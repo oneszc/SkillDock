@@ -13,6 +13,15 @@ SkillDock is a native macOS app for viewing, organizing, and installing local AI
 - Reveal a Skill in Finder and copy its path.
 - Keep system Skills read-only.
 
+## V0.2 Development Features
+
+- Drop one Skill folder onto the Library list.
+- Review metadata, files, scripts, and conflicts before importing.
+- Default conflicts to Skip, with explicit Replace and Rename choices.
+- Edit Chinese notes in one grouped form.
+- Reuse tag and use-case suggestions or add custom values.
+- Auto-save Chinese notes after about one second.
+
 ## Privacy Rule
 
 Chinese notes and future AI summaries never modify the original Skill. SkillDock stores them separately in:

@@ -6,7 +6,7 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 
 ## Current Goal
 
-V0.2 导入与中文备注体验规格和实现计划已完成，准备开始开发。
+V0.2 导入与中文备注体验开发已完成，等待产品负责人手动验收。
 
 - 扫描本机 skills。
 - 查看 skill 内容。
@@ -32,12 +32,16 @@ V0.2 导入与中文备注体验规格和实现计划已完成，准备开始开
 - GitHub V0.1.0 Release 已发布：
   - `https://github.com/oneszc/SkillDock/releases/tag/v0.1.0`
   - Release ZIP 已重新下载并通过 SHA-256 校验。
+- V0.2 已完成单文件夹拖拽导入和导入预览。
+- V0.2 已完成脚本风险提示和同名冲突策略。
+- V0.2 已完成中文备注分组表单、建议项和自动保存。
+- 自动化测试共 42 项，全部通过。
 
 ## Next Steps
 
-1. 创建 `codex/v0.2-development` 隔离工作区。
-2. 按 V0.2 实现计划从 Task 1 开始开发。
-3. 每完成一个 Task 后 commit 并 push。
+1. 按 `docs/testing/V0.2_ACCEPTANCE.md` 完成手动验收。
+2. 修正验收问题。
+3. 验收通过后合并到 `main`。
 
 ## Current Product Decisions
 
@@ -64,13 +68,13 @@ V0.2 导入与中文备注体验规格和实现计划已完成，准备开始开
 
 ## Handoff Note
 
-当前稳定分支：`main`。
+当前开发分支：`codex/v0.2-development`。
 
 第二台电脑的下一步：
 
 ```bash
 git fetch origin
-git switch main
+git switch codex/v0.2-development
 git pull
 swift test
 swift run SkillDockApp

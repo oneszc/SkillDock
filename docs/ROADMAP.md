@@ -48,6 +48,8 @@ docs/specs/v0.1-local-skill-library.md
 
 目标：让自制 skill 的导入、备注和管理更顺。
 
+状态：开发完成，等待手动验收。
+
 确认范围：
 
 - Skill 列表支持拖拽单个文件夹导入。
