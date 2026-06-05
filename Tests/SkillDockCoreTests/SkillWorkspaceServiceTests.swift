@@ -96,4 +96,38 @@ final class SkillWorkspaceServiceTests: XCTestCase {
             )
         )
     }
+
+    func testConfirmedImportUsesPreviewStrategyAndReturnsDestination() async throws {
+        let source = try Fixtures.temporaryDirectory()
+        try Fixtures.makeSkill(at: source)
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: try Fixtures.temporaryDirectory(),
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+        let preview = ImportPreview(
+            sourceURL: source,
+            name: "sample-skill",
+            description: nil,
+            relativePaths: ["SKILL.md"],
+            fileCount: 1,
+            hasScripts: false,
+            hasConflict: false,
+            strategy: .skip
+        )
+
+        let result = try await SkillWorkspaceService().importSkill(
+            preview: preview,
+            settings: settings
+        )
+
+        guard case let .copied(destination) = result else {
+            return XCTFail("Expected copied result")
+        }
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: destination.appendingPathComponent("SKILL.md").path
+            )
+        )
+    }
 }

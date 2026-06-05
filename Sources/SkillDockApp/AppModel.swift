@@ -7,7 +7,6 @@ import SkillDockCore
 @Observable
 final class AppModel {
     enum PendingOverwrite {
-        case importSkill(URL)
         case install(InstallTarget)
     }
 
@@ -22,20 +21,25 @@ final class AppModel {
     var filePaths: [String] = []
     var operationMessage: String?
     var pendingOverwrite: PendingOverwrite?
+    var importPreview: ImportPreview?
+    var importErrorMessage: String?
 
     private let settingsStore: SettingsStore
     private let libraryService: SkillLibraryService
     private let workspaceService: SkillWorkspaceService
+    private let importPreviewService: ImportPreviewService
     private let search = SkillSearch()
 
     init(
         settingsStore: SettingsStore = .init(),
         libraryService: SkillLibraryService = .init(),
-        workspaceService: SkillWorkspaceService = .init()
+        workspaceService: SkillWorkspaceService = .init(),
+        importPreviewService: ImportPreviewService = .init()
     ) {
         self.settingsStore = settingsStore
         self.libraryService = libraryService
         self.workspaceService = workspaceService
+        self.importPreviewService = importPreviewService
     }
 
     var filteredRecords: [SkillRecord] {
@@ -160,38 +164,49 @@ final class AppModel {
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let source = panel.url else { return }
-        guard settings.defaultConflictStrategy == .overwrite else {
-            await importSkill(from: source, strategy: settings.defaultConflictStrategy)
-            return
-        }
-        pendingOverwrite = .importSkill(source)
+        await prepareImport(urls: [source])
     }
 
-    func importSkill(from source: URL, strategy: ConflictStrategy) async {
+    func prepareImport(urls: [URL]) async {
+        do {
+            importPreview = try await importPreviewService.preview(
+                urls: urls,
+                libraryPath: settings.libraryPath
+            )
+            importErrorMessage = nil
+        } catch ImportPreviewError.requiresSingleFolder {
+            importErrorMessage = "Choose one Skill folder."
+        } catch ImportPreviewError.missingSkillMarkdown {
+            importErrorMessage = "This folder is not a valid Skill. SKILL.md was not found."
+        } catch {
+            importErrorMessage = "SkillDock could not inspect this folder."
+        }
+    }
+
+    func confirmImport() async {
+        guard let preview = importPreview else { return }
         do {
             let result = try await workspaceService.importSkill(
-                from: source,
-                settings: settings,
-                strategy: strategy
+                preview: preview,
+                settings: settings
             )
+            importPreview = nil
             operationMessage = result.message
             await refresh()
+            if case .copied(let destination) = result {
+                selectionID = records.first {
+                    $0.skill.path.standardizedFileURL == destination.standardizedFileURL
+                }?.id
+            }
         } catch {
-            errorMessage = error.localizedDescription
+            importErrorMessage = "Import failed. The existing Skill was not modified."
         }
     }
 
     func confirmOverwrite() async {
-        let operation = pendingOverwrite
+        guard case .install(let target) = pendingOverwrite else { return }
         pendingOverwrite = nil
-        switch operation {
-        case .importSkill(let source):
-            await importSkill(from: source, strategy: .overwrite)
-        case .install(let target):
-            await installSelected(to: target, strategy: .overwrite)
-        case nil:
-            break
-        }
+        await installSelected(to: target, strategy: .overwrite)
     }
 
     func saveSettings() async {

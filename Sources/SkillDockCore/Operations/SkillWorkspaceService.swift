@@ -59,6 +59,17 @@ public actor SkillWorkspaceService {
         )
     }
 
+    public func importSkill(
+        preview: ImportPreview,
+        settings: SkillSettings
+    ) async throws -> SkillFileOperationResult {
+        try await fileOperator.copySkill(
+            from: preview.sourceURL,
+            to: settings.libraryPath,
+            strategy: preview.strategy
+        )
+    }
+
     public func installSkill(
         from source: URL,
         target: InstallTarget,
