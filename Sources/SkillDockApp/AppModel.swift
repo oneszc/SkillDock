@@ -203,6 +203,10 @@ final class AppModel {
         }
     }
 
+    func updateImportStrategy(_ strategy: ConflictStrategy) {
+        importPreview?.strategy = strategy
+    }
+
     func confirmOverwrite() async {
         guard case .install(let target) = pendingOverwrite else { return }
         pendingOverwrite = nil

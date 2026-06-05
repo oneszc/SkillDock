@@ -12,7 +12,11 @@ struct RootView: View {
         } content: {
             SkillListView(
                 records: model.filteredRecords,
-                selectionID: $model.selectionID
+                acceptsImportDrop: model.navigationSection == .library,
+                selectionID: $model.selectionID,
+                onImportDrop: { urls in
+                    Task { await model.prepareImport(urls: urls) }
+                }
             )
             .navigationSplitViewColumnWidth(min: 280, ideal: 340, max: 420)
         } detail: {
@@ -53,6 +57,15 @@ struct RootView: View {
         .task {
             await model.start()
         }
+        .sheet(
+            isPresented: Binding(
+                get: { model.importPreview != nil },
+                set: { if !$0 { model.importPreview = nil } }
+            )
+        ) {
+            ImportPreviewView(model: model)
+                .frame(minWidth: 620, minHeight: 560)
+        }
         .onChange(of: model.selectionID) { _, _ in
             Task { await model.loadSelectedDetail() }
         }
@@ -82,6 +95,17 @@ struct RootView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(model.errorMessage ?? "")
+        }
+        .alert(
+            "SkillDock could not inspect this folder",
+            isPresented: Binding(
+                get: { model.importPreview == nil && model.importErrorMessage != nil },
+                set: { if !$0 { model.importErrorMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(model.importErrorMessage ?? "")
         }
         .alert(
             "SkillDock",
