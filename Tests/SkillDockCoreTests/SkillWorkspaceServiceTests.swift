@@ -130,4 +130,34 @@ final class SkillWorkspaceServiceTests: XCTestCase {
             )
         )
     }
+
+    func testSavingDraftCreatesCompleteNoteWithoutChangingSkillHash() async throws {
+        let skillDirectory = try Fixtures.temporaryDirectory()
+        try Fixtures.makeSkill(at: skillDirectory)
+        let originalHash = try SkillHasher().hash(directory: skillDirectory)
+        let notesStore = NotesStore(directory: try Fixtures.temporaryDirectory())
+        let service = SkillWorkspaceService(notesStore: notesStore)
+        let skill = Skill(
+            id: "sample",
+            name: "sample-skill",
+            description: nil,
+            path: skillDirectory,
+            source: .library,
+            hasScripts: false,
+            isSystem: false,
+            isReadOnly: false,
+            contentHash: originalHash
+        )
+        var draft = NoteDraft(note: nil)
+        draft.chineseName = "示例技能"
+        draft.tags = ["示例"]
+        draft.useCases = ["测试"]
+
+        try await service.save(draft: draft, for: skill)
+
+        let saved = try await notesStore.load().first
+        XCTAssertEqual(saved?.chineseName, "示例技能")
+        XCTAssertEqual(saved?.useCases, ["测试"])
+        XCTAssertEqual(try SkillHasher().hash(directory: skillDirectory), originalHash)
+    }
 }

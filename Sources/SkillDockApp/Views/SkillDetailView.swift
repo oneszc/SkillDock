@@ -34,7 +34,7 @@ struct SkillDetailView: View {
                 case .files:
                     FilesView(paths: model.filePaths)
                 case .notes:
-                    NotesEditorView(record: record, onSave: model.saveNote)
+                    NotesEditorView(model: model)
                 case .install:
                     installView(record)
                 }

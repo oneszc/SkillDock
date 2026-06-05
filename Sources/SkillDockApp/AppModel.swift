@@ -6,6 +6,14 @@ import SkillDockCore
 @MainActor
 @Observable
 final class AppModel {
+    enum NoteSaveState: Equatable {
+        case idle
+        case pending
+        case saving
+        case saved
+        case failed(String)
+    }
+
     enum PendingOverwrite {
         case install(InstallTarget)
     }
@@ -23,12 +31,17 @@ final class AppModel {
     var pendingOverwrite: PendingOverwrite?
     var importPreview: ImportPreview?
     var importErrorMessage: String?
+    var noteDraft = NoteDraft(note: nil)
+    var noteSuggestions = NoteSuggestions(tags: [], useCases: [])
+    var noteSaveState: NoteSaveState = .idle
 
     private let settingsStore: SettingsStore
     private let libraryService: SkillLibraryService
     private let workspaceService: SkillWorkspaceService
     private let importPreviewService: ImportPreviewService
     private let search = SkillSearch()
+    private var noteSaveTask: Task<Void, Never>?
+    private var noteDraftSkill: Skill?
 
     init(
         settingsStore: SettingsStore = .init(),
@@ -79,6 +92,7 @@ final class AppModel {
             records = try await libraryService.refresh(settings: settings)
             preserveOrSelectFirstRecord()
             await loadSelectedDetail()
+            await loadNoteDraft()
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
@@ -96,6 +110,47 @@ final class AppModel {
             filePaths = try await workspaceService.fileTree(for: record.skill.path)
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    func loadNoteDraft() async {
+        noteSaveTask?.cancel()
+        noteDraft = NoteDraft(note: selectedRecord?.note)
+        noteDraftSkill = selectedRecord?.skill
+        noteSaveState = .idle
+        do {
+            noteSuggestions = try await workspaceService.noteSuggestions()
+        } catch {
+            noteSuggestions = NoteSuggestions(tags: [], useCases: [])
+        }
+    }
+
+    func updateNoteDraft(_ draft: NoteDraft) {
+        noteDraft = draft
+        noteSaveState = .pending
+        noteSaveTask?.cancel()
+        noteSaveTask = Task {
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled else { return }
+            await saveCurrentNoteDraft()
+        }
+    }
+
+    func flushPendingNoteSave() async {
+        guard noteSaveState == .pending else { return }
+        noteSaveTask?.cancel()
+        await saveCurrentNoteDraft()
+    }
+
+    func saveCurrentNoteDraft() async {
+        guard let skill = noteDraftSkill else { return }
+        noteSaveState = .saving
+        do {
+            try await workspaceService.save(draft: noteDraft, for: skill)
+            noteSuggestions = try await workspaceService.noteSuggestions()
+            noteSaveState = .saved
+        } catch {
+            noteSaveState = .failed("Chinese notes could not be saved.")
         }
     }
 

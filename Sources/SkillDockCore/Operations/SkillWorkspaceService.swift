@@ -47,6 +47,30 @@ public actor SkillWorkspaceService {
         try await notesStore.upsert(note)
     }
 
+    public func save(draft: NoteDraft, for skill: Skill) async throws {
+        try await notesStore.upsert(
+            SkillNote(
+                key: SkillNoteKey(
+                    name: skill.name,
+                    source: skill.source,
+                    contentHash: skill.contentHash
+                ),
+                chineseName: draft.chineseName,
+                chineseDescription: draft.chineseDescription,
+                tags: draft.tags,
+                useCases: draft.useCases,
+                riskLevel: draft.riskLevel,
+                riskNote: draft.riskNote,
+                usageNote: draft.usageNote,
+                updatedAt: Date()
+            )
+        )
+    }
+
+    public func noteSuggestions() async throws -> NoteSuggestions {
+        try await notesStore.suggestions()
+    }
+
     public func importSkill(
         from source: URL,
         settings: SkillSettings,
