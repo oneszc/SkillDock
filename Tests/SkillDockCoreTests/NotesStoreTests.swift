@@ -72,6 +72,35 @@ final class NotesStoreTests: XCTestCase {
         XCTAssertEqual(settings.claudePath.path, "/Users/designer/.claude/skills")
     }
 
+    func testSuggestionsAreSeparatedNormalizedAndSorted() async throws {
+        let store = NotesStore(directory: try Fixtures.temporaryDirectory())
+        var first = makeNote(hash: "one")
+        first.tags = [" 写作 ", "效率"]
+        first.useCases = ["文章", "整理"]
+        var second = makeNote(hash: "two")
+        second.tags = ["写作", "效率工具"]
+        second.useCases = ["文章", "研究"]
+        try await store.save([first, second])
+
+        let suggestions = try await store.suggestions()
+
+        XCTAssertEqual(suggestions.tags, ["效率", "效率工具", "写作"])
+        XCTAssertEqual(suggestions.useCases, ["文章", "研究", "整理"])
+    }
+
+    func testUpsertNormalizesTagsAndUseCases() async throws {
+        let store = NotesStore(directory: try Fixtures.temporaryDirectory())
+        var note = makeNote(hash: "one")
+        note.tags = [" 写作 ", "写作", ""]
+        note.useCases = ["文章", " 文章 "]
+
+        try await store.upsert(note)
+        let saved = try await store.load().first!
+
+        XCTAssertEqual(saved.tags, ["写作"])
+        XCTAssertEqual(saved.useCases, ["文章"])
+    }
+
     private func makeNote(hash: String) -> SkillNote {
         SkillNote(
             key: SkillNoteKey(
