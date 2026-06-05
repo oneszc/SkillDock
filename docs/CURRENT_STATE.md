@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.2 代码已完成并合并到 `main`，等待产品负责人手动验收。
+V0.2 代码、自动化测试和产品负责人手动验收均已完成。
 
 ## Current Goal
 
-在另一台电脑完成 V0.2 手动验收，记录并修正实际使用问题；今晚不开始 V0.3 大功能。
+决定是否打包并发布 GitHub V0.2.0 Release；今晚不开始 V0.3 大功能。
 
 ## Completed
 
@@ -36,13 +36,12 @@ V0.2 代码已完成并合并到 `main`，等待产品负责人手动验收。
 - V0.2 已固定使用原始 Skill 名称，中文描述仅作为辅助理解。
 - V0.2 已移除 Overview，详情页默认打开 `SKILL.md`。
 - 自动化测试共 42 项，全部通过。
+- V0.2 产品负责人手动验收已通过。
 - `codex/v0.2-development` 已合并并推送到 `main`。
 
 ## Not Yet Completed
 
-1. 按 `docs/testing/V0.2_ACCEPTANCE.md` 完成剩余 17 项手动验收。
-2. 记录并修正手动验收发现的问题。
-3. 验收通过后决定是否打包并发布 V0.2 Release。
+1. 决定是否打包并发布 GitHub V0.2.0 Release。
 
 今晚不开始：
 
@@ -93,6 +92,6 @@ swift test
 swift run SkillDockApp
 ```
 
-打开应用后，逐项执行 `docs/testing/V0.2_ACCEPTANCE.md` 的 Manual 清单。
+V0.2 验收已通过。下一步先决定是否创建 GitHub V0.2.0 Release，不直接开始 V0.3。
 
 开始工作前先读本文件；结束工作前更新本文件，提交并 push 到 GitHub。
