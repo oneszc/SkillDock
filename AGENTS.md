@@ -28,6 +28,7 @@
 如果任务涉及具体版本，再读对应规格：
 
 - V0.1: `docs/specs/v0.1-local-skill-library.md`
+- V0.1 Design: `docs/superpowers/specs/2026-06-05-v0.1-local-skill-library-design.md`
 
 ## Context Handoff Rules
 
