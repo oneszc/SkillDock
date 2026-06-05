@@ -2,7 +2,7 @@
 
 ## Current Stage
 
-V0.1 设计已确认，准备编写实现计划。
+V0.1 设计与实现计划已确认，准备开始 SwiftUI 开发。
 
 ## Current Goal
 
@@ -33,10 +33,10 @@ V0.1 设计已确认，准备编写实现计划。
 
 ## Next Steps
 
-1. 用户复核 V0.1 正式设计文档。
-2. 编写 V0.1 实现计划。
-3. 创建 SwiftUI 项目基础结构。
-4. 开始实现本地扫描和详情查看。
+1. 安装完整 Xcode，并切换 `xcode-select` 到 Xcode。
+2. 按实现计划 Task 1 创建 Swift Package 和 SwiftUI 应用基础结构。
+3. 使用 TDD 实现本地 Skill 解析和扫描。
+4. 每完成一个 Task 后 commit 并 push。
 
 ## Current Product Decisions
 
@@ -50,6 +50,13 @@ V0.1 设计已确认，准备编写实现计划。
 - V0.1 使用 GitHub Release / 本地安装，不上 Mac App Store。
 - 主界面采用 Finder 式三栏布局。
 - 中文理解数据保存在 SkillDock 应用数据目录，不写入任何 Skill 文件夹。
+
+## Current Environment Note
+
+- Swift 6.3.1 已安装，目标为 macOS 26。
+- 当前仅启用 Command Line Tools。
+- `xcodebuild` 暂不可用，需要安装完整 Xcode。
+- 实现计划：`docs/superpowers/plans/2026-06-05-v0.1-local-skill-library.md`。
 
 ## Handoff Note
 
