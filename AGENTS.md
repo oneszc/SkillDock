@@ -29,6 +29,9 @@
 
 - V0.1: `docs/specs/v0.1-local-skill-library.md`
 - V0.1 Design: `docs/superpowers/specs/2026-06-05-v0.1-local-skill-library-design.md`
+- V0.2 Design: `docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md`
+- V0.2 Plan: `docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`
+- V0.2 Acceptance: `docs/testing/V0.2_ACCEPTANCE.md`
 
 ## Context Handoff Rules
 
