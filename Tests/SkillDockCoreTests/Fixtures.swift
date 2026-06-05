@@ -18,4 +18,24 @@ enum Fixtures {
         )
         try contents.write(to: url, atomically: true, encoding: .utf8)
     }
+
+    static func makeSkill(
+        at directory: URL,
+        name: String? = "sample-skill",
+        description: String? = "Sample description"
+    ) throws {
+        let frontmatter: String
+        if let name, let description {
+            frontmatter = """
+            ---
+            name: \(name)
+            description: \(description)
+            ---
+            # Instructions
+            """
+        } else {
+            frontmatter = "# Instructions"
+        }
+        try write(frontmatter, to: directory.appendingPathComponent("SKILL.md"))
+    }
 }
