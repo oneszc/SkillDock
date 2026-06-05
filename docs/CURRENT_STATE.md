@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.1 核心开发已完成，进入真实数据手动验收阶段。
+V0.1 核心功能、手动验收和本地应用打包已完成。
 
 ## Current Goal
 
-完成本地 Skill 资产台账的真实数据验收：
+准备合并开发分支，并决定公开发布签名方案。
 
 - 扫描本机 skills。
 - 查看 skill 内容。
@@ -24,13 +24,16 @@ V0.1 核心开发已完成，进入真实数据手动验收阶段。
 - 已完成 Finder 定位、复制路径和设置编辑。
 - 已安装并切换到 Xcode 26.5。
 - 自动化测试共 35 项，全部通过。
+- 产品负责人已确认手动测试没有问题。
+- 已生成并实际启动 `dist/SkillDock.app`。
+- 已生成并解压验证 `dist/SkillDock-0.1.0.zip`。
+- 当前应用使用临时本地签名，尚未进行 Apple Developer ID 签名和公证。
 
 ## Next Steps
 
-1. 在本机运行 `swift run SkillDockApp`。
-2. 按 `docs/testing/V0.1_ACCEPTANCE.md` 完成真实 Skill 手动验收。
-3. 修正验收问题。
-4. 为 GitHub Release 增加可直接打开的 `.app` 打包流程。
+1. 将 `codex/v0.1-development` 合并到 `main`。
+2. 决定是否配置 Apple Developer ID，用于公开发布签名与公证。
+3. 创建 GitHub V0.1 Release。
 
 ## Current Product Decisions
 

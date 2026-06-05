@@ -3,3 +3,4 @@
 .worktrees/
 .build/
 .build-check/
+dist/
