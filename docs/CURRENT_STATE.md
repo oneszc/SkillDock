@@ -6,7 +6,7 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 
 ## Current Goal
 
-V0.2 导入与中文备注体验开发已完成，等待产品负责人手动验收。
+V0.2 正在根据产品负责人反馈调整 Skill 身份展示和详情页布局。
 
 - 扫描本机 skills。
 - 查看 skill 内容。
@@ -39,8 +39,8 @@ V0.2 导入与中文备注体验开发已完成，等待产品负责人手动验
 
 ## Next Steps
 
-1. 按 `docs/testing/V0.2_ACCEPTANCE.md` 完成手动验收。
-2. 修正验收问题。
+1. 执行 V0.2 实现计划 Task 8。
+2. 按 `docs/testing/V0.2_ACCEPTANCE.md` 完成手动验收。
 3. 验收通过后合并到 `main`。
 
 ## Current Product Decisions
@@ -56,6 +56,7 @@ V0.2 导入与中文备注体验开发已完成，等待产品负责人手动验
 - 主界面采用 Finder 式三栏布局。
 - 中文理解数据保存在 SkillDock 应用数据目录，不写入任何 Skill 文件夹。
 - 应用内所有常规界面图标统一使用 Apple 官方 SF Symbols。
+- Skill 原始名称始终作为主名称；中文描述只作为辅助理解信息。
 
 ## Current Environment Note
 
