@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.2 代码、自动化测试和产品负责人手动验收均已完成。
+V0.2 代码、自动化测试、产品负责人手动验收和 GitHub Release 均已完成。
 
 ## Current Goal
 
-决定是否打包并发布 GitHub V0.2.0 Release；今晚不开始 V0.3 大功能。
+V0.2 已正式发布；今晚不开始 V0.3 大功能。
 
 ## Completed
 
@@ -38,10 +38,12 @@ V0.2 代码、自动化测试和产品负责人手动验收均已完成。
 - 自动化测试共 42 项，全部通过。
 - V0.2 产品负责人手动验收已通过。
 - `codex/v0.2-development` 已合并并推送到 `main`。
+- 已生成并验证 `dist/SkillDock-0.2.0.zip`。
+- GitHub V0.2.0 Release 已发布。
 
 ## Not Yet Completed
 
-1. 决定是否打包并发布 GitHub V0.2.0 Release。
+当前没有必须完成的 V0.2 工作。
 
 今晚不开始：
 
@@ -92,6 +94,6 @@ swift test
 swift run SkillDockApp
 ```
 
-V0.2 验收已通过。下一步先决定是否创建 GitHub V0.2.0 Release，不直接开始 V0.3。
+V0.2 已发布。下一步工作前先确定新的小目标，不直接开始大功能。
 
 开始工作前先读本文件；结束工作前更新本文件，提交并 push 到 GitHub。
