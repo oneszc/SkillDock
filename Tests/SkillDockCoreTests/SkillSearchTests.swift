@@ -10,11 +10,11 @@ final class SkillSearchTests: XCTestCase {
         XCTAssertEqual(search.filter(records, query: "description").count, 1)
     }
 
-    func testSearchMatchesChineseNameDescriptionAndTags() {
+    func testSearchMatchesChineseDescriptionAndTagsButNotLegacyChineseName() {
         let records = [makeRecord()]
         let search = SkillSearch()
 
-        XCTAssertEqual(search.filter(records, query: "示例技能").count, 1)
+        XCTAssertTrue(search.filter(records, query: "示例技能").isEmpty)
         XCTAssertEqual(search.filter(records, query: "帮助理解").count, 1)
         XCTAssertEqual(search.filter(records, query: "设计").count, 1)
     }

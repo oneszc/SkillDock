@@ -25,7 +25,6 @@ public struct SkillSearch: Sendable {
             skill.description ?? "",
             skill.path.path,
             skill.source.displayName,
-            note?.chineseName ?? "",
             note?.chineseDescription ?? "",
             note?.tags.joined(separator: " ") ?? "",
             note?.useCases.joined(separator: " ") ?? "",

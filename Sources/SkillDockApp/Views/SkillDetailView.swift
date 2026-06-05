@@ -3,41 +3,15 @@ import SwiftUI
 
 struct SkillDetailView: View {
     @Bindable var model: AppModel
-    @State private var tab: DetailTab = .overview
+    @State private var tab: DetailTab = .markdown
     let record: SkillRecord?
 
     var body: some View {
         if let record {
             VStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(record.note?.chineseName.nonEmpty ?? record.skill.name)
-                        .font(.title2.weight(.semibold))
-                    Text(record.note?.chineseDescription.nonEmpty ?? record.skill.description ?? record.skill.name)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                    Picker("Detail", selection: $tab) {
-                        ForEach(DetailTab.allCases) { item in
-                            Label(item.title, systemImage: item.systemImage).tag(item)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .padding(20)
-
+                detailHeader(record)
                 Divider()
-
-                switch tab {
-                case .overview:
-                    OverviewView(record: record)
-                case .markdown:
-                    MarkdownPreviewView(markdown: model.markdown)
-                case .files:
-                    FilesView(paths: model.filePaths)
-                case .notes:
-                    NotesEditorView(model: model)
-                case .install:
-                    installView(record)
-                }
+                content(for: record)
             }
             .navigationTitle(record.skill.name)
         } else {
@@ -46,6 +20,76 @@ struct SkillDetailView: View {
                 systemImage: "doc.text.magnifyingglass",
                 description: Text("Choose a Skill to view its details.")
             )
+        }
+    }
+
+    private func detailHeader(_ record: SkillRecord) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(record.skill.name)
+                .font(.largeTitle.weight(.semibold))
+                .textSelection(.enabled)
+
+            if let englishDescription = record.skill.description?.nonEmpty {
+                Text(englishDescription)
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+            }
+
+            if let chineseDescription = record.note?.chineseDescription.nonEmpty {
+                Text(chineseDescription)
+                    .font(.body)
+                    .textSelection(.enabled)
+            }
+
+            HStack(spacing: 12) {
+                Label(record.skill.source.displayName, systemImage: "folder")
+
+                if record.skill.installation.codex {
+                    Label("Codex", systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                }
+                if record.skill.installation.claude {
+                    Label("Claude", systemImage: "checkmark.circle")
+                        .foregroundStyle(.secondary)
+                }
+                if record.skill.isSystem {
+                    Label("Read-only", systemImage: "lock.fill")
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Button(action: model.revealSelectedInFinder) {
+                    Label("Reveal in Finder", systemImage: "folder")
+                }
+                Button(action: model.copySelectedPath) {
+                    Label("Copy Path", systemImage: "doc.on.doc")
+                }
+            }
+            .labelStyle(.titleAndIcon)
+            .font(.subheadline)
+
+            Picker("Detail", selection: $tab) {
+                ForEach(DetailTab.allCases) { item in
+                    Label(item.title, systemImage: item.systemImage).tag(item)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+        .padding(24)
+    }
+
+    @ViewBuilder
+    private func content(for record: SkillRecord) -> some View {
+        switch tab {
+        case .markdown:
+            MarkdownPreviewView(markdown: model.markdown)
+        case .files:
+            FilesView(paths: model.filePaths)
+        case .notes:
+            NotesEditorView(model: model)
+        case .install:
+            installView(record)
         }
     }
 
@@ -91,7 +135,6 @@ struct SkillDetailView: View {
 }
 
 private enum DetailTab: String, CaseIterable, Identifiable {
-    case overview
     case markdown
     case files
     case notes
@@ -101,7 +144,6 @@ private enum DetailTab: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .overview: "Overview"
         case .markdown: "SKILL.md"
         case .files: "Files"
         case .notes: "Chinese Notes"
@@ -111,7 +153,6 @@ private enum DetailTab: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
-        case .overview: "info.circle"
         case .markdown: "doc.text"
         case .files: "folder"
         case .notes: "character.book.closed"

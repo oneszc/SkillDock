@@ -11,7 +11,7 @@ struct SkillRowView: View {
                 .frame(width: 22)
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(record.note?.chineseName.nonEmpty ?? record.skill.name)
+                Text(record.skill.name)
                     .font(.body)
                     .lineLimit(1)
                 Text(record.note?.chineseDescription.nonEmpty ?? record.skill.description ?? record.skill.source.displayName)

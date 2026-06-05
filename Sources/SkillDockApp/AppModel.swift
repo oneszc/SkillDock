@@ -154,39 +154,6 @@ final class AppModel {
         }
     }
 
-    func saveNote(
-        chineseName: String,
-        chineseDescription: String,
-        tags: String,
-        usageNote: String,
-        riskLevel: RiskLevel,
-        riskNote: String
-    ) async {
-        guard let record = selectedRecord else { return }
-        let note = SkillNote(
-            key: SkillNoteKey(
-                name: record.skill.name,
-                source: record.skill.source,
-                contentHash: record.skill.contentHash
-            ),
-            chineseName: chineseName,
-            chineseDescription: chineseDescription,
-            tags: tags.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) },
-            useCases: record.note?.useCases ?? [],
-            riskLevel: riskLevel,
-            riskNote: riskNote,
-            usageNote: usageNote,
-            updatedAt: Date()
-        )
-        do {
-            try await workspaceService.save(note: note)
-            await refresh()
-            operationMessage = "Chinese notes saved outside the original Skill."
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
     func requestInstall(to target: InstallTarget) async {
         guard settings.defaultConflictStrategy == .overwrite else {
             await installSelected(to: target, strategy: settings.defaultConflictStrategy)

@@ -7,7 +7,6 @@ struct NotesEditorView: View {
     var body: some View {
         Form {
             Section("Chinese Understanding") {
-                TextField("Chinese name", text: $model.noteDraft.chineseName)
                 TextField(
                     "Chinese description",
                     text: $model.noteDraft.chineseDescription,
