@@ -38,4 +38,24 @@ enum Fixtures {
         }
         try write(frontmatter, to: directory.appendingPathComponent("SKILL.md"))
     }
+
+    static func snapshot(directory: URL) throws -> [String: Data] {
+        guard let enumerator = FileManager.default.enumerator(
+            at: directory,
+            includingPropertiesForKeys: [.isRegularFileKey],
+            options: []
+        ) else {
+            return [:]
+        }
+
+        var snapshot: [String: Data] = [:]
+        for case let file as URL in enumerator {
+            guard (try? file.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile) == true else {
+                continue
+            }
+            let relativePath = String(file.path.dropFirst(directory.path.count))
+            snapshot[relativePath] = try Data(contentsOf: file)
+        }
+        return snapshot
+    }
 }
