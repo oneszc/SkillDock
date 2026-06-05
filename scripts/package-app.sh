@@ -4,19 +4,22 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP_NAME="SkillDock"
 BUNDLE_ID="com.oneszc.SkillDock"
-VERSION="${SKILLDOCK_VERSION:-0.1.0}"
+VERSION="${SKILLDOCK_VERSION:-0.2.0}"
 BUILD_DIR="$ROOT_DIR/.build/release"
 DIST_DIR="$ROOT_DIR/dist"
 APP_DIR="$DIST_DIR/$APP_NAME.app"
 CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
+RESOURCES_DIR="$CONTENTS_DIR/Resources"
+ICON_FILE="$ROOT_DIR/Resources/SkillDock.icns"
 
 cd "$ROOT_DIR"
 swift build -c release --product SkillDockApp
 
 rm -rf "$APP_DIR"
-mkdir -p "$MACOS_DIR"
+mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 cp "$BUILD_DIR/SkillDockApp" "$MACOS_DIR/$APP_NAME"
+cp "$ICON_FILE" "$RESOURCES_DIR/SkillDock.icns"
 
 cat > "$CONTENTS_DIR/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -31,6 +34,8 @@ cat > "$CONTENTS_DIR/Info.plist" <<PLIST
     <string>$BUNDLE_ID</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+    <key>CFBundleIconFile</key>
+    <string>SkillDock.icns</string>
     <key>CFBundleName</key>
     <string>$APP_NAME</string>
     <key>CFBundlePackageType</key>

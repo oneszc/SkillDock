@@ -1,3 +1,4 @@
+import SkillDockCore
 import SwiftUI
 
 struct RootView: View {
@@ -6,54 +7,14 @@ struct RootView: View {
     var body: some View {
         @Bindable var model = model
 
-        NavigationSplitView {
-            SidebarView(selection: $model.navigationSection)
-                .navigationSplitViewColumnWidth(min: 190, ideal: 220, max: 270)
-        } content: {
-            SkillListView(
-                records: model.filteredRecords,
-                acceptsImportDrop: model.navigationSection == .library,
-                selectionID: $model.selectionID,
-                onImportDrop: { urls in
-                    Task { await model.prepareImport(urls: urls) }
-                }
-            )
-            .navigationSplitViewColumnWidth(min: 320, ideal: 380, max: 460)
-        } detail: {
+        Group {
             if model.navigationSection == .settings {
-                SettingsView(model: model)
+                settingsLayout
             } else {
-                SkillDetailView(model: model, record: model.selectedRecord)
+                skillBrowserLayout
             }
         }
-        .searchable(text: $model.searchQuery, prompt: "Search Skills")
-        .toolbar {
-            ToolbarItem {
-                Button {
-                    Task { await model.requestImport() }
-                } label: {
-                    Label("Import Skill", systemImage: "plus")
-                }
-            }
-            ToolbarItemGroup {
-                Button(action: model.revealSelectedInFinder) {
-                    Label("Reveal in Finder", systemImage: "folder")
-                }
-                .disabled(model.selectedRecord == nil)
-                Button(action: model.copySelectedPath) {
-                    Label("Copy Path", systemImage: "doc.on.doc")
-                }
-                .disabled(model.selectedRecord == nil)
-            }
-            ToolbarItem {
-                Button {
-                    Task { await model.refresh() }
-                } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                }
-                .disabled(model.isRefreshing)
-            }
-        }
+        .preferredColorScheme(model.settings.appearanceMode.colorScheme)
         .task {
             await model.start()
         }
@@ -123,5 +84,82 @@ struct RootView: View {
             Text(model.operationMessage ?? "")
         }
         .frame(minWidth: 1100, minHeight: 700)
+    }
+
+    private var skillBrowserLayout: some View {
+        @Bindable var model = model
+
+        return NavigationSplitView {
+            SidebarView(selection: $model.navigationSection)
+                .navigationSplitViewColumnWidth(min: 190, ideal: 220, max: 270)
+        } content: {
+            SkillListView(
+                records: model.filteredRecords,
+                acceptsImportDrop: model.navigationSection == .library,
+                selectionID: $model.selectionID,
+                onImportDrop: { urls in
+                    Task { await model.prepareImport(urls: urls) }
+                }
+            )
+            .navigationSplitViewColumnWidth(min: 320, ideal: 380, max: 460)
+        } detail: {
+            SkillDetailView(model: model, record: model.selectedRecord)
+        }
+        .searchable(text: $model.searchQuery, prompt: "Search Skills")
+        .toolbar {
+            ToolbarItem {
+                Button {
+                    Task { await model.requestImport() }
+                } label: {
+                    Label("Import Skill", systemImage: "plus")
+                }
+            }
+            ToolbarItemGroup {
+                Button(action: model.revealSelectedInFinder) {
+                    Label("Reveal in Finder", systemImage: "folder")
+                }
+                .disabled(model.selectedRecord == nil)
+                Button(action: model.copySelectedPath) {
+                    Label("Copy Path", systemImage: "doc.on.doc")
+                }
+                .disabled(model.selectedRecord == nil)
+            }
+            ToolbarItem {
+                Button {
+                    Task { await model.refresh() }
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+                .disabled(model.isRefreshing)
+            }
+        }
+    }
+
+    private var settingsLayout: some View {
+        NavigationSplitView {
+            SettingsSidebarView()
+                .navigationSplitViewColumnWidth(min: 190, ideal: 220, max: 270)
+        } detail: {
+            SettingsView(model: model)
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    model.navigationSection = .library
+                } label: {
+                    Label("Back to Library", systemImage: "chevron.left")
+                }
+            }
+        }
+    }
+}
+
+private extension AppearanceMode {
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
     }
 }

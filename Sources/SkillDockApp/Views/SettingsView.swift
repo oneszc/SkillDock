@@ -6,6 +6,14 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
+            Section("Appearance") {
+                AppearanceModePicker(
+                    selection: model.settings.appearanceMode,
+                    onSelect: { mode in
+                        Task { await model.selectAppearanceMode(mode) }
+                    }
+                )
+            }
             Section("Skill Locations") {
                 pathField("Library", url: $model.settings.libraryPath)
                 pathField("Codex", url: $model.settings.codexPath)
@@ -30,7 +38,7 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .font(.body)
         .padding(VisualMetrics.contentPadding)
-        .navigationTitle("Settings")
+        .navigationTitle("General")
     }
 
     private func pathField(_ title: String, url: Binding<URL>) -> some View {

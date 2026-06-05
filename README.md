@@ -54,10 +54,10 @@ This creates:
 
 ```text
 dist/SkillDock.app
-dist/SkillDock-0.1.0.zip
+dist/SkillDock-0.2.0.zip
 ```
 
-The V0.1 package uses an ad-hoc local signature. Public distribution through GitHub Release should add Developer ID signing and Apple notarization.
+The local package uses an ad-hoc signature. Public distribution through GitHub Release should add Developer ID signing and Apple notarization.
 
 The first launch creates or scans these default locations:
 

@@ -155,3 +155,26 @@ https://developer.apple.com/cn/sf-symbols/
 
 - 保留原 Skill 的身份标志，方便用户记忆、搜索和跨工具识别。
 - 避免中文名称造成同一 Skill 在不同位置显示不一致。
+
+## 2026-06-05 - Settings Uses A Dedicated Two-column Layout
+
+决定：
+
+- 普通 Skill 浏览继续使用 Finder 式三栏。
+- 进入 Settings 后使用“设置分类 + 设置内容”双栏，不显示 Skill 列表中间栏。
+- Settings 当前只有 General 分类，后续新增设置时再扩展分类。
+
+原因：
+
+- 设置状态下的 Skill 列表没有作用，会形成明显空白栏。
+- 双栏设置结构更接近 macOS 系统应用，信息关系更清楚。
+
+## 2026-06-05 - Support System, Light, And Dark Appearance
+
+决定：SkillDock 提供 System、Light、Dark 三种外观模式，并保存用户选择。
+
+原因：
+
+- 跟随系统保持默认原生体验。
+- 明确的浅色和深色选择方便用户按使用环境调整。
+- 外观选择属于应用级偏好，应立即生效并独立持久化。

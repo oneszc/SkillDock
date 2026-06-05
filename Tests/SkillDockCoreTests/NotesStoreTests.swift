@@ -70,6 +70,34 @@ final class NotesStoreTests: XCTestCase {
         XCTAssertEqual(settings.libraryPath.path, "/Users/designer/AI-Skills")
         XCTAssertEqual(settings.codexPath.path, "/Users/designer/.codex/skills")
         XCTAssertEqual(settings.claudePath.path, "/Users/designer/.claude/skills")
+        XCTAssertEqual(settings.appearanceMode, .system)
+    }
+
+    func testSettingsDecodeOlderJSONWithSystemAppearance() throws {
+        let data = """
+        {
+          "libraryPath": "file:///Users/designer/AI-Skills/",
+          "codexPath": "file:///Users/designer/.codex/skills/",
+          "claudePath": "file:///Users/designer/.claude/skills/",
+          "showSystemSkills": true,
+          "defaultInstallTargets": ["codex", "claude"],
+          "defaultConflictStrategy": "skip"
+        }
+        """.data(using: .utf8)!
+
+        let settings = try JSONDecoder().decode(SkillSettings.self, from: data)
+
+        XCTAssertEqual(settings.appearanceMode, .system)
+    }
+
+    func testSettingsAppearanceModeRoundTripsThroughJSON() throws {
+        var settings = SkillSettings.defaults()
+        settings.appearanceMode = .dark
+
+        let data = try JSONEncoder().encode(settings)
+        let decoded = try JSONDecoder().decode(SkillSettings.self, from: data)
+
+        XCTAssertEqual(decoded.appearanceMode, .dark)
     }
 
     func testSuggestionsAreSeparatedNormalizedAndSorted() async throws {

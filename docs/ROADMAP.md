@@ -84,7 +84,7 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 目标：提升长期浏览和阅读时的舒适度。
 
-状态：第一版已完成，等待产品负责人视觉验收。
+状态：实现已完成，等待产品负责人最终视觉验收。
 
 确认范围：
 
@@ -93,6 +93,9 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 - 增加主要页面内容留白。
 - 限制长文阅读宽度。
 - 保留 Finder 式三栏效率，不改为 App Store 营销卡片。
+- Settings 使用“设置分类 + 设置内容”双栏，不显示空白 Skill 列表。
+- 增加 System、Light、Dark 外观模式选择并持久化。
+- 替换应用图标并接入自动打包与验证流程。
 
 ## V0.3 - GitHub Remote Skills
 

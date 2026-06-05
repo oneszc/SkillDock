@@ -245,6 +245,17 @@ final class AppModel {
         }
     }
 
+    func selectAppearanceMode(_ mode: AppearanceMode) async {
+        settings.appearanceMode = mode
+        do {
+            var persistedSettings = try await settingsStore.load()
+            persistedSettings.appearanceMode = mode
+            try await settingsStore.save(persistedSettings)
+        } catch {
+            errorMessage = "Appearance could not be saved."
+        }
+    }
+
     func revealSelectedInFinder() {
         guard let record = selectedRecord else { return }
         NSWorkspace.shared.activateFileViewerSelecting([record.skill.path])
