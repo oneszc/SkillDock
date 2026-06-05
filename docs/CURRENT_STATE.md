@@ -6,7 +6,7 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 
 ## Current Goal
 
-发布 GitHub V0.1.0，并开始规划 V0.2。
+开始规划 V0.2 日常可用性优化。
 
 - 扫描本机 skills。
 - 查看 skill 内容。
@@ -29,12 +29,15 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 - 已生成并解压验证 `dist/SkillDock-0.1.0.zip`。
 - 当前应用使用临时本地签名，尚未进行 Apple Developer ID 签名和公证。
 - `codex/v0.1-development` 已合并到 `main`。
+- GitHub V0.1.0 Release 已发布：
+  - `https://github.com/oneszc/SkillDock/releases/tag/v0.1.0`
+  - Release ZIP 已重新下载并通过 SHA-256 校验。
 
 ## Next Steps
 
-1. 创建 GitHub V0.1.0 Release。
-2. 决定是否配置 Apple Developer ID，用于公开发布签名与公证。
-3. 编写 V0.2 需求规格。
+1. 编写 V0.2 需求规格。
+2. 决定是否配置 Apple Developer ID，用于后续公开版本签名与公证。
+3. 根据 V0.2 规格开始开发。
 
 ## Current Product Decisions
 
