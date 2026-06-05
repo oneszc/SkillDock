@@ -51,6 +51,7 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 - V0.1 使用 GitHub Release / 本地安装，不上 Mac App Store。
 - 主界面采用 Finder 式三栏布局。
 - 中文理解数据保存在 SkillDock 应用数据目录，不写入任何 Skill 文件夹。
+- 应用内所有常规界面图标统一使用 Apple 官方 SF Symbols。
 
 ## Current Environment Note
 

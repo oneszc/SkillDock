@@ -56,6 +56,28 @@ https://www.figma.com/community/file/1543337041090580818
 - 用户会频繁查看、筛选和同步 skills，界面需要稳定、克制、清晰。
 - 采用系统组件逻辑，可以减少设计和实现分歧。
 
+## 2026-06-05 - Use SF Symbols For All Interface Icons
+
+决定：SkillDock 应用内所有常规界面图标统一使用 Apple 官方 SF Symbols。
+
+参考链接：
+
+```text
+https://developer.apple.com/cn/sf-symbols/
+```
+
+实现规则：
+
+- SwiftUI 使用 `Image(systemName:)` 或 `Label(_:systemImage:)`。
+- 不引入第三方图标库，不为常规操作自绘图标。
+- 只有应用图标、品牌 Logo 或 SF Symbols 无法表达的 SkillDock 专属概念允许单独设计。
+
+原因：
+
+- 保持 macOS 原生体验和视觉一致性。
+- 系统图标更容易被用户理解。
+- 自动适配系统字号、强调状态和无障碍表现。
+
 ## 2026-06-05 - SwiftUI and macOS 26
 
 决定：V0.1 使用 SwiftUI 原生开发，最低支持 macOS 26。

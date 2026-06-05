@@ -85,9 +85,11 @@ SkillDock 是 macOS 本地工具，界面应遵循 macOS 26 的系统规范和 A
 - 信息密度适中，方便长期管理和频繁查看。
 - 优先使用系统常见结构：侧边栏、列表、详情面板、工具栏、设置页。
 - 控件、间距、层级、状态表达尽量贴近 Apple 官方组件。
+- 应用内所有常规功能图标使用 Apple 官方 SF Symbols，不引入第三方图标库。
 
 设计参考：
 
 ```text
 https://www.figma.com/community/file/1543337041090580818
+https://developer.apple.com/cn/sf-symbols/
 ```

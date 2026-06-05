@@ -56,6 +56,24 @@ SkillDock 应该像一个原生 macOS 工具，而不是网页 SaaS 后台。
 - 状态标签。
 - 工具栏图标按钮。
 
+## Icon Rules
+
+SkillDock 应用内所有功能图标统一使用 Apple 官方 SF Symbols：
+
+```text
+https://developer.apple.com/cn/sf-symbols/
+```
+
+强制规则：
+
+- SwiftUI 实现优先使用 `Image(systemName:)` 和 `Label(_:systemImage:)`。
+- 图标语义、粗细、尺寸和状态变化遵循 macOS 系统习惯。
+- 优先使用用户已经熟悉的系统图标，例如导入、刷新、文件夹、复制、设置和安装。
+- 同一动作在不同页面使用同一个 SF Symbol。
+- 不引入第三方图标库。
+- 不为常规功能自绘图标。
+- 品牌 Logo、应用图标以及 SF Symbols 无法表达的 SkillDock 专属概念，可以单独设计，但不能代替常规操作图标。
+
 状态表达要清楚：
 
 - 已安装 / 未安装。
@@ -103,4 +121,3 @@ SkillDock 应该像一个原生 macOS 工具，而不是网页 SaaS 后台。
 - 不从零发明基础控件。
 - 如果需要自定义组件，先说明它解决了哪个 SkillDock 特有问题。
 - 设计稿和实现要保持页面结构一致，避免 Figma 好看但开发落地困难。
-
