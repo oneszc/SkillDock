@@ -1,5 +1,25 @@
 # References
 
+## Apple macOS 26 Figma Component Library
+
+参考链接：
+
+```text
+https://www.figma.com/community/file/1543337041090580818
+```
+
+用途：
+
+- 作为 SkillDock 的主要界面规范参考。
+- 用于约束窗口结构、侧边栏、列表、详情页、工具栏、设置页和控件样式。
+- 后续做 Figma 设计稿或前端实现时，优先复用 Apple 官方组件逻辑。
+
+注意：
+
+- SkillDock 不做强烈品牌化视觉，不做网页 SaaS 风格。
+- 默认靠近原生 macOS 工具体验。
+- 在原生规范基础上，再加入适合中文用户的说明、标签和风险提示。
+
 ## Codex Skills Page
 
 可参考：
@@ -76,4 +96,3 @@
 不直接照搬：
 
 - SkillDock 需要更完整的主技能库和多工具同步。
-

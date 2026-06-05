@@ -23,6 +23,7 @@
 1. `docs/PROJECT_CONTEXT.md`
 2. `docs/CURRENT_STATE.md`
 3. `docs/ROADMAP.md`
+4. `docs/DESIGN_GUIDELINES.md`
 
 如果任务涉及具体版本，再读对应规格：
 
@@ -48,3 +49,11 @@ SkillDock 优先从零开发，不优先二开现有开源项目。
 - 同步到 Codex / Claude Code。
 - 为中文用户提供中文备注和理解层。
 
+## Interface Direction
+
+SkillDock 是 macOS 本地应用，界面规范和设计风格遵循 macOS 26。
+
+设计和实现界面前必须参考：
+
+- `docs/DESIGN_GUIDELINES.md`
+- Apple 官方 Figma 组件库：https://www.figma.com/community/file/1543337041090580818

@@ -40,3 +40,18 @@
 - 数据结构先稳定下来。
 - AI 自动生成可以在后续版本基于同一套字段增强。
 
+## 2026-06-05 - Follow macOS 26 Interface Guidelines
+
+决定：SkillDock 的界面规范和设计风格遵循 macOS 26，并以 Apple 官方 Figma 组件库作为主要设计参考。
+
+参考链接：
+
+```text
+https://www.figma.com/community/file/1543337041090580818
+```
+
+原因：
+
+- SkillDock 是 macOS 本地工具，原生感比强品牌视觉更重要。
+- 用户会频繁查看、筛选和同步 skills，界面需要稳定、克制、清晰。
+- 采用系统组件逻辑，可以减少设计和实现分歧。

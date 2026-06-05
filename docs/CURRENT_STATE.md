@@ -19,6 +19,7 @@ V0.1 产品需求收敛与项目基础文档搭建。
 - 已阅读原始 PRD：`/Users/macbookpro/Downloads/SkillDock_PRD.md`。
 - 已确认当前仓库基本为空，适合从零开发。
 - 已确认第一版不建议二开现有项目。
+- 已新增设计规则：界面规范和设计风格遵循 macOS 26，并参考 Apple 官方 Figma 组件库。
 - 已参考本机数据痕迹：
   - `~/.codex/skills`
   - `~/.claude/skills`
@@ -40,8 +41,8 @@ V0.1 产品需求收敛与项目基础文档搭建。
 - V0.1 先使用 copy folder 同步，不默认使用 symlink。
 - Codex / Claude 的系统 skills 默认只读展示。
 - 主技能库默认路径为 `~/AI-Skills`。
+- 界面规范和设计风格遵循 macOS 26，参考 Apple 官方 Figma 组件库。
 
 ## Handoff Note
 
 两台电脑协作时，开始工作前先读这个文件；结束工作前更新这个文件。
-

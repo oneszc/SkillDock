@@ -75,3 +75,19 @@ my-skill/
 
 先让用户放心管理本地 skills，再逐步做远程安装、AI 自动解读、批量同步和更新检测。
 
+## Design Principle
+
+SkillDock 是 macOS 本地工具，界面应遵循 macOS 26 的系统规范和 Apple 官方 Figma 组件库。
+
+设计重点：
+
+- 像一个原生 macOS 工具，而不是网页后台。
+- 信息密度适中，方便长期管理和频繁查看。
+- 优先使用系统常见结构：侧边栏、列表、详情面板、工具栏、设置页。
+- 控件、间距、层级、状态表达尽量贴近 Apple 官方组件。
+
+设计参考：
+
+```text
+https://www.figma.com/community/file/1543337041090580818
+```
