@@ -6,7 +6,7 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 
 ## Current Goal
 
-V0.2 导入与中文备注体验方案已确认，等待规格审阅。
+V0.2 导入与中文备注体验规格和实现计划已完成，准备开始开发。
 
 - 扫描本机 skills。
 - 查看 skill 内容。
@@ -35,9 +35,9 @@ V0.2 导入与中文备注体验方案已确认，等待规格审阅。
 
 ## Next Steps
 
-1. 审阅 V0.2 设计规格。
-2. 编写 V0.2 实现计划。
-3. 根据计划开始开发。
+1. 创建 `codex/v0.2-development` 隔离工作区。
+2. 按 V0.2 实现计划从 Task 1 开始开发。
+3. 每完成一个 Task 后 commit 并 push。
 
 ## Current Product Decisions
 
@@ -60,6 +60,7 @@ V0.2 导入与中文备注体验方案已确认，等待规格审阅。
 - `swift test`：35 项全部通过。
 - `swift build`：通过。
 - 实现计划：`docs/superpowers/plans/2026-06-05-v0.1-local-skill-library.md`。
+- V0.2 实现计划：`docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`。
 
 ## Handoff Note
 
