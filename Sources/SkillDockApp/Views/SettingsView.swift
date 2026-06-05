@@ -28,7 +28,8 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .padding()
+        .font(.body)
+        .padding(VisualMetrics.contentPadding)
         .navigationTitle("Settings")
     }
 

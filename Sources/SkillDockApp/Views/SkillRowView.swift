@@ -5,17 +5,18 @@ struct SkillRowView: View {
     let record: SkillRecord
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
             Image(systemName: record.skill.isSystem ? "lock.doc" : "doc.text")
+                .font(.title3)
                 .foregroundStyle(record.skill.isSystem ? Color.secondary : Color.accentColor)
-                .frame(width: 22)
+                .frame(width: VisualMetrics.rowIconSize)
 
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 5) {
                 Text(record.skill.name)
-                    .font(.body)
+                    .font(.headline)
                     .lineLimit(1)
                 Text(record.note?.chineseDescription.nonEmpty ?? record.skill.description ?? record.skill.source.displayName)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
             }
@@ -34,9 +35,9 @@ struct SkillRowView: View {
                         .help("Installed in Claude")
                 }
             }
-            .font(.caption)
+            .font(.subheadline)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, VisualMetrics.rowVerticalPadding)
     }
 }
 

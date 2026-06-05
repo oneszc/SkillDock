@@ -52,6 +52,7 @@ struct ImportPreviewView: View {
                     }
                 }
                 .formStyle(.grouped)
+                .font(.body)
 
                 Divider()
                 HStack {
@@ -73,7 +74,7 @@ struct ImportPreviewView: View {
                     }
                     .buttonStyle(.borderedProminent)
                 }
-                .padding(16)
+                .padding(VisualMetrics.compactContentPadding)
             }
             .confirmationDialog(
                 "Replace the existing Skill?",
@@ -90,20 +91,21 @@ struct ImportPreviewView: View {
     }
 
     private func header(_ preview: ImportPreview) -> some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 16) {
             Image(systemName: "square.and.arrow.down")
-                .font(.title2)
+                .font(.title)
                 .foregroundStyle(Color.accentColor)
-                .frame(width: 34, height: 34)
-            VStack(alignment: .leading, spacing: 3) {
+                .frame(width: 40, height: 40)
+            VStack(alignment: .leading, spacing: 6) {
                 Text(preview.name)
-                    .font(.title3.weight(.semibold))
+                    .font(.title2.weight(.semibold))
                 Text(preview.description ?? "Review this Skill before importing.")
+                    .font(.body)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
             }
             Spacer()
         }
-        .padding(18)
+        .padding(VisualMetrics.compactContentPadding)
     }
 }

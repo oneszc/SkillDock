@@ -6,10 +6,12 @@ struct MarkdownPreviewView: View {
     var body: some View {
         ScrollView {
             Text(markdown)
-                .font(.system(.body, design: .monospaced))
+                .font(.system(size: 14, design: .monospaced))
+                .lineSpacing(4)
                 .textSelection(.enabled)
+                .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(20)
+                .padding(VisualMetrics.contentPadding)
         }
     }
 }

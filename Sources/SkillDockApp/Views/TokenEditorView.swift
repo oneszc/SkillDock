@@ -7,11 +7,11 @@ struct TokenEditorView: View {
     @State private var input = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 90), spacing: 6)],
+                columns: [GridItem(.adaptive(minimum: 110), spacing: 8)],
                 alignment: .leading,
-                spacing: 6
+                spacing: 8
             ) {
                 ForEach(values, id: \.self) { value in
                     Button {
@@ -21,6 +21,7 @@ struct TokenEditorView: View {
                             .lineLimit(1)
                     }
                     .buttonStyle(.bordered)
+                    .controlSize(.large)
                     .help("Remove \(value)")
                 }
             }
@@ -39,6 +40,7 @@ struct TokenEditorView: View {
                 } label: {
                     Label("Suggestions", systemImage: "plus.circle")
                 }
+                .controlSize(.large)
             }
         }
     }

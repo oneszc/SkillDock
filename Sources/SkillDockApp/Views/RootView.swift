@@ -8,7 +8,7 @@ struct RootView: View {
 
         NavigationSplitView {
             SidebarView(selection: $model.navigationSection)
-                .navigationSplitViewColumnWidth(min: 180, ideal: 210, max: 260)
+                .navigationSplitViewColumnWidth(min: 190, ideal: 220, max: 270)
         } content: {
             SkillListView(
                 records: model.filteredRecords,
@@ -18,7 +18,7 @@ struct RootView: View {
                     Task { await model.prepareImport(urls: urls) }
                 }
             )
-            .navigationSplitViewColumnWidth(min: 280, ideal: 340, max: 420)
+            .navigationSplitViewColumnWidth(min: 320, ideal: 380, max: 460)
         } detail: {
             if model.navigationSection == .settings {
                 SettingsView(model: model)
@@ -122,6 +122,6 @@ struct RootView: View {
         } message: {
             Text(model.operationMessage ?? "")
         }
-        .frame(minWidth: 980, minHeight: 620)
+        .frame(minWidth: 1100, minHeight: 700)
     }
 }

@@ -80,6 +80,20 @@ docs/specs/v0.1-local-skill-library.md
 docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 ```
 
+## V0.2.1 - Visual Polish
+
+目标：提升长期浏览和阅读时的舒适度。
+
+状态：第一版已完成，等待产品负责人视觉验收。
+
+确认范围：
+
+- 放大列表标题、副标题、图标和行高。
+- 提升详情页标题与描述层级。
+- 增加主要页面内容留白。
+- 限制长文阅读宽度。
+- 保留 Finder 式三栏效率，不改为 App Store 营销卡片。
+
 ## V0.3 - GitHub Remote Skills
 
 目标：支持从公开 GitHub 仓库发现和安装 skills。

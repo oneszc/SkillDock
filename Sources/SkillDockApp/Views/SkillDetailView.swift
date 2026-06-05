@@ -24,20 +24,21 @@ struct SkillDetailView: View {
     }
 
     private func detailHeader(_ record: SkillRecord) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: VisualMetrics.sectionSpacing) {
             Text(record.skill.name)
-                .font(.largeTitle.weight(.semibold))
+                .font(.system(size: 32, weight: .semibold))
                 .textSelection(.enabled)
 
             if let englishDescription = record.skill.description?.nonEmpty {
                 Text(englishDescription)
+                    .font(.title3)
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
             }
 
             if let chineseDescription = record.note?.chineseDescription.nonEmpty {
                 Text(chineseDescription)
-                    .font(.body)
+                    .font(.title3)
                     .textSelection(.enabled)
             }
 
@@ -67,7 +68,7 @@ struct SkillDetailView: View {
                 }
             }
             .labelStyle(.titleAndIcon)
-            .font(.subheadline)
+            .font(.body)
 
             Picker("Detail", selection: $tab) {
                 ForEach(DetailTab.allCases) { item in
@@ -76,7 +77,9 @@ struct SkillDetailView: View {
             }
             .pickerStyle(.segmented)
         }
-        .padding(24)
+        .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(VisualMetrics.contentPadding)
     }
 
     @ViewBuilder

@@ -45,6 +45,9 @@ struct NotesEditorView: View {
             }
         }
         .formStyle(.grouped)
+        .font(.body)
+        .padding(.horizontal, VisualMetrics.compactContentPadding)
+        .padding(.vertical, 10)
         .onChange(of: model.noteDraft) { _, draft in
             model.updateNoteDraft(draft)
         }
