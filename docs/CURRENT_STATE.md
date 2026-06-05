@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.1 设计与实现计划已确认，准备开始 SwiftUI 开发。
+V0.1 核心开发已完成，进入真实数据手动验收阶段。
 
 ## Current Goal
 
-先做一个本地 Skill 资产台账：
+完成本地 Skill 资产台账的真实数据验收：
 
 - 扫描本机 skills。
 - 查看 skill 内容。
@@ -16,27 +16,21 @@ V0.1 设计与实现计划已确认，准备开始 SwiftUI 开发。
 
 ## Recently Completed
 
-- 已阅读原始 PRD：`/Users/macbookpro/Downloads/SkillDock_PRD.md`。
-- 已确认当前仓库基本为空，适合从零开发。
-- 已确认第一版不建议二开现有项目。
-- 已新增设计规则：界面规范和设计风格遵循 macOS 26，并参考 Apple 官方 Figma 组件库。
-- 已确认 SwiftUI 原生开发，最低支持 macOS 26。
-- 已确认通过 GitHub Release / 本地安装发布。
-- 已确认 Finder 式三栏主界面。
-- 已确认中文备注和未来 AI 总结完全独立，不修改原始 Skill。
-- 已参考本机数据痕迹：
-  - `~/.codex/skills`
-  - `~/.claude/skills`
-  - `~/.cc-switch`
-  - `~/.skillsmanager`
-  - `~/Library/Application Support/Skillz`
+- 已完成 SwiftUI 原生三栏界面。
+- 已完成 Library、Codex、Claude Skill 扫描、合并和搜索。
+- 已完成 `SKILL.md` 与文件列表查看。
+- 已完成独立中文备注编辑和保存。
+- 已完成本地导入、Codex / Claude 安装和冲突保护。
+- 已完成 Finder 定位、复制路径和设置编辑。
+- 已安装并切换到 Xcode 26.5。
+- 自动化测试共 35 项，全部通过。
 
 ## Next Steps
 
-1. 安装完整 Xcode，并切换 `xcode-select` 到 Xcode。
-2. 按实现计划 Task 1 创建 Swift Package 和 SwiftUI 应用基础结构。
-3. 使用 TDD 实现本地 Skill 解析和扫描。
-4. 每完成一个 Task 后 commit 并 push。
+1. 在本机运行 `swift run SkillDockApp`。
+2. 按 `docs/testing/V0.1_ACCEPTANCE.md` 完成真实 Skill 手动验收。
+3. 修正验收问题。
+4. 为 GitHub Release 增加可直接打开的 `.app` 打包流程。
 
 ## Current Product Decisions
 
@@ -53,11 +47,24 @@ V0.1 设计与实现计划已确认，准备开始 SwiftUI 开发。
 
 ## Current Environment Note
 
-- Swift 6.3.1 已安装，目标为 macOS 26。
-- 当前仅启用 Command Line Tools。
-- `xcodebuild` 暂不可用，需要安装完整 Xcode。
+- Xcode 26.5 已安装并选中。
+- Swift 6.3.2 已安装。
+- `swift test`：35 项全部通过。
+- `swift build`：通过。
 - 实现计划：`docs/superpowers/plans/2026-06-05-v0.1-local-skill-library.md`。
 
 ## Handoff Note
 
-两台电脑协作时，开始工作前先读这个文件；结束工作前更新这个文件。
+当前开发分支：`codex/v0.1-development`。
+
+第二台电脑的下一步：
+
+```bash
+git fetch origin
+git switch codex/v0.1-development
+git pull
+swift test
+swift run SkillDockApp
+```
+
+开始工作前先读本文件；结束工作前更新本文件并 push。
