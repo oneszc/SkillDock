@@ -6,7 +6,7 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 
 ## Current Goal
 
-准备合并开发分支，并决定公开发布签名方案。
+发布 GitHub V0.1.0，并开始规划 V0.2。
 
 - 扫描本机 skills。
 - 查看 skill 内容。
@@ -28,12 +28,13 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 - 已生成并实际启动 `dist/SkillDock.app`。
 - 已生成并解压验证 `dist/SkillDock-0.1.0.zip`。
 - 当前应用使用临时本地签名，尚未进行 Apple Developer ID 签名和公证。
+- `codex/v0.1-development` 已合并到 `main`。
 
 ## Next Steps
 
-1. 将 `codex/v0.1-development` 合并到 `main`。
+1. 创建 GitHub V0.1.0 Release。
 2. 决定是否配置 Apple Developer ID，用于公开发布签名与公证。
-3. 创建 GitHub V0.1 Release。
+3. 编写 V0.2 需求规格。
 
 ## Current Product Decisions
 
@@ -58,13 +59,13 @@ V0.1 核心功能、手动验收和本地应用打包已完成。
 
 ## Handoff Note
 
-当前开发分支：`codex/v0.1-development`。
+当前稳定分支：`main`。
 
 第二台电脑的下一步：
 
 ```bash
 git fetch origin
-git switch codex/v0.1-development
+git switch main
 git pull
 swift test
 swift run SkillDockApp
