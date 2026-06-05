@@ -39,6 +39,21 @@ enum Fixtures {
         try write(frontmatter, to: directory.appendingPathComponent("SKILL.md"))
     }
 
+    static func makeSkillWithFiles(
+        at directory: URL,
+        name: String = "sample-skill"
+    ) throws {
+        try makeSkill(at: directory, name: name)
+        try write(
+            "print('hello')",
+            to: directory.appendingPathComponent("scripts/run.py")
+        )
+        try write(
+            "# Reference",
+            to: directory.appendingPathComponent("references/guide.md")
+        )
+    }
+
     static func snapshot(directory: URL) throws -> [String: Data] {
         guard let enumerator = FileManager.default.enumerator(
             at: directory,
