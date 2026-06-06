@@ -86,6 +86,8 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 状态：实现已完成，等待产品负责人最终视觉验收。
 
+发布状态：尚未发布 GitHub Release。最终视觉验收通过后，再决定是否发布 V0.2.1。
+
 确认范围：
 
 - 放大列表标题、副标题、图标和行高。
