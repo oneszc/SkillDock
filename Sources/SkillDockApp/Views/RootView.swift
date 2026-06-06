@@ -14,7 +14,6 @@ struct RootView: View {
                 skillBrowserLayout
             }
         }
-        .preferredColorScheme(model.settings.appearanceMode.colorScheme)
         .task {
             await model.start()
         }
@@ -150,16 +149,6 @@ struct RootView: View {
                     Label("Back to Library", systemImage: "chevron.left")
                 }
             }
-        }
-    }
-}
-
-private extension AppearanceMode {
-    var colorScheme: ColorScheme? {
-        switch self {
-        case .system: nil
-        case .light: .light
-        case .dark: .dark
         }
     }
 }

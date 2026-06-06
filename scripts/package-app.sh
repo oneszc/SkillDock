@@ -12,6 +12,7 @@ CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 ICON_FILE="$ROOT_DIR/Resources/SkillDock.icns"
+APP_RESOURCE_BUNDLE="$BUILD_DIR/SkillDock_SkillDockApp.bundle"
 
 cd "$ROOT_DIR"
 swift build -c release --product SkillDockApp
@@ -20,6 +21,7 @@ rm -rf "$APP_DIR"
 mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 cp "$BUILD_DIR/SkillDockApp" "$MACOS_DIR/$APP_NAME"
 cp "$ICON_FILE" "$RESOURCES_DIR/SkillDock.icns"
+cp -R "$APP_RESOURCE_BUNDLE" "$RESOURCES_DIR/"
 
 cat > "$CONTENTS_DIR/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>

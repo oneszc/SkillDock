@@ -10,7 +10,11 @@ let package = Package(
     ],
     targets: [
         .target(name: "SkillDockCore"),
-        .executableTarget(name: "SkillDockApp", dependencies: ["SkillDockCore"]),
+        .executableTarget(
+            name: "SkillDockApp",
+            dependencies: ["SkillDockCore"],
+            resources: [.process("Resources")]
+        ),
         .testTarget(name: "SkillDockCoreTests", dependencies: ["SkillDockCore"])
     ]
 )

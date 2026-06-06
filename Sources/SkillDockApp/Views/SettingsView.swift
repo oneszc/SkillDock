@@ -6,7 +6,7 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("Appearance") {
+            Section {
                 AppearanceModePicker(
                     selection: model.settings.appearanceMode,
                     onSelect: { mode in

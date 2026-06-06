@@ -78,6 +78,7 @@ final class AppModel {
     func start() async {
         do {
             settings = try await settingsStore.load()
+            applyAppearance(settings.appearanceMode)
             await refresh()
         } catch {
             errorMessage = error.localizedDescription
@@ -246,6 +247,7 @@ final class AppModel {
     }
 
     func selectAppearanceMode(_ mode: AppearanceMode) async {
+        applyAppearance(mode)
         settings.appearanceMode = mode
         do {
             var persistedSettings = try await settingsStore.load()
@@ -253,6 +255,14 @@ final class AppModel {
             try await settingsStore.save(persistedSettings)
         } catch {
             errorMessage = "Appearance could not be saved."
+        }
+    }
+
+    private func applyAppearance(_ mode: AppearanceMode) {
+        NSApp.appearance = switch mode {
+        case .system: nil
+        case .light: NSAppearance(named: .aqua)
+        case .dark: NSAppearance(named: .darkAqua)
         }
     }
 
