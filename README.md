@@ -40,8 +40,10 @@ Chinese notes and future AI summaries never modify the original Skill. SkillDock
 
 ```bash
 swift test
-swift run SkillDockApp
+./scripts/run-app.sh
 ```
+
+`run-app.sh` builds and opens the packaged `SkillDock.app`, so macOS uses the configured app name, icon, and bundle settings. Avoid `swift run SkillDockApp` for normal visual testing because it launches a raw executable without the app bundle icon.
 
 ## Create A Double-clickable App
 
