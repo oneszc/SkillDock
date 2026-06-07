@@ -36,6 +36,7 @@
 - 内容：现有 `SettingsWindowView`
 - 左侧：General 导航，保留后续新增分类能力
 - 右侧：现有 Appearance、Skill Locations、Behavior 内容
+- 保留系统侧栏开关和 `Settings` 窗口标题，为未来增加多个设置分类提供明确导航。
 - 默认尺寸比当前设置窗口更紧凑，减少空旷感
 - 保留系统窗口控制、系统侧栏材质和系统分隔关系
 

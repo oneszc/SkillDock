@@ -108,13 +108,14 @@ Remove:
 .frame(minWidth: 800, minHeight: 540)
 ```
 
-Keep:
+Use a system sidebar and keep its navigation title:
 
 ```swift
-.toolbar(removing: .title)
+.listStyle(.sidebar)
+.navigationTitle("Settings")
 ```
 
-This allows the scene's default size to define the initial window while preserving normal user resizing and the system sidebar/titlebar integration.
+Do not remove the title or sidebar toggle. They preserve the system sidebar/titlebar integration and support future settings categories.
 
 - [ ] **Step 2: Build to verify**
 

@@ -10,16 +10,16 @@ struct SettingsWindowView: View {
                 Label(section.title, systemImage: section.systemImage)
                     .tag(section)
             }
+            .listStyle(.sidebar)
+            .navigationTitle("Settings")
             .navigationSplitViewColumnWidth(min: 200, ideal: 215, max: 240)
-            .toolbar(removing: .sidebarToggle)
         } detail: {
             switch selection {
             case .general:
                 SettingsView(model: model)
             }
         }
-        .toolbar(removing: .title)
-        .frame(minWidth: 800, minHeight: 540)
+        .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
     }
 }
 

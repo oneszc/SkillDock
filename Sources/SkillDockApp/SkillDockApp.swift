@@ -16,8 +16,12 @@ struct SkillDockApp: App {
         }
         .defaultSize(width: 1180, height: 760)
 
-        Settings {
+        Window("Settings", id: "settings") {
             SettingsWindowView(model: model)
+        }
+        .defaultSize(width: 980, height: 650)
+        .commands {
+            SettingsCommands()
         }
     }
 }
