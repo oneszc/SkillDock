@@ -15,24 +15,29 @@ struct SettingsView: View {
                 )
             }
             Section("Skill Locations") {
-                pathField("Library", url: $model.settings.libraryPath)
-                pathField("Codex", url: $model.settings.codexPath)
-                pathField("Claude", url: $model.settings.claudePath)
+                PathField(title: "Library", url: $model.settings.libraryPath) {
+                    Task { await model.saveSettings() }
+                }
+                PathField(title: "Codex", url: $model.settings.codexPath) {
+                    Task { await model.saveSettings() }
+                }
+                PathField(title: "Claude", url: $model.settings.claudePath) {
+                    Task { await model.saveSettings() }
+                }
             }
             Section("Behavior") {
                 Toggle("Show system Skills", isOn: $model.settings.showSystemSkills)
+                    .onChange(of: model.settings.showSystemSkills) { _, _ in
+                        Task { await model.saveSettings() }
+                    }
                 Picker("Default conflict strategy", selection: $model.settings.defaultConflictStrategy) {
                     ForEach(ConflictStrategy.allCases, id: \.self) {
                         Text($0.rawValue.capitalized).tag($0)
                     }
                 }
-            }
-            HStack {
-                Spacer()
-                Button("Save Settings") {
+                .onChange(of: model.settings.defaultConflictStrategy) { _, _ in
                     Task { await model.saveSettings() }
                 }
-                .buttonStyle(.borderedProminent)
             }
         }
         .formStyle(.grouped)
@@ -40,17 +45,39 @@ struct SettingsView: View {
         .padding(VisualMetrics.contentPadding)
         .navigationTitle("General")
     }
+}
 
-    private func pathField(_ title: String, url: Binding<URL>) -> some View {
+private struct PathField: View {
+    let title: String
+    @Binding var url: URL
+    let onCommit: () -> Void
+
+    @State private var text: String = ""
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
         LabeledContent(title) {
-            TextField(
-                title,
-                text: Binding(
-                    get: { url.wrappedValue.path },
-                    set: { url.wrappedValue = URL(fileURLWithPath: $0, isDirectory: true) }
-                )
-            )
-            .textFieldStyle(.roundedBorder)
+            TextField(title, text: $text)
+                .textFieldStyle(.roundedBorder)
+                .labelsHidden()
+                .fixedSize(horizontal: true, vertical: false)
+                .focused($isFocused)
+                .onSubmit(commit)
+                .onChange(of: isFocused) { _, focused in
+                    if !focused { commit() }
+                }
         }
+        .onAppear { text = url.path }
+        .onChange(of: url) { _, newValue in
+            if !isFocused { text = newValue.path }
+        }
+    }
+
+    private func commit() {
+        let trimmed = text.trimmingCharacters(in: .whitespaces)
+        let newURL = URL(fileURLWithPath: trimmed, isDirectory: true)
+        guard newURL != url else { return }
+        url = newURL
+        onCommit()
     }
 }

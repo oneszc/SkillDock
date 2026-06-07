@@ -18,19 +18,19 @@ struct AppearanceModePicker: View {
                     Button {
                         onSelect(mode)
                     } label: {
-                        VStack(spacing: 10) {
+                        VStack(spacing: 8) {
                             Image(nsImage: mode.previewImage)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 104, height: 68)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .frame(width: 70, height: 46)
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
                                 .overlay {
-                                    RoundedRectangle(cornerRadius: 10)
+                                    RoundedRectangle(cornerRadius: 8)
                                         .stroke(
                                             selection == mode ? Color.accentColor : .clear,
-                                            lineWidth: 4
+                                            lineWidth: 3
                                         )
-                                        .padding(-5)
+                                        .padding(-3)
                                 }
 
                             Text(mode.title)
