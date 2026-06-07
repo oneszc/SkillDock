@@ -64,8 +64,6 @@ final class AppModel {
                 record.skill.installation.codex || record.skill.installation.claude
             case .system:
                 record.skill.isSystem
-            case .settings:
-                false
             }
         }
         return search.filter(sectionRecords, query: searchQuery)

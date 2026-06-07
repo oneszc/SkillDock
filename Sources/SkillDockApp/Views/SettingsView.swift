@@ -43,7 +43,6 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .font(.body)
         .padding(VisualMetrics.contentPadding)
-        .navigationTitle("General")
     }
 }
 

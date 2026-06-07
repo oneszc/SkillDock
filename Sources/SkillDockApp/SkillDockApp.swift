@@ -3,6 +3,8 @@ import SwiftUI
 
 @main
 struct SkillDockApp: App {
+    @State private var model = AppModel()
+
     init() {
         NSApplication.shared.setActivationPolicy(.regular)
         NSApplication.shared.activate(ignoringOtherApps: true)
@@ -10,8 +12,12 @@ struct SkillDockApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView(model: model)
         }
         .defaultSize(width: 1180, height: 760)
+
+        Settings {
+            SettingsWindowView(model: model)
+        }
     }
 }

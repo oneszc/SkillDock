@@ -2,18 +2,12 @@ import SkillDockCore
 import SwiftUI
 
 struct RootView: View {
-    @State private var model = AppModel()
+    @Bindable var model: AppModel
 
     var body: some View {
         @Bindable var model = model
 
-        Group {
-            if model.navigationSection == .settings {
-                settingsLayout
-            } else {
-                skillBrowserLayout
-            }
-        }
+        skillBrowserLayout
         .task {
             await model.start()
         }
@@ -130,24 +124,6 @@ struct RootView: View {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
                 .disabled(model.isRefreshing)
-            }
-        }
-    }
-
-    private var settingsLayout: some View {
-        NavigationSplitView {
-            SettingsSidebarView()
-                .navigationSplitViewColumnWidth(min: 190, ideal: 220, max: 270)
-        } detail: {
-            SettingsView(model: model)
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button {
-                    model.navigationSection = .library
-                } label: {
-                    Label("Back to Library", systemImage: "chevron.left")
-                }
             }
         }
     }
