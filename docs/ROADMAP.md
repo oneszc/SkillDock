@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3 及之后只保留方向，开始前再展开详细规格。
+V0.3 已开启设计，V0.4 及之后只保留方向。
 
 ## V0.1 - Local Skill Library
 
@@ -103,17 +103,25 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 目标：支持从公开 GitHub 仓库发现和安装 skills。
 
-候选方向：
+状态：产品方案已确认，设计规格已编写，等待产品负责人确认后进入实施计划。
 
-- 添加 GitHub 仓库 URL。
-- 扫描仓库中的 `SKILL.md`。
-- 预览远程 skill。
-- 安装到主技能库。
-- 记录来源仓库和分支。
+确认范围：
 
-展开时机：
+- 支持公开仓库，无需 GitHub 登录。
+- 同时支持 Git Clone 和 ZIP 下载。
+- 支持仓库链接和仓库内 Skill 文件夹链接。
+- 扫描仓库内多个 Skills，并支持多选一次导入。
+- 远程 Skill 默认只进入主技能库，不自动安装到智能体。
+- 保存仓库、分支、Skill 路径、提交版本和内容 Hash。
+- 支持手动检查单个 Skill 更新。
+- 更新前展示变更文件列表并逐个确认。
+- 检测到本地修改时默认阻止更新，不做自动合并。
 
-本地管理稳定后再做。
+设计规格：
+
+```text
+docs/superpowers/specs/2026-06-08-v0.3-github-remote-skills-design.md
+```
 
 ## V0.4 - Sync Enhancements
 
