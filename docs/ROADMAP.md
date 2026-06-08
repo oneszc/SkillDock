@@ -84,9 +84,9 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 目标：提升长期浏览和阅读时的舒适度。
 
-状态：实现已完成，等待产品负责人最终视觉验收。
+状态：已完成并发布 GitHub V0.2.1 Release。
 
-发布状态：尚未发布 GitHub Release。最终视觉验收通过后，再决定是否发布 V0.2.1。
+发布状态：产品负责人视觉验收已通过。
 
 确认范围：
 

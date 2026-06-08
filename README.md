@@ -56,7 +56,7 @@ This creates:
 
 ```text
 dist/SkillDock.app
-dist/SkillDock-0.2.0.zip
+dist/SkillDock-0.2.1.zip
 ```
 
 The local package uses an ad-hoc signature. Public distribution through GitHub Release should add Developer ID signing and Apple notarization.
