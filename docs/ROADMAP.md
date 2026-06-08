@@ -103,7 +103,7 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 目标：支持从公开 GitHub 仓库发现和安装 skills。
 
-状态：产品方案、设计规格和实施计划已确认，进入第一阶段开发。
+状态：V0.3.0 已完成并发布 GitHub Release。
 
 确认范围：
 
@@ -113,9 +113,7 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 - 扫描仓库内多个 Skills，并支持多选一次导入。
 - 远程 Skill 默认只进入主技能库，不自动安装到智能体。
 - 保存仓库、分支、Skill 路径、提交版本和内容 Hash。
-- 支持手动检查单个 Skill 更新。
-- 更新前展示变更文件列表并逐个确认。
-- 检测到本地修改时默认阻止更新，不做自动合并。
+- 手动检查单个 Skill 更新、变化预览和本地修改保护顺延到 V0.3.1。
 
 设计规格：
 

@@ -11,7 +11,7 @@
 Keep your personal Skill library clear, local, and under your control.
 
 <p>
-  <img src="https://img.shields.io/badge/version-v0.2.1-0A84FF?style=flat-square" alt="Version v0.2.1">
+  <img src="https://img.shields.io/badge/version-v0.3.0-0A84FF?style=flat-square" alt="Version v0.3.0">
   <img src="https://img.shields.io/badge/macOS-26%2B-111111?style=flat-square&logo=apple&logoColor=white" alt="macOS 26 or later">
   <img src="https://img.shields.io/badge/SwiftUI-native-F05138?style=flat-square&logo=swift&logoColor=white" alt="Native SwiftUI">
   <img src="https://img.shields.io/badge/local--first-private-34C759?style=flat-square" alt="Local-first and private">
@@ -40,6 +40,7 @@ SkillDock 不修改原始 Skill，也不试图成为 Skill 市场。它服务的
 | 统一浏览 | 扫描主技能库、Codex 和 Claude Code 中的 Skills |
 | 快速理解 | 查看原始名称、英文描述、`SKILL.md`、文件结构和独立中文备注 |
 | 安全导入 | 导入前预览文件、脚本风险和同名冲突 |
+| GitHub 导入 | 从公开 GitHub 仓库发现多个 Skills，并批量导入主技能库 |
 | 本地整理 | 使用中文描述、标签、适用场景、风险说明和使用建议整理 Skills |
 | 多工具安装 | 将 Skill 安装到 Codex 或 Claude Code |
 | 原始内容保护 | 中文备注和未来 AI 总结不会写入或修改原始 Skill |
@@ -70,7 +71,7 @@ SkillDock 默认扫描以下位置：
 ### 下载应用
 
 1. 前往 [GitHub Releases](https://github.com/oneszc/SkillDock/releases/latest)。
-2. 下载 `SkillDock-0.2.1.zip`。
+2. 下载 `SkillDock-0.3.0.zip`。
 3. 解压并打开 `SkillDock.app`。
 
 > 当前版本使用本地临时签名，尚未进行 Apple Developer ID 签名与公证。
@@ -106,10 +107,10 @@ SkillDock 采用 local-first 方式工作，不依赖云端服务。
 
 ## 当前状态
 
-- 最新版本：[`v0.2.1`](https://github.com/oneszc/SkillDock/releases/tag/v0.2.1)
-- 自动化测试：44 项通过
-- 当前阶段：V0.2.1 已发布，V0.3 尚未开始
-- 后续方向：GitHub 远程 Skills、多工具同步增强、AI 中文解读
+- 最新版本：[`v0.3.0`](https://github.com/oneszc/SkillDock/releases/tag/v0.3.0)
+- 自动化测试：64 项通过
+- 当前阶段：V0.3.0 已发布，支持公开 GitHub 仓库批量导入
+- 后续方向：手动检查远程更新、多工具同步增强、AI 中文解读
 
 查看完整进度：
 
