@@ -34,6 +34,8 @@ final class AppModel {
     var noteDraft = NoteDraft(note: nil)
     var noteSuggestions = NoteSuggestions(tags: [], useCases: [])
     var noteSaveState: NoteSaveState = .idle
+    var isRemoteImportPresented = false
+    var remoteImport = RemoteImportModel()
 
     private let settingsStore: SettingsStore
     private let libraryService: SkillLibraryService
@@ -186,6 +188,29 @@ final class AppModel {
         panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let source = panel.url else { return }
         await prepareImport(urls: [source])
+    }
+
+    func openRemoteImport() {
+        remoteImport.reset()
+        isRemoteImportPresented = true
+    }
+
+    func closeRemoteImport() {
+        remoteImport.reset()
+        isRemoteImportPresented = false
+    }
+
+    func confirmRemoteImport() async {
+        guard let result = await remoteImport.importSelected(libraryPath: settings.libraryPath) else {
+            return
+        }
+        await refresh()
+        if let first = result.copied.first {
+            navigationSection = .library
+            selectionID = records.first {
+                $0.skill.path.standardizedFileURL == first.standardizedFileURL
+            }?.id
+        }
     }
 
     func prepareImport(urls: [URL]) async {

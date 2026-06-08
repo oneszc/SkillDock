@@ -20,6 +20,10 @@ struct RootView: View {
             ImportPreviewView(model: model)
                 .frame(minWidth: 620, minHeight: 560)
         }
+        .sheet(isPresented: $model.isRemoteImportPresented) {
+            RemoteImportView(appModel: model)
+                .frame(minWidth: 720, minHeight: 620)
+        }
         .onChange(of: model.selectionID) { _, _ in
             Task {
                 await model.flushPendingNoteSave()
@@ -105,6 +109,11 @@ struct RootView: View {
                     Task { await model.requestImport() }
                 } label: {
                     Label("Import Skill", systemImage: "plus")
+                }
+            }
+            ToolbarItem {
+                Button(action: model.openRemoteImport) {
+                    Label("Add from GitHub", systemImage: "shippingbox.and.arrow.backward")
                 }
             }
             ToolbarItemGroup {
