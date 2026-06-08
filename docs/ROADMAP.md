@@ -103,7 +103,7 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 目标：支持从公开 GitHub 仓库发现和安装 skills。
 
-状态：产品方案已确认，设计规格已编写，等待产品负责人确认后进入实施计划。
+状态：产品方案、设计规格和实施计划已确认，进入第一阶段开发。
 
 确认范围：
 
@@ -121,6 +121,12 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 ```text
 docs/superpowers/specs/2026-06-08-v0.3-github-remote-skills-design.md
+```
+
+实施计划：
+
+```text
+docs/superpowers/plans/2026-06-08-v0.3-github-remote-skills.md
 ```
 
 ## V0.4 - Sync Enhancements
