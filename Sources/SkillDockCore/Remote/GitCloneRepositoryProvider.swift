@@ -1,6 +1,6 @@
 import Foundation
 
-public actor GitCloneRepositoryProvider {
+public actor GitCloneRepositoryProvider: RemoteRepositoryProviding {
     private let repositoriesDirectory: URL
     private let commandRunner: CommandRunner
     private let fileManager: FileManager
@@ -17,8 +17,14 @@ public actor GitCloneRepositoryProvider {
     }
 
     public func acquire(
+        _ reference: GitHubRepositoryReference
+    ) async throws -> RemoteRepository {
+        try await acquire(reference, cloneURL: nil)
+    }
+
+    public func acquire(
         _ reference: GitHubRepositoryReference,
-        cloneURL: URL? = nil
+        cloneURL: URL?
     ) async throws -> RemoteRepository {
         try fileManager.createDirectory(
             at: repositoriesDirectory,
