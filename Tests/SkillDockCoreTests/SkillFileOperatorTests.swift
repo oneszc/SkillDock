@@ -120,4 +120,71 @@ final class SkillFileOperatorTests: XCTestCase {
             XCTAssertEqual(error as? SkillFileOperationError, .systemSkillIsReadOnly)
         }
     }
+
+    func testRemoveSkillDeletesOnlyChildInsideExpectedRoot() async throws {
+        let targetRoot = try Fixtures.temporaryDirectory()
+        let target = targetRoot.appendingPathComponent("sample-skill")
+        let sibling = targetRoot.appendingPathComponent("other-skill")
+        try Fixtures.makeSkill(at: target)
+        try Fixtures.makeSkill(at: sibling)
+
+        try await SkillFileOperator().removeSkill(
+            named: "sample-skill",
+            from: targetRoot,
+            isSystemSkill: false
+        )
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: target.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: sibling.path))
+    }
+
+    func testRemoveSkillRejectsSystemSkill() async throws {
+        let targetRoot = try Fixtures.temporaryDirectory()
+        let target = targetRoot.appendingPathComponent("sample-skill")
+        try Fixtures.makeSkill(at: target)
+
+        do {
+            try await SkillFileOperator().removeSkill(
+                named: "sample-skill",
+                from: targetRoot,
+                isSystemSkill: true
+            )
+            XCTFail("Expected system skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .systemSkillIsReadOnly)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: target.path))
+    }
+
+    func testRemoveSkillRejectsDestinationOutsideExpectedRoot() async throws {
+        let parent = try Fixtures.temporaryDirectory()
+        let targetRoot = parent.appendingPathComponent("installed")
+        let outside = parent.appendingPathComponent("outside-skill")
+        try FileManager.default.createDirectory(at: targetRoot, withIntermediateDirectories: true)
+        try Fixtures.makeSkill(at: outside)
+
+        do {
+            try await SkillFileOperator().removeSkill(
+                named: "../outside-skill",
+                from: targetRoot
+            )
+            XCTFail("Expected destination outside root rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: outside.path))
+    }
+
+    func testRemoveSkillDoesNothingWhenDestinationIsMissing() async throws {
+        let targetRoot = try Fixtures.temporaryDirectory()
+
+        try await SkillFileOperator().removeSkill(
+            named: "missing-skill",
+            from: targetRoot
+        )
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: targetRoot.path))
+    }
 }

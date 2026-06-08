@@ -3,6 +3,7 @@ import Foundation
 public enum SkillFileOperationError: Error, Equatable, Sendable {
     case missingSkillMarkdown
     case systemSkillIsReadOnly
+    case destinationOutsideRoot
 }
 
 public enum SkillFileOperationResult: Equatable, Sendable {
@@ -66,6 +67,29 @@ public actor SkillFileOperator {
             try fileManager.moveItem(at: temporaryDestination, to: destination)
             return .copied(destination)
         }
+    }
+
+    public func removeSkill(
+        named name: String,
+        from root: URL,
+        isSystemSkill: Bool = false
+    ) throws {
+        guard !isSystemSkill else {
+            throw SkillFileOperationError.systemSkillIsReadOnly
+        }
+
+        let standardizedRoot = root.standardizedFileURL
+        let destination = root
+            .appendingPathComponent(name, isDirectory: true)
+            .standardizedFileURL
+        guard destination.deletingLastPathComponent() == standardizedRoot else {
+            throw SkillFileOperationError.destinationOutsideRoot
+        }
+        guard fileManager.fileExists(atPath: destination.path) else {
+            return
+        }
+
+        try fileManager.removeItem(at: destination)
     }
 
     private func nextAvailableDestination(named name: String, in root: URL) -> URL {
