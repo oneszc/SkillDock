@@ -85,8 +85,29 @@ public actor SkillFileOperator {
         guard destination.deletingLastPathComponent() == standardizedRoot else {
             throw SkillFileOperationError.destinationOutsideRoot
         }
-        guard fileManager.fileExists(atPath: destination.path) else {
+
+        let resolvedRoot = standardizedRoot.resolvingSymlinksInPath()
+        let resolvedDestination = destination.resolvingSymlinksInPath()
+        guard resolvedDestination.deletingLastPathComponent() == resolvedRoot else {
+            throw SkillFileOperationError.destinationOutsideRoot
+        }
+
+        var isDirectory = ObjCBool(false)
+        guard fileManager.fileExists(
+            atPath: destination.path,
+            isDirectory: &isDirectory
+        ) else {
+            guard (try? fileManager.destinationOfSymbolicLink(atPath: destination.path)) == nil else {
+                throw SkillFileOperationError.missingSkillMarkdown
+            }
             return
+        }
+        guard isDirectory.boolValue,
+              fileManager.fileExists(
+                atPath: destination.appendingPathComponent("SKILL.md").path
+              )
+        else {
+            throw SkillFileOperationError.missingSkillMarkdown
         }
 
         try fileManager.removeItem(at: destination)

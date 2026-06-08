@@ -177,6 +177,87 @@ final class SkillFileOperatorTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: outside.path))
     }
 
+    func testRemoveSkillRejectsSymbolicLinkOutsideExpectedRoot() async throws {
+        let parent = try Fixtures.temporaryDirectory()
+        let targetRoot = parent.appendingPathComponent("installed")
+        let outside = parent.appendingPathComponent("outside-skill")
+        let symbolicLink = targetRoot.appendingPathComponent("linked-skill")
+        try FileManager.default.createDirectory(at: targetRoot, withIntermediateDirectories: true)
+        try Fixtures.makeSkill(at: outside)
+        try FileManager.default.createSymbolicLink(at: symbolicLink, withDestinationURL: outside)
+
+        do {
+            try await SkillFileOperator().removeSkill(
+                named: "linked-skill",
+                from: targetRoot
+            )
+            XCTFail("Expected destination outside root rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: symbolicLink.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: outside.path))
+    }
+
+    func testRemoveSkillRejectsRegularFile() async throws {
+        let targetRoot = try Fixtures.temporaryDirectory()
+        let target = targetRoot.appendingPathComponent("sample-skill")
+        try Fixtures.write("not a skill", to: target)
+
+        do {
+            try await SkillFileOperator().removeSkill(
+                named: "sample-skill",
+                from: targetRoot
+            )
+            XCTFail("Expected invalid skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .missingSkillMarkdown)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: target.path))
+    }
+
+    func testRemoveSkillRejectsDirectoryWithoutSkillMarkdown() async throws {
+        let targetRoot = try Fixtures.temporaryDirectory()
+        let target = targetRoot.appendingPathComponent("sample-skill")
+        try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
+
+        do {
+            try await SkillFileOperator().removeSkill(
+                named: "sample-skill",
+                from: targetRoot
+            )
+            XCTFail("Expected invalid skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .missingSkillMarkdown)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: target.path))
+    }
+
+    func testRemoveSkillRejectsDanglingSymbolicLink() async throws {
+        let targetRoot = try Fixtures.temporaryDirectory()
+        let symbolicLink = targetRoot.appendingPathComponent("sample-skill")
+        let missingTarget = targetRoot.appendingPathComponent("missing-target")
+        try FileManager.default.createSymbolicLink(
+            at: symbolicLink,
+            withDestinationURL: missingTarget
+        )
+
+        do {
+            try await SkillFileOperator().removeSkill(
+                named: "sample-skill",
+                from: targetRoot
+            )
+            XCTFail("Expected invalid skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .missingSkillMarkdown)
+        }
+
+        XCTAssertNoThrow(try FileManager.default.destinationOfSymbolicLink(atPath: symbolicLink.path))
+    }
+
     func testRemoveSkillDoesNothingWhenDestinationIsMissing() async throws {
         let targetRoot = try Fixtures.temporaryDirectory()
 
