@@ -102,9 +102,15 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         let codex = try Fixtures.temporaryDirectory()
         let claude = try Fixtures.temporaryDirectory()
         let name = "sample-skill"
-        try Fixtures.makeSkill(at: library.appendingPathComponent(name))
+        let librarySkill = library.appendingPathComponent(name)
+        try Fixtures.makeSkill(at: librarySkill)
         try Fixtures.makeSkill(at: codex.appendingPathComponent(name))
         try Fixtures.makeSkill(at: claude.appendingPathComponent(name))
+        let contentHash = try await scannedHash(
+            in: codex,
+            source: .codex,
+            folderName: name
+        )
         let settings = SkillSettings(
             libraryPath: library,
             codexPath: codex,
@@ -113,6 +119,7 @@ final class SkillWorkspaceServiceTests: XCTestCase {
 
         try await SkillWorkspaceService().uninstallSkill(
             named: name,
+            contentHash: contentHash,
             target: .codex,
             settings: settings
         )
@@ -133,8 +140,14 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         let codex = try Fixtures.temporaryDirectory()
         let notesDirectory = try Fixtures.temporaryDirectory()
         let name = "sample-skill"
-        try Fixtures.makeSkill(at: library.appendingPathComponent(name))
+        let librarySkill = library.appendingPathComponent(name)
+        try Fixtures.makeSkill(at: librarySkill)
         try Fixtures.makeSkill(at: codex.appendingPathComponent(name))
+        let contentHash = try await scannedHash(
+            in: codex,
+            source: .codex,
+            folderName: name
+        )
         let notesStore = NotesStore(directory: notesDirectory)
         try await notesStore.upsert(
             SkillNote(
@@ -163,6 +176,7 @@ final class SkillWorkspaceServiceTests: XCTestCase {
 
         try await SkillWorkspaceService(notesStore: notesStore).uninstallSkill(
             named: name,
+            contentHash: contentHash,
             target: .codex,
             settings: settings
         )
@@ -179,6 +193,11 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         let name = "sample-skill"
         let installedSkill = codex.appendingPathComponent(name)
         try Fixtures.makeSkill(at: installedSkill)
+        let contentHash = try await scannedHash(
+            in: codex,
+            source: .codex,
+            folderName: name
+        )
         let settings = SkillSettings(
             libraryPath: try Fixtures.temporaryDirectory(),
             codexPath: codex,
@@ -188,6 +207,7 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         do {
             try await SkillWorkspaceService().uninstallSkill(
                 named: name,
+                contentHash: contentHash,
                 target: .codex,
                 settings: settings,
                 isSystemSkill: true
@@ -200,39 +220,226 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: installedSkill.path))
     }
 
-    func testUninstallRejectsAgentRootResolvingToLibrary() async throws {
+    func testUninstallFindsExactAgentCopyWithDifferentFolderName() async throws {
+        let library = try Fixtures.temporaryDirectory()
+        let codex = try Fixtures.temporaryDirectory()
+        let logicalName = "sample-skill"
+        let librarySkill = library.appendingPathComponent(logicalName)
+        let renamedAgentCopy = codex.appendingPathComponent("renamed-folder")
+        let differentCopy = codex.appendingPathComponent("different-content")
+        try Fixtures.makeSkill(at: librarySkill, name: logicalName)
+        try Fixtures.makeSkill(at: renamedAgentCopy, name: logicalName)
+        try Fixtures.makeSkill(at: differentCopy, name: logicalName, description: "Different")
+        let contentHash = try await scannedHash(
+            in: codex,
+            source: .codex,
+            folderName: renamedAgentCopy.lastPathComponent
+        )
+        let settings = SkillSettings(
+            libraryPath: library,
+            codexPath: codex,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        try await SkillWorkspaceService().uninstallSkill(
+            named: logicalName,
+            contentHash: contentHash,
+            target: .codex,
+            settings: settings
+        )
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: renamedAgentCopy.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: differentCopy.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: librarySkill.path))
+    }
+
+    func testUninstallThrowsWhenExactAgentCopyIsNotFound() async throws {
+        let codex = try Fixtures.temporaryDirectory()
+        let installedSkill = codex.appendingPathComponent("sample-skill")
+        try Fixtures.makeSkill(at: installedSkill)
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: codex,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: "sample-skill",
+                contentHash: "different-hash",
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected exact installed skill not found error")
+        } catch {
+            XCTAssertEqual(error as? SkillWorkspaceServiceError, .installedSkillNotFound)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: installedSkill.path))
+    }
+
+    func testUninstallRejectsAmbiguousExactAgentCopies() async throws {
+        let codex = try Fixtures.temporaryDirectory()
+        let firstCopy = codex.appendingPathComponent("first-copy")
+        let secondCopy = codex.appendingPathComponent("second-copy")
+        try Fixtures.makeSkill(at: firstCopy, name: "sample-skill")
+        try Fixtures.makeSkill(at: secondCopy, name: "sample-skill")
+        let contentHash = try await scannedHash(
+            in: codex,
+            source: .codex,
+            folderName: firstCopy.lastPathComponent
+        )
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: codex,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: "sample-skill",
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected ambiguous installed skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillWorkspaceServiceError, .installedSkillAmbiguous)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: firstCopy.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: secondCopy.path))
+    }
+
+    func testUninstallRejectsAgentCopyEqualToLibrary() async throws {
         let parent = try Fixtures.temporaryDirectory()
         let library = parent.appendingPathComponent("library", isDirectory: true)
-        let linkedAgentRoot = parent.appendingPathComponent("agent-link", isDirectory: true)
-        let normalizedAgentRoot = library.appendingPathComponent("../library", isDirectory: true)
         let name = "sample-skill"
-        try Fixtures.makeSkill(at: library.appendingPathComponent(name))
-        try FileManager.default.createSymbolicLink(
-            at: linkedAgentRoot,
-            withDestinationURL: library
+        try Fixtures.makeSkill(at: library, name: name)
+        let contentHash = try await scannedHash(
+            in: parent,
+            source: .codex,
+            folderName: library.lastPathComponent
         )
         let libraryBefore = try Fixtures.snapshot(directory: library)
+        let settings = SkillSettings(
+            libraryPath: library,
+            codexPath: parent,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
 
-        for agentRoot in [linkedAgentRoot, normalizedAgentRoot] {
-            let settings = SkillSettings(
-                libraryPath: library,
-                codexPath: agentRoot,
-                claudePath: try Fixtures.temporaryDirectory()
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: name,
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
             )
-
-            do {
-                try await SkillWorkspaceService().uninstallSkill(
-                    named: name,
-                    target: .codex,
-                    settings: settings
-                )
-                XCTFail("Expected Library target rejection")
-            } catch {
-                XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
-            }
-
-            XCTAssertEqual(try Fixtures.snapshot(directory: library), libraryBefore)
+            XCTFail("Expected Library overlap rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
         }
+
+        XCTAssertEqual(try Fixtures.snapshot(directory: library), libraryBefore)
+    }
+
+    func testUninstallRejectsAgentCopyInsideLibraryThroughSymbolicLink() async throws {
+        let parent = try Fixtures.temporaryDirectory()
+        let library = parent.appendingPathComponent("library", isDirectory: true)
+        let installedSkill = library.appendingPathComponent("renamed-folder")
+        let linkedAgentRoot = parent.appendingPathComponent("agent-link", isDirectory: true)
+        let name = "sample-skill"
+        try Fixtures.makeSkill(at: installedSkill, name: name)
+        try FileManager.default.createSymbolicLink(at: linkedAgentRoot, withDestinationURL: library)
+        let contentHash = try await scannedHash(
+            in: library,
+            source: .codex,
+            folderName: installedSkill.lastPathComponent
+        )
+        let libraryBefore = try Fixtures.snapshot(directory: library)
+        let settings = SkillSettings(
+            libraryPath: library,
+            codexPath: linkedAgentRoot,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: name,
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected Library overlap rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
+        }
+
+        XCTAssertEqual(try Fixtures.snapshot(directory: library), libraryBefore)
+    }
+
+    func testUninstallRejectsAgentCopyContainingLibrary() async throws {
+        let parent = try Fixtures.temporaryDirectory()
+        let installedSkill = parent.appendingPathComponent("agent-copy")
+        let library = installedSkill.appendingPathComponent("library", isDirectory: true)
+        let name = "sample-skill"
+        try Fixtures.makeSkill(at: installedSkill, name: name)
+        try Fixtures.write("keep", to: library.appendingPathComponent("sentinel.txt"))
+        let contentHash = try await scannedHash(
+            in: parent,
+            source: .codex,
+            folderName: installedSkill.lastPathComponent
+        )
+        let libraryBefore = try Fixtures.snapshot(directory: library)
+        let settings = SkillSettings(
+            libraryPath: library,
+            codexPath: parent,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: name,
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected Library overlap rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
+        }
+
+        XCTAssertEqual(try Fixtures.snapshot(directory: library), libraryBefore)
+    }
+
+    func testUninstallAllowsAgentCopyBesideLibraryWithinSharedParent() async throws {
+        let parent = try Fixtures.temporaryDirectory()
+        let installedSkill = parent.appendingPathComponent("agent-copy")
+        let library = parent.appendingPathComponent("library", isDirectory: true)
+        let name = "sample-skill"
+        try Fixtures.makeSkill(at: installedSkill, name: name)
+        try Fixtures.write("keep", to: library.appendingPathComponent("sentinel.txt"))
+        let contentHash = try await scannedHash(
+            in: parent,
+            source: .codex,
+            folderName: installedSkill.lastPathComponent
+        )
+        let libraryBefore = try Fixtures.snapshot(directory: library)
+        let settings = SkillSettings(
+            libraryPath: library,
+            codexPath: parent,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        try await SkillWorkspaceService().uninstallSkill(
+            named: name,
+            contentHash: contentHash,
+            target: .codex,
+            settings: settings
+        )
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: installedSkill.path))
+        XCTAssertEqual(try Fixtures.snapshot(directory: library), libraryBefore)
     }
 
     func testConfirmedImportUsesPreviewStrategyAndReturnsDestination() async throws {
@@ -297,5 +504,16 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         XCTAssertEqual(saved?.chineseName, "示例技能")
         XCTAssertEqual(saved?.useCases, ["测试"])
         XCTAssertEqual(try SkillHasher().hash(directory: skillDirectory), originalHash)
+    }
+
+    private func scannedHash(
+        in root: URL,
+        source: SkillSource,
+        folderName: String
+    ) async throws -> String {
+        let skills = await SkillScanner().scan([ScanLocation(root: root, source: source)])
+        return try XCTUnwrap(
+            skills.first { $0.path.lastPathComponent == folderName }?.contentHash
+        )
     }
 }
