@@ -102,10 +102,14 @@ public actor SkillFileOperator {
             }
             return
         }
+        let skillMarkdown = destination.appendingPathComponent("SKILL.md")
+        var skillMarkdownIsDirectory = ObjCBool(false)
         guard isDirectory.boolValue,
               fileManager.fileExists(
-                atPath: destination.appendingPathComponent("SKILL.md").path
-              )
+                atPath: skillMarkdown.path,
+                isDirectory: &skillMarkdownIsDirectory
+              ),
+              !skillMarkdownIsDirectory.boolValue
         else {
             throw SkillFileOperationError.missingSkillMarkdown
         }

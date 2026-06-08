@@ -236,6 +236,25 @@ final class SkillFileOperatorTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: target.path))
     }
 
+    func testRemoveSkillRejectsSkillMarkdownDirectory() async throws {
+        let targetRoot = try Fixtures.temporaryDirectory()
+        let target = targetRoot.appendingPathComponent("sample-skill")
+        let skillMarkdown = target.appendingPathComponent("SKILL.md")
+        try FileManager.default.createDirectory(at: skillMarkdown, withIntermediateDirectories: true)
+
+        do {
+            try await SkillFileOperator().removeSkill(
+                named: "sample-skill",
+                from: targetRoot
+            )
+            XCTFail("Expected invalid skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .missingSkillMarkdown)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: skillMarkdown.path))
+    }
+
     func testRemoveSkillRejectsDanglingSymbolicLink() async throws {
         let targetRoot = try Fixtures.temporaryDirectory()
         let symbolicLink = targetRoot.appendingPathComponent("sample-skill")
