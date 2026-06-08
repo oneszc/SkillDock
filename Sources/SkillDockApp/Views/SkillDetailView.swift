@@ -57,15 +57,6 @@ struct SkillDetailView: View {
                     Label("Read-only", systemImage: "lock.fill")
                         .foregroundStyle(.secondary)
                 }
-
-                Spacer()
-
-                Button(action: model.revealSelectedInFinder) {
-                    Label("Reveal in Finder", systemImage: "folder")
-                }
-                Button(action: model.copySelectedPath) {
-                    Label("Copy Path", systemImage: "doc.on.doc")
-                }
             }
             .labelStyle(.titleAndIcon)
             .font(.body)
@@ -76,6 +67,7 @@ struct SkillDetailView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .labelsHidden()
         }
         .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -114,6 +114,7 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 - 远程 Skill 默认只进入主技能库，不自动安装到智能体。
 - 保存仓库、分支、Skill 路径、提交版本和内容 Hash。
 - 手动检查单个 Skill 更新、变化预览和本地修改保护顺延到 V0.3.1。
+- Library 和 Installed 第二栏的 Agent 筛选顺延到 V0.3.1；默认显示全部 Agent，并支持筛选 Codex / Claude。
 
 设计规格：
 

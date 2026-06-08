@@ -9,8 +9,8 @@ enum NavigationSection: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
-        case .library: "books.vertical"
-        case .installed: "checkmark.circle"
+        case .library: "folder"
+        case .installed: "square.and.arrow.down"
         case .system: "lock.shield"
         }
     }

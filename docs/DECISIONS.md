@@ -190,3 +190,30 @@ https://developer.apple.com/cn/sf-symbols/
 
 - 当前远程导入流程已经形成可独立使用和验收的完整能力。
 - 将更新能力单独迭代，可以避免 V0.3.0 发布范围含糊。
+
+## 2026-06-08 - All AI Collaborators Follow Superpowers Workflows
+
+决定：
+
+- SkillDock 由多个 AI 工具共同维护，Superpowers 工作流对 Codex、Claude Code 和其他接手项目的 AI 同样生效。
+- 新增功能、交互和需求调整先 brainstorming；开发使用计划与 TDD；异常使用系统化调试；完成、提交和发布前必须验证。
+- 当前环境无法访问 Superpowers 时，AI 必须明确说明，并执行对应的等价流程。
+
+原因：
+
+- 避免不同 AI 接手项目时采用不一致的设计和开发流程。
+- 确保方案讨论、小改动、开发、测试和发布都有清晰的质量门槛。
+
+## 2026-06-08 - Agent Filter Moves To V0.3.1
+
+决定：
+
+- 当前版本不开发 Agent 筛选。
+- V0.3.1 在 Library 和 Installed 的第二栏增加 Agent 筛选。
+- 默认显示全部 Agent，首批支持筛选 Codex 和 Claude。
+- System 页面暂不显示 Agent 筛选。
+
+原因：
+
+- 当前版本先收口已完成的视觉和阅读体验调整。
+- Agent 筛选属于独立的信息架构能力，放入下个版本更适合单独设计和验收。

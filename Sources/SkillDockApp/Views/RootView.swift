@@ -105,16 +105,19 @@ struct RootView: View {
         .searchable(text: $model.searchQuery, prompt: "Search Skills")
         .toolbar {
             ToolbarItem {
-                Button {
-                    Task { await model.requestImport() }
+                Menu {
+                    Button {
+                        Task { await model.requestImport() }
+                    } label: {
+                        Label("Import from Folder", systemImage: "folder")
+                    }
+                    Button(action: model.openRemoteImport) {
+                        Label("Add from GitHub", systemImage: "shippingbox.and.arrow.backward")
+                    }
                 } label: {
-                    Label("Import Skill", systemImage: "plus")
+                    Label("Add Skill", systemImage: "plus")
                 }
-            }
-            ToolbarItem {
-                Button(action: model.openRemoteImport) {
-                    Label("Add from GitHub", systemImage: "shippingbox.and.arrow.backward")
-                }
+                .help("Add Skill")
             }
             ToolbarItemGroup {
                 Button(action: model.revealSelectedInFinder) {

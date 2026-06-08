@@ -33,6 +33,25 @@
 - V0.2 Plan: `docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`
 - V0.2 Acceptance: `docs/testing/V0.2_ACCEPTANCE.md`
 
+## Superpowers Workflow Rules
+
+本项目由多个 AI 工具共同维护。无论当前使用 Codex、Claude Code 或其他 AI，开始回复、设计、计划、开发或修改前，都必须先检查并使用适用的 Superpowers 技能。
+
+- 新增功能、交互设计、需求调整：先使用 `superpowers:brainstorming`。
+- 已确认需求需要形成实施步骤：使用 `superpowers:writing-plans`。
+- 按现有计划开发：使用 `superpowers:executing-plans` 或 `superpowers:subagent-driven-development`。
+- 新功能和 Bug 修复：使用 `superpowers:test-driven-development`。
+- 遇到异常、测试失败或行为不符合预期：使用 `superpowers:systematic-debugging`。
+- 完成工作、提交或发布前：使用 `superpowers:verification-before-completion`。
+- 准备合并开发分支时：使用 `superpowers:finishing-a-development-branch`。
+
+执行规则：
+
+- 在任何回复或操作前，先判断是否有适用技能；只要可能适用，就先读取并遵循。
+- 使用技能时，先用一句话告诉用户正在使用哪个技能以及目的。
+- 不得因为任务看起来简单、只是讨论方案或只是小改动而跳过适用技能。
+- 如果当前 AI 环境无法访问 Superpowers，必须明确说明，并按照对应技能的等价流程执行和记录。
+
 ## Context Handoff Rules
 
 - 每次完成一段重要工作后，更新 `docs/CURRENT_STATE.md`。
