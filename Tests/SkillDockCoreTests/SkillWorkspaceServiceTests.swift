@@ -97,6 +97,144 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         )
     }
 
+    func testUninstallRemovesOnlySelectedAgentCopy() async throws {
+        let library = try Fixtures.temporaryDirectory()
+        let codex = try Fixtures.temporaryDirectory()
+        let claude = try Fixtures.temporaryDirectory()
+        let name = "sample-skill"
+        try Fixtures.makeSkill(at: library.appendingPathComponent(name))
+        try Fixtures.makeSkill(at: codex.appendingPathComponent(name))
+        try Fixtures.makeSkill(at: claude.appendingPathComponent(name))
+        let settings = SkillSettings(
+            libraryPath: library,
+            codexPath: codex,
+            claudePath: claude
+        )
+
+        try await SkillWorkspaceService().uninstallSkill(
+            named: name,
+            target: .codex,
+            settings: settings
+        )
+
+        XCTAssertTrue(FileManager.default.fileExists(
+            atPath: library.appendingPathComponent(name).path
+        ))
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: codex.appendingPathComponent(name).path
+        ))
+        XCTAssertTrue(FileManager.default.fileExists(
+            atPath: claude.appendingPathComponent(name).path
+        ))
+    }
+
+    func testUninstallDoesNotModifyLibraryOrNotes() async throws {
+        let library = try Fixtures.temporaryDirectory()
+        let codex = try Fixtures.temporaryDirectory()
+        let notesDirectory = try Fixtures.temporaryDirectory()
+        let name = "sample-skill"
+        try Fixtures.makeSkill(at: library.appendingPathComponent(name))
+        try Fixtures.makeSkill(at: codex.appendingPathComponent(name))
+        let notesStore = NotesStore(directory: notesDirectory)
+        try await notesStore.upsert(
+            SkillNote(
+                key: SkillNoteKey(
+                    name: name,
+                    source: .library,
+                    contentHash: "hash"
+                ),
+                chineseName: "示例技能",
+                chineseDescription: "中文说明",
+                tags: [],
+                useCases: [],
+                riskLevel: .low,
+                riskNote: "",
+                usageNote: "",
+                updatedAt: Date()
+            )
+        )
+        let libraryBefore = try Fixtures.snapshot(directory: library)
+        let notesBefore = try Fixtures.snapshot(directory: notesDirectory)
+        let settings = SkillSettings(
+            libraryPath: library,
+            codexPath: codex,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        try await SkillWorkspaceService(notesStore: notesStore).uninstallSkill(
+            named: name,
+            target: .codex,
+            settings: settings
+        )
+
+        XCTAssertEqual(try Fixtures.snapshot(directory: library), libraryBefore)
+        XCTAssertEqual(try Fixtures.snapshot(directory: notesDirectory), notesBefore)
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: codex.appendingPathComponent(name).path
+        ))
+    }
+
+    func testUninstallRejectsSystemSkill() async throws {
+        let codex = try Fixtures.temporaryDirectory()
+        let name = "sample-skill"
+        let installedSkill = codex.appendingPathComponent(name)
+        try Fixtures.makeSkill(at: installedSkill)
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: codex,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: name,
+                target: .codex,
+                settings: settings,
+                isSystemSkill: true
+            )
+            XCTFail("Expected system skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .systemSkillIsReadOnly)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: installedSkill.path))
+    }
+
+    func testUninstallRejectsAgentRootResolvingToLibrary() async throws {
+        let parent = try Fixtures.temporaryDirectory()
+        let library = parent.appendingPathComponent("library", isDirectory: true)
+        let linkedAgentRoot = parent.appendingPathComponent("agent-link", isDirectory: true)
+        let normalizedAgentRoot = library.appendingPathComponent("../library", isDirectory: true)
+        let name = "sample-skill"
+        try Fixtures.makeSkill(at: library.appendingPathComponent(name))
+        try FileManager.default.createSymbolicLink(
+            at: linkedAgentRoot,
+            withDestinationURL: library
+        )
+        let libraryBefore = try Fixtures.snapshot(directory: library)
+
+        for agentRoot in [linkedAgentRoot, normalizedAgentRoot] {
+            let settings = SkillSettings(
+                libraryPath: library,
+                codexPath: agentRoot,
+                claudePath: try Fixtures.temporaryDirectory()
+            )
+
+            do {
+                try await SkillWorkspaceService().uninstallSkill(
+                    named: name,
+                    target: .codex,
+                    settings: settings
+                )
+                XCTFail("Expected Library target rejection")
+            } catch {
+                XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
+            }
+
+            XCTAssertEqual(try Fixtures.snapshot(directory: library), libraryBefore)
+        }
+    }
+
     func testConfirmedImportUsesPreviewStrategyAndReturnsDestination() async throws {
         let source = try Fixtures.temporaryDirectory()
         try Fixtures.makeSkill(at: source)

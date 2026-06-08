@@ -112,4 +112,31 @@ public actor SkillWorkspaceService {
             isSystemSkill: isSystemSkill
         )
     }
+
+    public func uninstallSkill(
+        named name: String,
+        target: InstallTarget,
+        settings: SkillSettings,
+        isSystemSkill: Bool = false
+    ) async throws {
+        let targetRoot = switch target {
+        case .codex: settings.codexPath
+        case .claude: settings.claudePath
+        }
+        let resolvedTargetRoot = targetRoot
+            .resolvingSymlinksInPath()
+            .standardizedFileURL
+        let resolvedLibraryRoot = settings.libraryPath
+            .resolvingSymlinksInPath()
+            .standardizedFileURL
+        guard resolvedTargetRoot != resolvedLibraryRoot else {
+            throw SkillFileOperationError.destinationOutsideRoot
+        }
+
+        try await fileOperator.removeSkill(
+            named: name,
+            from: targetRoot,
+            isSystemSkill: isSystemSkill
+        )
+    }
 }
