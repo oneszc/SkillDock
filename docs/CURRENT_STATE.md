@@ -192,12 +192,12 @@ V0.3.0 暂不包含：
 
 ## Handoff Note
 
-当前开发分支：`codex/v0.3-development`。
+当前发布分支：`main`。
 
 截至 2026-06-08 的交接状态：
 
 - 最新功能实现：Settings 使用独立单实例 SwiftUI 窗口，保留 `Settings…` / `⌘,`，红绿灯位于浮层侧栏，并为未来设置分类预留导航。
-- `codex/v0.3-development` 已推送到 GitHub。
+- `codex/v0.3-development` 已合并到 `main`。
 - 工作区干净，没有未提交文件。
 - 最新发布版本：`v0.3.0`。
 - V0.3.0 已完成公开 GitHub 获取、多 Skill 扫描、多选导入、来源记录和导入界面；下一步进入 V0.3.1 手动更新检查。
@@ -208,8 +208,8 @@ V0.3.0 暂不包含：
 ```bash
 git clone https://github.com/oneszc/SkillDock.git
 cd SkillDock
-git switch codex/v0.3-development
-git pull --ff-only origin codex/v0.3-development
+git switch main
+git pull --ff-only origin main
 swift test
 ./scripts/run-app.sh
 ```
