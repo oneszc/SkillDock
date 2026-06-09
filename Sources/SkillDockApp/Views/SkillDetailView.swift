@@ -55,6 +55,10 @@ struct SkillDetailView: View {
                     .buttonStyle(.plain)
                     .disabled(record.skill.isSystem || installed)
                     .help(installed ? "Installed in \(target.displayName)" : "Install to \(target.displayName)")
+                    .accessibilityLabel("\(target.displayName) installation status")
+                    .accessibilityValue(
+                        accessibilityValue(installed: installed, isSystem: record.skill.isSystem)
+                    )
                 }
 
                 if record.skill.isSystem {
@@ -99,6 +103,11 @@ struct SkillDetailView: View {
         case .claude:
             record.skill.installation.claude
         }
+    }
+
+    private func accessibilityValue(installed: Bool, isSystem: Bool) -> String {
+        let installationStatus = installed ? "Installed" : "Not installed"
+        return isSystem ? "\(installationStatus), system read-only" : installationStatus
     }
 
     private func installView(_ record: SkillRecord) -> some View {
