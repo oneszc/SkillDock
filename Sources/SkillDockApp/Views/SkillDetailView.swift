@@ -43,16 +43,20 @@ struct SkillDetailView: View {
             }
 
             HStack(spacing: 12) {
-                Label(record.skill.source.displayName, systemImage: "folder")
+                ForEach(InstallTarget.allCases, id: \.self) { target in
+                    let installed = isInstalled(target, in: record)
 
-                if record.skill.installation.codex {
-                    Label("Codex", systemImage: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
+                    Button {
+                        guard !installed else { return }
+                        Task { await model.requestInstall(to: target) }
+                    } label: {
+                        AgentLogo(target: target, installed: installed, size: 22)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(record.skill.isSystem || installed)
+                    .help(installed ? "Installed in \(target.displayName)" : "Install to \(target.displayName)")
                 }
-                if record.skill.installation.claude {
-                    Label("Claude", systemImage: "checkmark.circle")
-                        .foregroundStyle(.secondary)
-                }
+
                 if record.skill.isSystem {
                     Label("Read-only", systemImage: "lock.fill")
                         .foregroundStyle(.secondary)
@@ -85,6 +89,15 @@ struct SkillDetailView: View {
             NotesEditorView(model: model)
         case .install:
             installView(record)
+        }
+    }
+
+    private func isInstalled(_ target: InstallTarget, in record: SkillRecord) -> Bool {
+        switch target {
+        case .codex:
+            record.skill.installation.codex
+        case .claude:
+            record.skill.installation.claude
         }
     }
 
