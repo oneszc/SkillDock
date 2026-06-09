@@ -9,6 +9,7 @@ public actor SkillWorkspaceService {
     private let notesStore: NotesStore
     private let fileOperator: SkillFileOperator
     private let fileManager: FileManager
+    private let beforeUninstallFinalValidation: (@Sendable (URL) throws -> Void)?
 
     public init(
         notesStore: NotesStore = .init(),
@@ -18,6 +19,14 @@ public actor SkillWorkspaceService {
         self.notesStore = notesStore
         self.fileOperator = fileOperator
         self.fileManager = fileManager
+        self.beforeUninstallFinalValidation = nil
+    }
+
+    init(beforeUninstallFinalValidation: @escaping @Sendable (URL) throws -> Void) {
+        self.notesStore = .init()
+        self.fileOperator = .init()
+        self.fileManager = .default
+        self.beforeUninstallFinalValidation = beforeUninstallFinalValidation
     }
 
     public func markdown(for skillDirectory: URL) throws -> String {
@@ -153,7 +162,7 @@ public actor SkillWorkspaceService {
             matches.append(contentsOf: scannedSkills.filter {
                 $0.name == name
                     && $0.contentHash == contentHash
-                    && pathsReferToSameFile($0.path, child)
+                    && (pathsReferToSameFile($0.path, child) || $0.isSystem)
             })
         }
         guard let installedSkill = matches.first else {
@@ -162,17 +171,48 @@ public actor SkillWorkspaceService {
         guard matches.count == 1 else {
             throw SkillWorkspaceServiceError.installedSkillAmbiguous
         }
+        guard !installedSkill.isSystem else {
+            throw SkillFileOperationError.systemSkillIsReadOnly
+        }
 
         let resolvedInstalledSkill = resolved(installedSkill.path)
         guard !pathsOverlap(resolvedInstalledSkill, resolvedLibraryRoot) else {
             throw SkillFileOperationError.destinationOutsideRoot
         }
 
+        try beforeUninstallFinalValidation?(installedSkill.path)
+        guard let finalInstalledSkill = await exactSkill(
+            at: installedSkill.path,
+            named: name,
+            contentHash: contentHash,
+            source: source
+        ) else {
+            throw SkillWorkspaceServiceError.installedSkillNotFound
+        }
+        guard !finalInstalledSkill.isSystem else {
+            throw SkillFileOperationError.systemSkillIsReadOnly
+        }
+
         try await fileOperator.removeSkill(
-            named: installedSkill.path.lastPathComponent,
+            named: finalInstalledSkill.path.lastPathComponent,
             from: targetRoot,
-            isSystemSkill: false
+            isSystemSkill: finalInstalledSkill.isSystem
         )
+    }
+
+    private func exactSkill(
+        at target: URL,
+        named name: String,
+        contentHash: String,
+        source: SkillSource
+    ) async -> Skill? {
+        let scannedSkills = await SkillScanner()
+            .scan([ScanLocation(root: target, source: source)])
+        return scannedSkills.first {
+            $0.name == name
+                && $0.contentHash == contentHash
+                && pathsReferToSameFile($0.path, target)
+        }
     }
 
     private func resolved(_ url: URL) -> URL {

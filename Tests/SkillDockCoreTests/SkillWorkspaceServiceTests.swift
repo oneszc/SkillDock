@@ -220,6 +220,117 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: installedSkill.path))
     }
 
+    func testUninstallRejectsScannedCodexSystemSkillWhenCallerOmitsFlag() async throws {
+        let codex = try Fixtures.temporaryDirectory()
+        let name = "skill-creator"
+        let installedSkill = codex.appendingPathComponent(".system/\(name)")
+        try Fixtures.makeSkill(at: installedSkill, name: name)
+        let contentHash = try await scannedHash(
+            in: codex,
+            source: .codex,
+            folderName: name
+        )
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: codex,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: name,
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected scanned system skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .systemSkillIsReadOnly)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: installedSkill.path))
+    }
+
+    func testUninstallThrowsWhenExactAgentCopyDisappearsBeforeRemoval() async throws {
+        let codex = try Fixtures.temporaryDirectory()
+        let name = "sample-skill"
+        let installedSkill = codex.appendingPathComponent(name)
+        try Fixtures.makeSkill(at: installedSkill)
+        let contentHash = try await scannedHash(
+            in: codex,
+            source: .codex,
+            folderName: name
+        )
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: codex,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+        let workspace = SkillWorkspaceService(
+            beforeUninstallFinalValidation: { target in
+                try FileManager.default.removeItem(at: target)
+            }
+        )
+
+        do {
+            try await workspace.uninstallSkill(
+                named: name,
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected disappeared installed skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillWorkspaceServiceError, .installedSkillNotFound)
+        }
+    }
+
+    func testUninstallDoesNotDeleteChangedAgentCopyBeforeRemoval() async throws {
+        let codex = try Fixtures.temporaryDirectory()
+        let name = "sample-skill"
+        let installedSkill = codex.appendingPathComponent(name)
+        try Fixtures.makeSkill(at: installedSkill)
+        let contentHash = try await scannedHash(
+            in: codex,
+            source: .codex,
+            folderName: name
+        )
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: codex,
+            claudePath: try Fixtures.temporaryDirectory()
+        )
+        let workspace = SkillWorkspaceService(
+            beforeUninstallFinalValidation: { target in
+                try Fixtures.write(
+                    "replacement",
+                    to: target.appendingPathComponent("replacement.txt")
+                )
+            }
+        )
+
+        do {
+            try await workspace.uninstallSkill(
+                named: name,
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected changed installed skill rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillWorkspaceServiceError, .installedSkillNotFound)
+        }
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: installedSkill.path))
+        XCTAssertEqual(
+            try String(
+                contentsOf: installedSkill.appendingPathComponent("replacement.txt"),
+                encoding: .utf8
+            ),
+            "replacement"
+        )
+    }
+
     func testUninstallFindsExactAgentCopyWithDifferentFolderName() async throws {
         let library = try Fixtures.temporaryDirectory()
         let codex = try Fixtures.temporaryDirectory()
