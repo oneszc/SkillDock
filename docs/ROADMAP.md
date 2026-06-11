@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.1 已发布，V0.3.2、V0.4 及之后保留后续方向。
+V0.3.2 已发布，V0.3.3、V0.4 及之后保留后续方向。
 
 ## V0.1 - Local Skill Library
 
@@ -113,8 +113,8 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 - 扫描仓库内多个 Skills，并支持多选一次导入。
 - 远程 Skill 默认只进入主技能库，不自动安装到智能体。
 - 保存仓库、分支、Skill 路径、提交版本和内容 Hash。
-- 手动检查单个 Skill 更新、变化预览和本地修改保护顺延到 V0.3.2。
-- Library 和 Installed 第二栏的 Agent 筛选顺延到 V0.3.2；默认显示全部 Agent，并支持筛选 Codex / Claude。
+- 手动检查单个 Skill 更新、变化预览和本地修改保护顺延到 V0.3.3。
+- Library 和 Installed 第二栏的 Agent 筛选顺延到 V0.3.3；默认显示全部 Agent，并支持筛选 Codex / Claude。
 
 ## V0.3.1 - Agent Install Management
 
@@ -131,7 +131,20 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 - 卸载前必须确认，只移除所选 Agent 的精确副本。
 - 保护主技能库、其他 Agent 副本、中文备注和 System Skill。
 
-## V0.3.2 - Manual Updates And Agent Filter
+## V0.3.2 - Confirmation Hotfix
+
+目标：修复卸载与覆盖安装确认弹窗关闭后操作请求丢失的问题。
+
+状态：已完成并发布 GitHub Release。
+
+确认范围：
+
+- 点击卸载确认 `Remove` 后真实删除所选 Agent 副本。
+- 删除完成后刷新安装状态与复选框。
+- 修复使用相同确认结构的覆盖安装操作。
+- 增加 App 层回归测试。
+
+## V0.3.3 - Manual Updates And Agent Filter
 
 目标：增加远程 Skill 手动更新检查与 Agent 筛选。
 

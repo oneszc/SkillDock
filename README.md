@@ -11,7 +11,7 @@
 Keep your personal Skill library clear, local, and under your control.
 
 <p>
-  <img src="https://img.shields.io/badge/version-v0.3.1-0A84FF?style=flat-square" alt="Version v0.3.1">
+  <img src="https://img.shields.io/badge/version-v0.3.2-0A84FF?style=flat-square" alt="Version v0.3.2">
   <img src="https://img.shields.io/badge/macOS-26%2B-111111?style=flat-square&logo=apple&logoColor=white" alt="macOS 26 or later">
   <img src="https://img.shields.io/badge/SwiftUI-native-F05138?style=flat-square&logo=swift&logoColor=white" alt="Native SwiftUI">
   <img src="https://img.shields.io/badge/local--first-private-34C759?style=flat-square" alt="Local-first and private">
@@ -72,7 +72,7 @@ SkillDock 默认扫描以下位置：
 ### 下载应用
 
 1. 前往 [GitHub Releases](https://github.com/oneszc/SkillDock/releases/latest)。
-2. 下载 `SkillDock-0.3.1.zip`。
+2. 下载 `SkillDock-0.3.2.zip`。
 3. 解压并打开 `SkillDock.app`。
 
 > 当前版本使用本地临时签名，尚未进行 Apple Developer ID 签名与公证。
@@ -108,9 +108,9 @@ SkillDock 采用 local-first 方式工作，不依赖云端服务。
 
 ## 当前状态
 
-- 最新版本：[`v0.3.1`](https://github.com/oneszc/SkillDock/releases/tag/v0.3.1)
-- 自动化测试：91 项通过
-- 当前阶段：V0.3.1 已发布，支持 Agent 安装状态与安全卸载管理
+- 最新版本：[`v0.3.2`](https://github.com/oneszc/SkillDock/releases/tag/v0.3.2)
+- 自动化测试：92 项通过
+- 当前阶段：V0.3.2 已发布，修复卸载确认与覆盖安装确认
 - 后续方向：手动检查远程更新、多工具同步增强、AI 中文解读
 
 查看完整进度：

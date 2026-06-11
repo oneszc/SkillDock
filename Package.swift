@@ -15,6 +15,7 @@ let package = Package(
             dependencies: ["SkillDockCore"],
             resources: [.process("Resources")]
         ),
-        .testTarget(name: "SkillDockCoreTests", dependencies: ["SkillDockCore"])
+        .testTarget(name: "SkillDockCoreTests", dependencies: ["SkillDockCore"]),
+        .testTarget(name: "SkillDockAppTests", dependencies: ["SkillDockApp", "SkillDockCore"])
     ]
 )

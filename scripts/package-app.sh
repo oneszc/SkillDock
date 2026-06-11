@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP_NAME="SkillDock"
 BUNDLE_ID="com.oneszc.SkillDock"
-VERSION="${SKILLDOCK_VERSION:-0.3.1}"
+VERSION="${SKILLDOCK_VERSION:-0.3.2}"
 BUILD_DIR="$ROOT_DIR/.build/release"
 DIST_DIR="$ROOT_DIR/dist"
 APP_DIR="$DIST_DIR/$APP_NAME.app"

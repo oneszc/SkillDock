@@ -201,8 +201,7 @@ final class AppModel {
         }
     }
 
-    func confirmUninstall() async {
-        guard let pendingUninstall else { return }
+    func confirmUninstall(_ pendingUninstall: PendingUninstall) async {
         self.pendingUninstall = nil
 
         do {
@@ -293,9 +292,9 @@ final class AppModel {
         importPreview?.strategy = strategy
     }
 
-    func confirmOverwrite() async {
+    func confirmOverwrite(_ pendingOverwrite: PendingOverwrite) async {
+        self.pendingOverwrite = nil
         guard case .install(let target) = pendingOverwrite else { return }
-        pendingOverwrite = nil
         await installSelected(to: target, strategy: .overwrite)
     }
 

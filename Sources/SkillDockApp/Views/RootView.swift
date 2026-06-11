@@ -39,7 +39,9 @@ struct RootView: View {
             )
         ) {
             Button("Replace", role: .destructive) {
-                Task { await model.confirmOverwrite() }
+                guard let pendingOverwrite = model.pendingOverwrite else { return }
+                model.pendingOverwrite = nil
+                Task { await model.confirmOverwrite(pendingOverwrite) }
             }
             Button("Cancel", role: .cancel) {
                 model.pendingOverwrite = nil
@@ -55,7 +57,9 @@ struct RootView: View {
             )
         ) {
             Button("Remove", role: .destructive) {
-                Task { await model.confirmUninstall() }
+                guard let pendingUninstall = model.pendingUninstall else { return }
+                model.pendingUninstall = nil
+                Task { await model.confirmUninstall(pendingUninstall) }
             }
             Button("Cancel", role: .cancel) {
                 model.pendingUninstall = nil
