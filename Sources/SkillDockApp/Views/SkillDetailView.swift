@@ -43,16 +43,24 @@ struct SkillDetailView: View {
             }
 
             HStack(spacing: 12) {
-                Label(record.skill.source.displayName, systemImage: "folder")
+                ForEach(InstallTarget.allCases, id: \.self) { target in
+                    let installed = isInstalled(target, in: record)
 
-                if record.skill.installation.codex {
-                    Label("Codex", systemImage: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
+                    Button {
+                        guard !installed else { return }
+                        Task { await model.requestInstall(to: target) }
+                    } label: {
+                        AgentLogo(target: target, installed: installed, size: 22)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(record.skill.isSystem || installed)
+                    .help(installed ? "Installed in \(target.displayName)" : "Install to \(target.displayName)")
+                    .accessibilityLabel("\(target.displayName) installation status")
+                    .accessibilityValue(
+                        accessibilityValue(installed: installed, isSystem: record.skill.isSystem)
+                    )
                 }
-                if record.skill.installation.claude {
-                    Label("Claude", systemImage: "checkmark.circle")
-                        .foregroundStyle(.secondary)
-                }
+
                 if record.skill.isSystem {
                     Label("Read-only", systemImage: "lock.fill")
                         .foregroundStyle(.secondary)
@@ -88,18 +96,32 @@ struct SkillDetailView: View {
         }
     }
 
+    private func isInstalled(_ target: InstallTarget, in record: SkillRecord) -> Bool {
+        switch target {
+        case .codex:
+            record.skill.installation.codex
+        case .claude:
+            record.skill.installation.claude
+        }
+    }
+
+    private func accessibilityValue(installed: Bool, isSystem: Bool) -> String {
+        let installationStatus = installed ? "Installed" : "Not installed"
+        return isSystem ? "\(installationStatus), system read-only" : installationStatus
+    }
+
     private func installView(_ record: SkillRecord) -> some View {
         Form {
             Section("Install Targets") {
                 installRow(
-                    title: "Codex",
                     installed: record.skill.installation.codex,
-                    target: .codex
+                    target: .codex,
+                    isSystem: record.skill.isSystem
                 )
                 installRow(
-                    title: "Claude",
                     installed: record.skill.installation.claude,
-                    target: .claude
+                    target: .claude,
+                    isSystem: record.skill.isSystem
                 )
             }
             if record.skill.isSystem {
@@ -111,21 +133,25 @@ struct SkillDetailView: View {
     }
 
     private func installRow(
-        title: String,
         installed: Bool,
-        target: InstallTarget
+        target: InstallTarget,
+        isSystem: Bool
     ) -> some View {
-        HStack {
-            Label(
-                title,
-                systemImage: installed ? "checkmark.circle.fill" : "circle"
+        Toggle(
+            isOn: Binding(
+                get: { installed },
+                set: { newValue in
+                    Task { await model.requestTargetState(newValue, target: target) }
+                }
             )
-            Spacer()
-            Button(installed ? "Reinstall" : "Install") {
-                Task { await model.requestInstall(to: target) }
+        ) {
+            HStack(spacing: 12) {
+                AgentLogo(target: target, size: 20)
+                Text(target.displayName)
             }
-            .disabled(record?.skill.isSystem == true)
         }
+        .toggleStyle(.checkbox)
+        .disabled(isSystem)
     }
 }
 

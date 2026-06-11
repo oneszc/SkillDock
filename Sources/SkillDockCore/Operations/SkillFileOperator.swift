@@ -3,6 +3,20 @@ import Foundation
 public enum SkillFileOperationError: Error, Equatable, Sendable {
     case missingSkillMarkdown
     case systemSkillIsReadOnly
+    case destinationOutsideRoot
+}
+
+extension SkillFileOperationError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingSkillMarkdown:
+            "The selected folder is not a valid Skill. No files were changed."
+        case .systemSkillIsReadOnly:
+            "System Skills are read-only and cannot be changed."
+        case .destinationOutsideRoot:
+            "The operation was blocked because the configured Skill locations overlap."
+        }
+    }
 }
 
 public enum SkillFileOperationResult: Equatable, Sendable {
@@ -66,6 +80,54 @@ public actor SkillFileOperator {
             try fileManager.moveItem(at: temporaryDestination, to: destination)
             return .copied(destination)
         }
+    }
+
+    public func removeSkill(
+        named name: String,
+        from root: URL,
+        isSystemSkill: Bool = false
+    ) throws {
+        guard !isSystemSkill else {
+            throw SkillFileOperationError.systemSkillIsReadOnly
+        }
+
+        let standardizedRoot = root.standardizedFileURL
+        let destination = root
+            .appendingPathComponent(name, isDirectory: true)
+            .standardizedFileURL
+        guard destination.deletingLastPathComponent() == standardizedRoot else {
+            throw SkillFileOperationError.destinationOutsideRoot
+        }
+
+        let resolvedRoot = standardizedRoot.resolvingSymlinksInPath()
+        let resolvedDestination = destination.resolvingSymlinksInPath()
+        guard resolvedDestination.deletingLastPathComponent() == resolvedRoot else {
+            throw SkillFileOperationError.destinationOutsideRoot
+        }
+
+        var isDirectory = ObjCBool(false)
+        guard fileManager.fileExists(
+            atPath: destination.path,
+            isDirectory: &isDirectory
+        ) else {
+            guard (try? fileManager.destinationOfSymbolicLink(atPath: destination.path)) == nil else {
+                throw SkillFileOperationError.missingSkillMarkdown
+            }
+            return
+        }
+        let skillMarkdown = destination.appendingPathComponent("SKILL.md")
+        var skillMarkdownIsDirectory = ObjCBool(false)
+        guard isDirectory.boolValue,
+              fileManager.fileExists(
+                atPath: skillMarkdown.path,
+                isDirectory: &skillMarkdownIsDirectory
+              ),
+              !skillMarkdownIsDirectory.boolValue
+        else {
+            throw SkillFileOperationError.missingSkillMarkdown
+        }
+
+        try fileManager.removeItem(at: destination)
     }
 
     private func nextAvailableDestination(named name: String, in root: URL) -> URL {
