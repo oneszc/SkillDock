@@ -184,7 +184,7 @@ https://developer.apple.com/cn/sf-symbols/
 决定：
 
 - V0.3.0 发布公开 GitHub 仓库导入、Git Clone / ZIP、批量选择和来源记录。
-- 手动检查远程更新、变化预览和本地修改保护顺延到 V0.3.1。
+- 手动检查远程更新、变化预览和本地修改保护后续顺延到 V0.3.2。
 
 原因：
 
@@ -204,12 +204,12 @@ https://developer.apple.com/cn/sf-symbols/
 - 避免不同 AI 接手项目时采用不一致的设计和开发流程。
 - 确保方案讨论、小改动、开发、测试和发布都有清晰的质量门槛。
 
-## 2026-06-08 - Agent Filter Moves To V0.3.1
+## 2026-06-08 - Agent Filter Moves To V0.3.2
 
 决定：
 
 - 当前版本不开发 Agent 筛选。
-- V0.3.1 在 Library 和 Installed 的第二栏增加 Agent 筛选。
+- V0.3.2 在 Library 和 Installed 的第二栏增加 Agent 筛选。
 - 默认显示全部 Agent，首批支持筛选 Codex 和 Claude。
 - System 页面暂不显示 Agent 筛选。
 
@@ -247,3 +247,16 @@ https://developer.apple.com/cn/sf-symbols/
 
 - 不同 Agent 中同一 Skill 的文件夹名可能不同，仅按文件夹名删除不可靠。
 - 卸载是高风险文件操作，必须优先避免误删和假报成功。
+
+## 2026-06-11 - V0.3.1 Releases Agent Install Management
+
+决定：
+
+- V0.3.1 发布 Agent Logo 安装状态、Install Targets 复选框和安全卸载能力。
+- 未安装状态使用产品负责人提供的独立灰色 Logo，不通过降低彩色 Logo 透明度生成。
+- 手动更新检查、变化预览和 Agent 筛选顺延到 V0.3.2。
+
+原因：
+
+- Agent 安装管理已经形成可独立使用的完整能力。
+- 单独发布便于另一台电脑直接安装验收，也避免将未开始的更新功能混入本次版本。

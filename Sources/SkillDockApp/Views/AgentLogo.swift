@@ -1,3 +1,4 @@
+import AppKit
 import SkillDockCore
 import SwiftUI
 
@@ -7,12 +8,18 @@ struct AgentLogo: View {
     var size: CGFloat = 20
 
     var body: some View {
-        Image(target.resourceName, bundle: .module)
+        logo
             .resizable()
             .scaledToFit()
             .frame(width: size, height: size)
-            .grayscale(installed ? 0 : 1)
-            .opacity(installed ? 1 : 0.28)
+    }
+
+    private var logo: Image {
+        if let image = target.logoImage(installed: installed) {
+            Image(nsImage: image)
+        } else {
+            Image(systemName: "app.dashed")
+        }
     }
 }
 
@@ -29,5 +36,13 @@ extension InstallTarget {
         case .codex: "codex"
         case .claude: "claude"
         }
+    }
+
+    func logoImage(installed: Bool) -> NSImage? {
+        let name = installed ? resourceName : "\(resourceName)-gray"
+        guard let url = Bundle.module.url(forResource: name, withExtension: "svg") else {
+            return nil
+        }
+        return NSImage(contentsOf: url)
     }
 }

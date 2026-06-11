@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3 已开启设计，V0.4 及之后只保留方向。
+V0.3.1 已发布，V0.3.2、V0.4 及之后保留后续方向。
 
 ## V0.1 - Local Skill Library
 
@@ -113,8 +113,33 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 - 扫描仓库内多个 Skills，并支持多选一次导入。
 - 远程 Skill 默认只进入主技能库，不自动安装到智能体。
 - 保存仓库、分支、Skill 路径、提交版本和内容 Hash。
-- 手动检查单个 Skill 更新、变化预览和本地修改保护顺延到 V0.3.1。
-- Library 和 Installed 第二栏的 Agent 筛选顺延到 V0.3.1；默认显示全部 Agent，并支持筛选 Codex / Claude。
+- 手动检查单个 Skill 更新、变化预览和本地修改保护顺延到 V0.3.2。
+- Library 和 Installed 第二栏的 Agent 筛选顺延到 V0.3.2；默认显示全部 Agent，并支持筛选 Codex / Claude。
+
+## V0.3.1 - Agent Install Management
+
+目标：让用户清楚查看并安全管理 Skill 在 Codex / Claude Code 中的安装状态。
+
+状态：已完成并发布 GitHub Release。
+
+确认范围：
+
+- 详情页顶部使用 Agent Logo 表示安装状态。
+- 彩色 Logo 表示已安装，独立灰色 Logo 表示未安装。
+- 点击未安装 Logo 可发起安装。
+- Install Targets 使用复选框、Agent Logo 和名称管理安装与卸载。
+- 卸载前必须确认，只移除所选 Agent 的精确副本。
+- 保护主技能库、其他 Agent 副本、中文备注和 System Skill。
+
+## V0.3.2 - Manual Updates And Agent Filter
+
+目标：增加远程 Skill 手动更新检查与 Agent 筛选。
+
+候选范围：
+
+- 手动检查单个远程 Skill 更新。
+- 文件变化预览和本地修改保护。
+- Library 和 Installed 第二栏增加 Agent 筛选。
 
 设计规格：
 

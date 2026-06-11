@@ -47,13 +47,13 @@ struct SkillDetailView: View {
                     let installed = isInstalled(target, in: record)
 
                     Button {
-                        guard !installed else { return }
+                        guard !record.skill.isSystem, !installed else { return }
                         Task { await model.requestInstall(to: target) }
                     } label: {
-                        AgentLogo(target: target, installed: installed, size: 22)
+                        AgentLogo(target: target, installed: installed, size: 18)
                     }
                     .buttonStyle(.plain)
-                    .disabled(record.skill.isSystem || installed)
+                    .allowsHitTesting(!record.skill.isSystem && !installed)
                     .help(installed ? "Installed in \(target.displayName)" : "Install to \(target.displayName)")
                     .accessibilityLabel("\(target.displayName) installation status")
                     .accessibilityValue(
@@ -146,7 +146,7 @@ struct SkillDetailView: View {
             )
         ) {
             HStack(spacing: 12) {
-                AgentLogo(target: target, size: 20)
+                AgentLogo(target: target, installed: installed, size: 16)
                 Text(target.displayName)
             }
         }
