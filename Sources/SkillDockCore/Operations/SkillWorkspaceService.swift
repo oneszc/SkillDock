@@ -5,6 +5,17 @@ public enum SkillWorkspaceServiceError: Error, Equatable, Sendable {
     case installedSkillAmbiguous
 }
 
+extension SkillWorkspaceServiceError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .installedSkillNotFound:
+            "The installed Skill changed or could not be found. Refresh and try again."
+        case .installedSkillAmbiguous:
+            "More than one matching installed Skill was found. No files were removed."
+        }
+    }
+}
+
 public actor SkillWorkspaceService {
     private let notesStore: NotesStore
     private let fileOperator: SkillFileOperator
@@ -142,6 +153,10 @@ public actor SkillWorkspaceService {
         case .codex: settings.codexPath
         case .claude: settings.claudePath
         }
+        let otherAgentRoot = switch target {
+        case .codex: settings.claudePath
+        case .claude: settings.codexPath
+        }
         let source: SkillSource = switch target {
         case .codex: .codex
         case .claude: .claude
@@ -177,6 +192,9 @@ public actor SkillWorkspaceService {
 
         let resolvedInstalledSkill = resolved(installedSkill.path)
         guard !pathsOverlap(resolvedInstalledSkill, resolvedLibraryRoot) else {
+            throw SkillFileOperationError.destinationOutsideRoot
+        }
+        guard !pathsOverlap(resolvedInstalledSkill, resolved(otherAgentRoot)) else {
             throw SkillFileOperationError.destinationOutsideRoot
         }
 

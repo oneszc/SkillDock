@@ -64,7 +64,7 @@ struct RootView: View {
             Text("The Library copy and copies installed in other Agents will remain unchanged.")
         }
         .alert(
-            "SkillDock could not refresh",
+            "SkillDock could not complete the operation",
             isPresented: Binding(
                 get: { model.errorMessage != nil },
                 set: { if !$0 { model.errorMessage = nil } }

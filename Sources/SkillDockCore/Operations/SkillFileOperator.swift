@@ -6,6 +6,19 @@ public enum SkillFileOperationError: Error, Equatable, Sendable {
     case destinationOutsideRoot
 }
 
+extension SkillFileOperationError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingSkillMarkdown:
+            "The selected folder is not a valid Skill. No files were changed."
+        case .systemSkillIsReadOnly:
+            "System Skills are read-only and cannot be changed."
+        case .destinationOutsideRoot:
+            "The operation was blocked because the configured Skill locations overlap."
+        }
+    }
+}
+
 public enum SkillFileOperationResult: Equatable, Sendable {
     case copied(URL)
     case skipped(URL)

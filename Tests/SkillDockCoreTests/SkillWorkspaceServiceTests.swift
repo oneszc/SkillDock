@@ -553,6 +553,104 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         XCTAssertEqual(try Fixtures.snapshot(directory: library), libraryBefore)
     }
 
+    func testUninstallRejectsSharedAgentRoot() async throws {
+        let sharedAgentRoot = try Fixtures.temporaryDirectory()
+        let installedSkill = sharedAgentRoot.appendingPathComponent("sample-skill")
+        try Fixtures.makeSkill(at: installedSkill)
+        let contentHash = try await scannedHash(
+            in: sharedAgentRoot,
+            source: .codex,
+            folderName: installedSkill.lastPathComponent
+        )
+        let before = try Fixtures.snapshot(directory: sharedAgentRoot)
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: sharedAgentRoot,
+            claudePath: sharedAgentRoot
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: "sample-skill",
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected overlapping Agent path rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
+        }
+
+        XCTAssertEqual(try Fixtures.snapshot(directory: sharedAgentRoot), before)
+    }
+
+    func testUninstallRejectsAgentCopyContainingOtherAgentRoot() async throws {
+        let codexRoot = try Fixtures.temporaryDirectory()
+        let installedSkill = codexRoot.appendingPathComponent("sample-skill")
+        let claudeRoot = installedSkill.appendingPathComponent("claude", isDirectory: true)
+        try Fixtures.makeSkill(at: installedSkill)
+        try Fixtures.write("keep", to: claudeRoot.appendingPathComponent("sentinel.txt"))
+        let contentHash = try await scannedHash(
+            in: codexRoot,
+            source: .codex,
+            folderName: installedSkill.lastPathComponent
+        )
+        let before = try Fixtures.snapshot(directory: installedSkill)
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: codexRoot,
+            claudePath: claudeRoot
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: "sample-skill",
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected overlapping Agent path rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
+        }
+
+        XCTAssertEqual(try Fixtures.snapshot(directory: installedSkill), before)
+    }
+
+    func testUninstallRejectsOtherAgentRootLinkedInsideTargetSkill() async throws {
+        let parent = try Fixtures.temporaryDirectory()
+        let codexRoot = parent.appendingPathComponent("codex", isDirectory: true)
+        let installedSkill = codexRoot.appendingPathComponent("sample-skill")
+        let claudeLink = parent.appendingPathComponent("claude-link", isDirectory: true)
+        try Fixtures.makeSkill(at: installedSkill)
+        try FileManager.default.createSymbolicLink(at: claudeLink, withDestinationURL: installedSkill)
+        let contentHash = try await scannedHash(
+            in: codexRoot,
+            source: .codex,
+            folderName: installedSkill.lastPathComponent
+        )
+        let before = try Fixtures.snapshot(directory: installedSkill)
+        let settings = SkillSettings(
+            libraryPath: try Fixtures.temporaryDirectory(),
+            codexPath: codexRoot,
+            claudePath: claudeLink
+        )
+
+        do {
+            try await SkillWorkspaceService().uninstallSkill(
+                named: "sample-skill",
+                contentHash: contentHash,
+                target: .codex,
+                settings: settings
+            )
+            XCTFail("Expected overlapping Agent path rejection")
+        } catch {
+            XCTAssertEqual(error as? SkillFileOperationError, .destinationOutsideRoot)
+        }
+
+        XCTAssertEqual(try Fixtures.snapshot(directory: installedSkill), before)
+    }
+
     func testConfirmedImportUsesPreviewStrategyAndReturnsDestination() async throws {
         let source = try Fixtures.temporaryDirectory()
         try Fixtures.makeSkill(at: source)
