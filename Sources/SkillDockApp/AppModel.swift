@@ -18,6 +18,13 @@ final class AppModel {
         case install(InstallTarget)
     }
 
+    struct PendingUninstall {
+        let target: InstallTarget
+        let skillName: String
+        let contentHash: String
+        let isSystemSkill: Bool
+    }
+
     var records: [SkillRecord] = []
     var selectionID: SkillRecord.ID?
     var navigationSection: NavigationSection = .library
@@ -29,6 +36,7 @@ final class AppModel {
     var filePaths: [String] = []
     var operationMessage: String?
     var pendingOverwrite: PendingOverwrite?
+    var pendingUninstall: PendingUninstall?
     var importPreview: ImportPreview?
     var importErrorMessage: String?
     var noteDraft = NoteDraft(note: nil)
@@ -174,6 +182,38 @@ final class AppModel {
                 isSystemSkill: record.skill.isSystem
             )
             operationMessage = result.message
+            await refresh()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func requestTargetState(_ installed: Bool, target: InstallTarget) async {
+        if installed {
+            await requestInstall(to: target)
+        } else if let record = selectedRecord {
+            pendingUninstall = PendingUninstall(
+                target: target,
+                skillName: record.skill.name,
+                contentHash: record.skill.contentHash,
+                isSystemSkill: record.skill.isSystem
+            )
+        }
+    }
+
+    func confirmUninstall() async {
+        guard let pendingUninstall else { return }
+        self.pendingUninstall = nil
+
+        do {
+            try await workspaceService.uninstallSkill(
+                named: pendingUninstall.skillName,
+                contentHash: pendingUninstall.contentHash,
+                target: pendingUninstall.target,
+                settings: settings,
+                isSystemSkill: pendingUninstall.isSystemSkill
+            )
+            operationMessage = "Removed from \(pendingUninstall.target.displayName)."
             await refresh()
         } catch {
             errorMessage = error.localizedDescription

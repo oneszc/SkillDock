@@ -47,6 +47,22 @@ struct RootView: View {
         } message: {
             Text("The existing folder will be replaced only after you confirm.")
         }
+        .confirmationDialog(
+            "Remove this Skill from \(model.pendingUninstall?.target.displayName ?? "Agent")?",
+            isPresented: Binding(
+                get: { model.pendingUninstall != nil },
+                set: { if !$0 { model.pendingUninstall = nil } }
+            )
+        ) {
+            Button("Remove", role: .destructive) {
+                Task { await model.confirmUninstall() }
+            }
+            Button("Cancel", role: .cancel) {
+                model.pendingUninstall = nil
+            }
+        } message: {
+            Text("The Library copy and copies installed in other Agents will remain unchanged.")
+        }
         .alert(
             "SkillDock could not refresh",
             isPresented: Binding(

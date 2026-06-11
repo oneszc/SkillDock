@@ -114,14 +114,14 @@ struct SkillDetailView: View {
         Form {
             Section("Install Targets") {
                 installRow(
-                    title: "Codex",
                     installed: record.skill.installation.codex,
-                    target: .codex
+                    target: .codex,
+                    isSystem: record.skill.isSystem
                 )
                 installRow(
-                    title: "Claude",
                     installed: record.skill.installation.claude,
-                    target: .claude
+                    target: .claude,
+                    isSystem: record.skill.isSystem
                 )
             }
             if record.skill.isSystem {
@@ -133,21 +133,25 @@ struct SkillDetailView: View {
     }
 
     private func installRow(
-        title: String,
         installed: Bool,
-        target: InstallTarget
+        target: InstallTarget,
+        isSystem: Bool
     ) -> some View {
-        HStack {
-            Label(
-                title,
-                systemImage: installed ? "checkmark.circle.fill" : "circle"
+        Toggle(
+            isOn: Binding(
+                get: { installed },
+                set: { newValue in
+                    Task { await model.requestTargetState(newValue, target: target) }
+                }
             )
-            Spacer()
-            Button(installed ? "Reinstall" : "Install") {
-                Task { await model.requestInstall(to: target) }
+        ) {
+            HStack(spacing: 12) {
+                AgentLogo(target: target, size: 20)
+                Text(target.displayName)
             }
-            .disabled(record?.skill.isSystem == true)
         }
+        .toggleStyle(.checkbox)
+        .disabled(isSystem)
     }
 }
 
