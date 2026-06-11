@@ -217,3 +217,33 @@ https://developer.apple.com/cn/sf-symbols/
 
 - 当前版本先收口已完成的视觉和阅读体验调整。
 - Agent 筛选属于独立的信息架构能力，放入下个版本更适合单独设计和验收。
+
+## 2026-06-11 - Agent Logos Represent Installation, Not Source
+
+决定：
+
+- Skill 详情页不再展示 Skill 来自 Library、Codex 或 Claude。
+- 详情页只用 Codex / Claude Logo 表达安装状态：彩色为已安装，灰色为未安装。
+- 点击灰色 Logo 可以安装；彩色 Logo 只显示状态，不承担卸载操作。
+- Install Targets 使用原生复选框、Agent Logo 和 Agent 名称管理安装与卸载。
+- Agent Logo 是品牌标识，作为应用内常规图标统一使用 SF Symbols 规则的例外。
+
+原因：
+
+- 用户关心的是“哪些 Agent 已安装”，而不是当前合并记录来自哪个目录。
+- Logo 比重复的 Agent 名称和状态图标更易扫描。
+- 卸载属于破坏性操作，集中放在 Install Targets 并要求确认，避免顶部状态栏误触。
+
+## 2026-06-11 - Agent Uninstall Uses Exact Copy And Protects Library
+
+决定：
+
+- 卸载按 Skill 原始名称与内容 Hash 精确定位所选 Agent 的真实副本。
+- 卸载只删除所选 Agent 副本，不修改 Library、其他 Agent 副本或中文备注。
+- System Skill、路径穿越、符号链接逃逸、与 Library 路径重叠、目标变化和歧义副本均拒绝删除。
+- 取消勾选后必须先确认；确认对象固定为发起操作时的 Skill，切换选择不会改变待删除目标。
+
+原因：
+
+- 不同 Agent 中同一 Skill 的文件夹名可能不同，仅按文件夹名删除不可靠。
+- 卸载是高风险文件操作，必须优先避免误删和假报成功。
