@@ -85,14 +85,10 @@ struct SkillListView: View {
                     currentAgentFilterLabel
                         .fontWeight(.medium)
                         .lineLimit(1)
-                    Image(systemName: "chevron.down")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
                 }
                 .font(.system(size: 13))
-                .frame(minWidth: 170, alignment: .leading)
+                .frame(minWidth: 150, alignment: .leading)
             }
-            .menuIndicator(.hidden)
             .menuStyle(.button)
 
             Spacer()
