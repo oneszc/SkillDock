@@ -82,19 +82,35 @@ struct SkillListView: View {
                 HStack(spacing: 8) {
                     Text("Agent:")
                         .foregroundStyle(.secondary)
-                    Text(agentFilter.title)
+                    currentAgentFilterLabel
                         .fontWeight(.medium)
+                        .lineLimit(1)
                     Image(systemName: "chevron.down")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
                 .font(.system(size: 13))
+                .frame(minWidth: 170, alignment: .leading)
             }
+            .menuIndicator(.hidden)
             .menuStyle(.button)
 
             Spacer()
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
+    }
+
+    @ViewBuilder
+    private var currentAgentFilterLabel: some View {
+        switch agentFilter {
+        case .all:
+            Text("All Agents")
+        case .target(let target):
+            HStack(spacing: 6) {
+                AgentLogo(target: target, installed: true, size: 13)
+                Text(target.displayName)
+            }
+        }
     }
 }
