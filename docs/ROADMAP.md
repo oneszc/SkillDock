@@ -178,17 +178,31 @@ docs/superpowers/plans/2026-06-16-v0.3.3-manual-updates-and-agent-filter.md
 
 目标：增强多工具同步能力。
 
-候选方向：
+状态：已完成 V0.4.0 计划，建议先做 Multi-Agent Targets 架构。
 
-- 批量同步。
-- 内容 hash 对比。
-- 更新检测。
-- 覆盖 / 跳过 / 重命名策略优化。
-- symlink 高级模式。
+V0.4.0 确认方向：
+
+- 将 Codex / Claude 写死逻辑改为动态 Agent Targets。
+- Settings 支持启用 / 禁用 Agent Target 和编辑路径。
+- Library / Installed 筛选读取动态 Agent Target。
+- 详情页顶部 Agent Logo 和 Install Targets 动态渲染。
+- 安装 / 卸载逻辑支持自定义 Agent 目标。
+
+后续候选方向：
+
+- V0.4.1 批量安装 / 批量同步。
+- V0.4.2 多 Agent 同步 review table。
+- symlink 高级模式继续后置。
 
 展开时机：
 
 用户已经有足够多 skills，需要减少重复操作时再做。
+
+实施计划：
+
+```text
+docs/superpowers/plans/2026-06-16-v0.4-multi-agent-targets.md
+```
 
 ## V0.5 - AI Chinese Interpretation
 

@@ -6,7 +6,7 @@ V0.3.3 已完成、产品负责人已验收，并发布 GitHub Release。
 
 ## Current Goal
 
-V0.3.3 已发布；下一步准备 V0.4 方向梳理。
+V0.3.3 已发布；V0.4.0 计划已创建，下一步可开启 Multi-Agent Targets 架构开发。
 
 ## Completed
 
@@ -192,7 +192,7 @@ V0.3.3 暂不包含：
 
 ## Not Yet Completed
 
-1. 设计 V0.4：更多 Agent 类型和多工具同步增强。
+1. 开启 V0.4.0：动态 Agent Targets 架构。
 2. 后续补充正式 Developer ID 签名和公证。
 
 ### V0.3.0 GitHub Remote Import（2026-06-08）
@@ -263,6 +263,7 @@ V0.3.0 暂不包含：
 - V0.3 设计规格：`docs/superpowers/specs/2026-06-08-v0.3-github-remote-skills-design.md`。
 - V0.3 实施计划：`docs/superpowers/plans/2026-06-08-v0.3-github-remote-skills.md`。
 - V0.3.3 实施计划：`docs/superpowers/plans/2026-06-16-v0.3.3-manual-updates-and-agent-filter.md`。
+- V0.4.0 实施计划：`docs/superpowers/plans/2026-06-16-v0.4-multi-agent-targets.md`。
 
 ## Handoff Note
 
@@ -273,6 +274,7 @@ V0.3.0 暂不包含：
 - 最新功能实现：V0.3.3 手动远程更新检查、文件变化预览、本地修改保护、确认替换和 Agent 筛选。
 - V0.3.3 已通过产品负责人验收，并发布 GitHub Release。
 - 最新已发布版本：`v0.3.3`。
+- V0.4.0 计划已创建，建议下一步新建 `codex/v0.4-development` 分支执行。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 
