@@ -47,9 +47,12 @@ struct RemoteImportView: View {
         Form {
             Section("Public GitHub Repository") {
                 TextField(
-                    "https://github.com/owner/repository",
-                    text: $appModel.remoteImport.link
-                )
+                    text: $appModel.remoteImport.link,
+                    prompt: Text("https://github.com/owner/repository")
+                ) {
+                    Text("GitHub Repository")
+                }
+                .labelsHidden()
                 Text("Repository links and links to a Skill folder are supported.")
                     .foregroundStyle(.secondary)
             }
