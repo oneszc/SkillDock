@@ -24,6 +24,12 @@ struct RootView: View {
             RemoteImportView(appModel: model)
                 .frame(minWidth: 720, minHeight: 620)
         }
+        .sheet(isPresented: $model.isRemoteUpdatePreviewPresented) {
+            if let update = model.remoteUpdate {
+                RemoteUpdatePreviewView(model: model, update: update)
+                    .frame(minWidth: 620, minHeight: 560)
+            }
+        }
         .onChange(of: model.selectionID) { _, _ in
             Task {
                 await model.flushPendingNoteSave()
@@ -113,6 +119,8 @@ struct RootView: View {
             SkillListView(
                 records: model.filteredRecords,
                 acceptsImportDrop: model.navigationSection == .library,
+                showsAgentFilter: model.navigationSection != .system,
+                agentFilter: $model.agentFilter,
                 selectionID: $model.selectionID,
                 onImportDrop: { urls in
                     Task { await model.prepareImport(urls: urls) }

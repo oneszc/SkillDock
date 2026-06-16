@@ -69,6 +69,36 @@ struct SkillDetailView: View {
             .labelStyle(.titleAndIcon)
             .font(.body)
 
+            if let source = record.remoteSource {
+                HStack(spacing: 12) {
+                    Label("GitHub", systemImage: "network")
+                        .foregroundStyle(.secondary)
+                    Text("\(source.owner)/\(source.repository)")
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .textSelection(.enabled)
+                    if source.branch != "HEAD" {
+                        Text(source.branch)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(.quaternary, in: Capsule())
+                    }
+                    Spacer(minLength: 0)
+                    Button {
+                        Task { await model.checkSelectedRemoteUpdate() }
+                    } label: {
+                        Label(
+                            model.isCheckingRemoteUpdate ? "Checking" : "Check Update",
+                            systemImage: "arrow.clockwise"
+                        )
+                    }
+                    .disabled(model.isCheckingRemoteUpdate)
+                }
+                .font(.callout)
+            }
+
             Picker("Detail", selection: $tab) {
                 ForEach(DetailTab.allCases) { item in
                     Label(item.title, systemImage: item.systemImage).tag(item)

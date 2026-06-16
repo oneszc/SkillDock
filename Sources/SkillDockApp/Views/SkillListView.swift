@@ -4,28 +4,37 @@ import SwiftUI
 struct SkillListView: View {
     let records: [SkillRecord]
     let acceptsImportDrop: Bool
+    let showsAgentFilter: Bool
+    @Binding var agentFilter: AgentFilter
     @Binding var selectionID: SkillRecord.ID?
     let onImportDrop: ([URL]) -> Void
     @State private var isImportTargeted = false
 
     var body: some View {
-        Group {
-            if records.isEmpty {
-                ContentUnavailableView(
-                    "No Skills",
-                    systemImage: "tray",
-                    description: Text(
-                        acceptsImportDrop
-                            ? "Drop one Skill folder here or use Import Skill."
-                            : "Refresh or choose another section."
+        VStack(spacing: 0) {
+            if showsAgentFilter {
+                agentFilterBar
+                Divider()
+            }
+
+            Group {
+                if records.isEmpty {
+                    ContentUnavailableView(
+                        "No Skills",
+                        systemImage: "tray",
+                        description: Text(
+                            acceptsImportDrop
+                                ? "Drop one Skill folder here or use Import Skill."
+                                : "Refresh or choose another section."
+                        )
                     )
-                )
-            } else {
-                List(records, selection: $selectionID) { record in
-                    SkillRowView(record: record)
-                        .tag(record.id)
+                } else {
+                    List(records, selection: $selectionID) { record in
+                        SkillRowView(record: record)
+                            .tag(record.id)
+                    }
+                    .navigationTitle("\(records.count) Skills")
                 }
-                .navigationTitle("\(records.count) Skills")
             }
         }
         .dropDestination(for: URL.self) { urls, _ in
@@ -46,5 +55,46 @@ struct SkillListView: View {
                     .allowsHitTesting(false)
             }
         }
+    }
+
+    private var agentFilterBar: some View {
+        HStack {
+            Menu {
+                Button {
+                    agentFilter = .all
+                } label: {
+                    Label("All Agents", systemImage: "circle.grid.2x2")
+                }
+
+                Divider()
+
+                ForEach(InstallTarget.allCases, id: \.self) { target in
+                    Button {
+                        agentFilter = .target(target)
+                    } label: {
+                        HStack {
+                            AgentLogo(target: target, installed: true, size: 13)
+                            Text(target.displayName)
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Text("Agent:")
+                        .foregroundStyle(.secondary)
+                    Text(agentFilter.title)
+                        .fontWeight(.medium)
+                    Image(systemName: "chevron.down")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .font(.system(size: 13))
+            }
+            .menuStyle(.button)
+
+            Spacer()
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
     }
 }

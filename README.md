@@ -11,7 +11,7 @@
 Keep your personal Skill library clear, local, and under your control.
 
 <p>
-  <img src="https://img.shields.io/badge/version-v0.3.2-0A84FF?style=flat-square" alt="Version v0.3.2">
+  <img src="https://img.shields.io/badge/version-v0.3.3-0A84FF?style=flat-square" alt="Version v0.3.3">
   <img src="https://img.shields.io/badge/macOS-26%2B-111111?style=flat-square&logo=apple&logoColor=white" alt="macOS 26 or later">
   <img src="https://img.shields.io/badge/SwiftUI-native-F05138?style=flat-square&logo=swift&logoColor=white" alt="Native SwiftUI">
   <img src="https://img.shields.io/badge/local--first-private-34C759?style=flat-square" alt="Local-first and private">
@@ -41,8 +41,9 @@ SkillDock 不修改原始 Skill，也不试图成为 Skill 市场。它服务的
 | 快速理解 | 查看原始名称、英文描述、`SKILL.md`、文件结构和独立中文备注 |
 | 安全导入 | 导入前预览文件、脚本风险和同名冲突 |
 | GitHub 导入 | 从公开 GitHub 仓库发现多个 Skills，并批量导入主技能库 |
+| 手动更新 | 对 GitHub 导入的 Skill 手动检查更新、预览文件变化并确认替换 |
 | 本地整理 | 使用中文描述、标签、适用场景、风险说明和使用建议整理 Skills |
-| 多工具安装 | 使用 Agent Logo 和复选框管理 Codex / Claude Code 安装状态 |
+| 多工具安装 | 使用 Agent Logo、复选框和 Agent 筛选管理 Codex / Claude Code 安装状态 |
 | 安全卸载 | 仅移除所选 Agent 的精确 Skill 副本，保护主技能库和其他副本 |
 | 原始内容保护 | 中文备注和未来 AI 总结不会写入或修改原始 Skill |
 
@@ -72,7 +73,7 @@ SkillDock 默认扫描以下位置：
 ### 下载应用
 
 1. 前往 [GitHub Releases](https://github.com/oneszc/SkillDock/releases/latest)。
-2. 下载 `SkillDock-0.3.2.zip`。
+2. 下载 `SkillDock-0.3.3.zip`。
 3. 解压并打开 `SkillDock.app`。
 
 > 当前版本使用本地临时签名，尚未进行 Apple Developer ID 签名与公证。
@@ -108,10 +109,10 @@ SkillDock 采用 local-first 方式工作，不依赖云端服务。
 
 ## 当前状态
 
-- 最新版本：[`v0.3.2`](https://github.com/oneszc/SkillDock/releases/tag/v0.3.2)
-- 自动化测试：92 项通过
-- 当前阶段：V0.3.2 已发布，修复卸载确认与覆盖安装确认
-- 后续方向：手动检查远程更新、多工具同步增强、AI 中文解读
+- 最新版本：`v0.3.3` 已打包，等待发布到 GitHub Release
+- 自动化测试：103 项通过
+- 当前阶段：V0.3.3 已完成手动远程更新与 Agent 筛选
+- 后续方向：更多 Agent 类型、多工具同步增强、AI 中文解读
 
 查看完整进度：
 

@@ -28,6 +28,7 @@ final class AppModel {
     var records: [SkillRecord] = []
     var selectionID: SkillRecord.ID?
     var navigationSection: NavigationSection = .library
+    var agentFilter: AgentFilter = .all
     var searchQuery = ""
     var settings: SkillSettings = .defaults()
     var isRefreshing = false
@@ -44,11 +45,15 @@ final class AppModel {
     var noteSaveState: NoteSaveState = .idle
     var isRemoteImportPresented = false
     var remoteImport = RemoteImportModel()
+    var remoteUpdate: RemoteSkillUpdate?
+    var isRemoteUpdatePreviewPresented = false
+    var isCheckingRemoteUpdate = false
 
     private let settingsStore: SettingsStore
     private let libraryService: SkillLibraryService
     private let workspaceService: SkillWorkspaceService
     private let importPreviewService: ImportPreviewService
+    private let remoteUpdateService: RemoteUpdateService
     private let search = SkillSearch()
     private var noteSaveTask: Task<Void, Never>?
     private var noteDraftSkill: Skill?
@@ -57,12 +62,19 @@ final class AppModel {
         settingsStore: SettingsStore = .init(),
         libraryService: SkillLibraryService = .init(),
         workspaceService: SkillWorkspaceService = .init(),
-        importPreviewService: ImportPreviewService = .init()
+        importPreviewService: ImportPreviewService = .init(),
+        remoteUpdateService: RemoteUpdateService = .init(
+            repositoryService: RemoteRepositoryService(
+                cloneProvider: GitCloneRepositoryProvider(),
+                zipProvider: GitHubZipRepositoryProvider()
+            )
+        )
     ) {
         self.settingsStore = settingsStore
         self.libraryService = libraryService
         self.workspaceService = workspaceService
         self.importPreviewService = importPreviewService
+        self.remoteUpdateService = remoteUpdateService
     }
 
     var filteredRecords: [SkillRecord] {
@@ -76,7 +88,15 @@ final class AppModel {
                 record.skill.isSystem
             }
         }
-        return search.filter(sectionRecords, query: searchQuery)
+        let agentFilteredRecords = sectionRecords.filter { record in
+            switch (navigationSection, agentFilter) {
+            case (.system, _), (_, .all):
+                true
+            case (_, .target(let target)):
+                isInstalled(record.skill.installation, in: target)
+            }
+        }
+        return search.filter(agentFilteredRecords, query: searchQuery)
     }
 
     var selectedRecord: SkillRecord? {
@@ -252,6 +272,44 @@ final class AppModel {
         }
     }
 
+    func checkSelectedRemoteUpdate() async {
+        guard let source = selectedRecord?.remoteSource else { return }
+        isCheckingRemoteUpdate = true
+        defer { isCheckingRemoteUpdate = false }
+
+        do {
+            let update = try await remoteUpdateService.check(source)
+            remoteUpdate = update
+            if update.status == .upToDate {
+                operationMessage = "This Skill is up to date."
+            } else {
+                isRemoteUpdatePreviewPresented = true
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func confirmRemoteReplacement() async {
+        guard let update = remoteUpdate else { return }
+
+        do {
+            let replacement = try await remoteUpdateService.replaceWithRemote(
+                update,
+                libraryPath: settings.libraryPath
+            )
+            remoteUpdate = nil
+            isRemoteUpdatePreviewPresented = false
+            operationMessage = "Updated \(replacement.source.skillName)."
+            await refresh()
+            selectionID = records.first {
+                $0.skill.path.standardizedFileURL == replacement.destination.standardizedFileURL
+            }?.id
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func prepareImport(urls: [URL]) async {
         do {
             importPreview = try await importPreviewService.preview(
@@ -344,6 +402,15 @@ final class AppModel {
         guard records.contains(where: { $0.id == selectionID }) else {
             selectionID = filteredRecords.first?.id
             return
+        }
+    }
+
+    private func isInstalled(_ installation: SkillInstallation, in target: InstallTarget) -> Bool {
+        switch target {
+        case .codex:
+            installation.codex
+        case .claude:
+            installation.claude
         }
     }
 }

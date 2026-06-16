@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.3.3 已开启计划阶段；当前从手动远程更新检查和 Agent 筛选开始。
+V0.3.3 已完成实现、本地验证和打包；等待产品负责人验收后发布 GitHub Release。
 
 ## Current Goal
 
-按 V0.3.3 实施计划推进：先完成 GitHub 来源展示与手动检查更新，再做变化预览、安全替换确认和 Agent 筛选。
+完成 V0.3.3 产品验收；验收通过后创建 GitHub V0.3.3 Release。
 
 ## Completed
 
@@ -157,13 +157,44 @@ V0.3.3 已开启计划阶段；当前从手动远程更新检查和 Agent 筛选
 - 已生成、独立解压并验证 `dist/SkillDock-0.3.2.zip`。
 - GitHub V0.3.2 Release 已发布。
 
+### V0.3.3 Manual Updates And Agent Filter（2026-06-16）
+
+已完成：
+
+- GitHub 导入到 Library 的 Skill 会在详情页显示来源仓库与分支。
+- 已增加手动 `Check Update` 入口，不做后台自动检查。
+- 已实现远程版本与本地 Library Skill 的内容 Hash 对比。
+- 已实现文件变化预览：新增、修改、删除。
+- 已实现本地修改保护：本地内容已变更时，不允许静默替换。
+- 已实现明确确认后替换 Library Skill，并同步更新来源记录中的 commit 和内容 Hash。
+- Library 和 Installed 第二栏已增加 Agent 筛选，默认 All Agents，可筛选 Codex / Claude。
+- System 页面不显示 Agent 筛选。
+- 已新增 V0.3.3 验收清单：`docs/testing/V0.3.3_ACCEPTANCE.md`。
+- 已新增 V0.3.3 Release 草稿：`docs/releases/v0.3.3.md`。
+
+已验证：
+
+- `swift test`：103 项全部通过（2026-06-16）。
+- `./scripts/package-app.sh`：已生成并验证 `dist/SkillDock.app` 和 `dist/SkillDock-0.3.3.zip`。
+- 独立解压 `dist/SkillDock-0.3.3.zip` 后运行 `./scripts/verify-app.sh`：通过。
+
+当前安装包：
+
+- `dist/SkillDock-0.3.3.zip`
+- SHA-256：`dfbf27867313ca8c7e35674046e250b554760dd0d90087023a18e0e21a00bfc5`
+
+V0.3.3 暂不包含：
+
+- 私有 GitHub 仓库和登录。
+- 后台自动更新。
+- 自动合并本地修改。
+- 新增 Codex / Claude 之外的 Agent 类型。
+
 ## Not Yet Completed
 
-1. 在 Skill 详情页展示 GitHub 来源与手动检查更新入口。
-2. 实现远程版本与本地主技能库的文件变化比较。
-3. 实现本地修改保护和明确替换确认。
-4. 在 Library 和 Installed 第二栏增加 Agent 筛选，默认全部，可筛选 Codex / Claude。
-5. 完成 V0.3.3 验收、打包和发布准备。
+1. 产品负责人手动验收 V0.3.3。
+2. 验收通过后创建 GitHub V0.3.3 Release。
+3. 设计 V0.4：更多 Agent 类型和多工具同步增强。
 
 ### V0.3.0 GitHub Remote Import（2026-06-08）
 
@@ -214,19 +245,19 @@ V0.3.0 暂不包含：
 - 应用支持跟随系统、浅色和深色三种外观模式。
 - 设计铁律：能用 Apple 官方组件或系统默认行为实现的界面，绝对不自己写自定义实现。
 - V0.3 公开 GitHub 仓库同时支持 Git Clone 和 ZIP；远程导入默认只进入主技能库，更新必须手动触发并确认。
-- V0.3.1 发布 Agent 安装状态与安全卸载；V0.3.2 修复确认操作；手动更新检查和 Agent 筛选顺延到 V0.3.3。
+- V0.3.1 发布 Agent 安装状态与安全卸载；V0.3.2 修复确认操作；V0.3.3 完成手动更新检查和 Agent 筛选。
 
 ## Current Environment Note
 
 - Xcode 26.5 已安装并选中。
 - Swift 6.3.2 已安装。
-- `swift test`：64 项全部通过，最后验证于 2026-06-08。
-- Agent 安装状态功能分支 `swift test`：91 项全部通过，最后验证于 2026-06-11。
-- `swift build -c release`：通过，最后验证于 2026-06-11。
+- `swift test`：103 项全部通过，最后验证于 2026-06-16。
+- `swift build -c release`：通过，最后验证于 2026-06-16。
 - V0.2.1 正式安装包 SHA-256：`e3e77eb13e2ba1046a78e24ef4d0780a0622b0679481677f936cedfba9f26f34`。
 - V0.3.0 正式安装包 SHA-256：`e7b2edf2020846c48577aa629425002c92be648bd4d76dbbc93a4988c82dc26a`。
 - V0.3.1 正式安装包 SHA-256：`1d3cf5137c4f5fcd0b5f388138f9f3eb6aaa1ac00e97053767066fd753b8157d`。
 - V0.3.2 正式安装包 SHA-256：`6f657b077134e63201525683f957bac76f152ab56422c10712cdc4c14e5530b6`。
+- V0.3.3 本地待发布安装包 SHA-256：`dfbf27867313ca8c7e35674046e250b554760dd0d90087023a18e0e21a00bfc5`。
 - 实现计划：`docs/superpowers/plans/2026-06-05-v0.1-local-skill-library.md`。
 - V0.2 实现计划：`docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`。
 - V0.2.1 设置页实现计划：`docs/superpowers/plans/2026-06-05-v0.2.1-settings-layout-and-appearance.md`。
@@ -238,13 +269,12 @@ V0.3.0 暂不包含：
 
 当前发布分支：`main`。
 
-截至 2026-06-11 的交接状态：
+截至 2026-06-16 的交接状态：
 
-- 最新功能实现：详情页使用独立彩色 / 灰色 Agent Logo 表示安装状态，Install Targets 使用复选框管理安装与安全卸载。
-- 安全卸载只处理所选 Agent 的精确副本，并保护 Library、其他 Agent 副本、中文备注和 System Skill。
-- V0.3.2 卸载确认与覆盖安装确认修复已发布。
-- 最新发布版本：`v0.3.2`。
-- V0.3.3 已开启计划，下一步从 GitHub 来源展示和手动检查更新入口开始。
+- 最新功能实现：V0.3.3 手动远程更新检查、文件变化预览、本地修改保护、确认替换和 Agent 筛选。
+- V0.3.3 已本地打包并验证，等待产品负责人验收后发布 GitHub Release。
+- 最新已发布版本：`v0.3.2`。
+- 最新本地待发布版本：`v0.3.3`。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 
@@ -255,6 +285,7 @@ git clone https://github.com/oneszc/SkillDock.git
 cd SkillDock
 git switch main
 git pull --ff-only origin main
+git switch codex/v0.3.3-development
 swift test
 ./scripts/run-app.sh
 ```

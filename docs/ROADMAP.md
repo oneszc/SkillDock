@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.2 已发布，V0.3.3 已开启计划，V0.4 及之后保留后续方向。
+V0.3.2 已发布，V0.3.3 已完成实现与本地打包，等待产品负责人验收和 GitHub Release 发布。
 
 ## V0.1 - Local Skill Library
 
@@ -113,8 +113,8 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 - 扫描仓库内多个 Skills，并支持多选一次导入。
 - 远程 Skill 默认只进入主技能库，不自动安装到智能体。
 - 保存仓库、分支、Skill 路径、提交版本和内容 Hash。
-- 手动检查单个 Skill 更新、变化预览和本地修改保护顺延到 V0.3.3。
-- Library 和 Installed 第二栏的 Agent 筛选顺延到 V0.3.3；默认显示全部 Agent，并支持筛选 Codex / Claude。
+- 手动检查单个 Skill 更新、变化预览和本地修改保护已在 V0.3.3 完成。
+- Library 和 Installed 第二栏的 Agent 筛选已在 V0.3.3 完成；默认显示全部 Agent，并支持筛选 Codex / Claude。
 
 ## V0.3.1 - Agent Install Management
 
@@ -148,7 +148,7 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 目标：增加远程 Skill 手动更新检查与 Agent 筛选。
 
-状态：已开启计划。
+状态：已完成实现与本地打包，等待产品负责人验收和 GitHub Release 发布。
 
 确认范围：
 
@@ -156,6 +156,11 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 - 文件变化预览和本地修改保护。
 - 明确替换确认，不自动合并、不后台自动更新。
 - Library 和 Installed 第二栏增加 Agent 筛选。
+
+已验证：
+
+- `swift test`：103 项全部通过。
+- `dist/SkillDock-0.3.3.zip` 已生成并独立解压验证通过。
 
 设计规格：
 
