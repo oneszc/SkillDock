@@ -4,13 +4,20 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
     public let skill: Skill
     public let note: SkillNote?
     public let isNoteStale: Bool
+    public let remoteSource: RemoteSkillSource?
 
     public var id: String { skill.id }
 
-    public init(skill: Skill, note: SkillNote?, isNoteStale: Bool) {
+    public init(
+        skill: Skill,
+        note: SkillNote?,
+        isNoteStale: Bool,
+        remoteSource: RemoteSkillSource? = nil
+    ) {
         self.skill = skill
         self.note = note
         self.isNoteStale = isNoteStale
+        self.remoteSource = remoteSource
     }
 }
 
