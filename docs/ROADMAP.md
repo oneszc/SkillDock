@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.2 已发布，V0.3.3、V0.4 及之后保留后续方向。
+V0.3.2 已发布，V0.3.3 已开启计划，V0.4 及之后保留后续方向。
 
 ## V0.1 - Local Skill Library
 
@@ -148,10 +148,13 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 目标：增加远程 Skill 手动更新检查与 Agent 筛选。
 
-候选范围：
+状态：已开启计划。
+
+确认范围：
 
 - 手动检查单个远程 Skill 更新。
 - 文件变化预览和本地修改保护。
+- 明确替换确认，不自动合并、不后台自动更新。
 - Library 和 Installed 第二栏增加 Agent 筛选。
 
 设计规格：
@@ -163,7 +166,7 @@ docs/superpowers/specs/2026-06-08-v0.3-github-remote-skills-design.md
 实施计划：
 
 ```text
-docs/superpowers/plans/2026-06-08-v0.3-github-remote-skills.md
+docs/superpowers/plans/2026-06-16-v0.3.3-manual-updates-and-agent-filter.md
 ```
 
 ## V0.4 - Sync Enhancements
