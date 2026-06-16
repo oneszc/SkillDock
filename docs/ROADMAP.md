@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.2 已发布，V0.3.3 已完成实现与本地打包，等待产品负责人验收和 GitHub Release 发布。
+V0.3.2 已发布，V0.3.3 已完成并发布 GitHub Release。
 
 ## V0.1 - Local Skill Library
 
@@ -148,7 +148,7 @@ docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md
 
 目标：增加远程 Skill 手动更新检查与 Agent 筛选。
 
-状态：已完成实现与本地打包，等待产品负责人验收和 GitHub Release 发布。
+状态：已完成并发布 GitHub Release。
 
 确认范围：
 

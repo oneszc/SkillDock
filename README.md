@@ -109,7 +109,7 @@ SkillDock 采用 local-first 方式工作，不依赖云端服务。
 
 ## 当前状态
 
-- 最新版本：`v0.3.3` 已打包，等待发布到 GitHub Release
+- 最新版本：[`v0.3.3`](https://github.com/oneszc/SkillDock/releases/tag/v0.3.3) 已发布
 - 自动化测试：103 项通过
 - 当前阶段：V0.3.3 已完成手动远程更新与 Agent 筛选
 - 后续方向：更多 Agent 类型、多工具同步增强、AI 中文解读
