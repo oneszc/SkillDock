@@ -27,7 +27,7 @@ final class AppModelConfirmationTests: XCTestCase {
         )
         model.settings = settings
         let request = AppModel.PendingUninstall(
-            target: .codex,
+            agentID: AgentTargetID.codex,
             skillName: "sample-skill",
             contentHash: try XCTUnwrap(scanned.first?.contentHash),
             isSystemSkill: false

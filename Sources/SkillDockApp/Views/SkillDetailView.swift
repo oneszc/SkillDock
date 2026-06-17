@@ -43,12 +43,12 @@ struct SkillDetailView: View {
             }
 
             HStack(spacing: 12) {
-                ForEach(InstallTarget.allCases, id: \.self) { target in
+                ForEach(enabledAgentTargets, id: \.id) { target in
                     let installed = isInstalled(target, in: record)
 
                     Button {
                         guard !record.skill.isSystem, !installed else { return }
-                        Task { await model.requestInstall(to: target) }
+                        Task { await model.requestInstall(to: target.id) }
                     } label: {
                         AgentLogo(target: target, installed: installed, size: 18)
                     }
@@ -112,6 +112,10 @@ struct SkillDetailView: View {
         .padding(VisualMetrics.contentPadding)
     }
 
+    private var enabledAgentTargets: [AgentTarget] {
+        model.settings.agentTargets.filter(\.isEnabled)
+    }
+
     @ViewBuilder
     private func content(for record: SkillRecord) -> some View {
         switch tab {
@@ -126,13 +130,8 @@ struct SkillDetailView: View {
         }
     }
 
-    private func isInstalled(_ target: InstallTarget, in record: SkillRecord) -> Bool {
-        switch target {
-        case .codex:
-            record.skill.installation.codex
-        case .claude:
-            record.skill.installation.claude
-        }
+    private func isInstalled(_ target: AgentTarget, in record: SkillRecord) -> Bool {
+        record.skill.installation.agentIDs.contains(target.id)
     }
 
     private func accessibilityValue(installed: Bool, isSystem: Bool) -> String {
@@ -143,16 +142,13 @@ struct SkillDetailView: View {
     private func installView(_ record: SkillRecord) -> some View {
         Form {
             Section("Install Targets") {
-                installRow(
-                    installed: record.skill.installation.codex,
-                    target: .codex,
-                    isSystem: record.skill.isSystem
-                )
-                installRow(
-                    installed: record.skill.installation.claude,
-                    target: .claude,
-                    isSystem: record.skill.isSystem
-                )
+                ForEach(enabledAgentTargets, id: \.id) { target in
+                    installRow(
+                        installed: isInstalled(target, in: record),
+                        target: target,
+                        isSystem: record.skill.isSystem
+                    )
+                }
             }
             if record.skill.isSystem {
                 Label("System Skills are read-only.", systemImage: "lock.fill")
@@ -164,7 +160,7 @@ struct SkillDetailView: View {
 
     private func installRow(
         installed: Bool,
-        target: InstallTarget,
+        target: AgentTarget,
         isSystem: Bool
     ) -> some View {
         Toggle(

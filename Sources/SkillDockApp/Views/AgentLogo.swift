@@ -3,7 +3,7 @@ import SkillDockCore
 import SwiftUI
 
 struct AgentLogo: View {
-    let target: InstallTarget
+    let target: AgentTarget
     var installed = true
     var size: CGFloat = 20
 
@@ -23,23 +23,10 @@ struct AgentLogo: View {
     }
 }
 
-extension InstallTarget {
-    var displayName: String {
-        switch self {
-        case .codex: "Codex"
-        case .claude: "Claude"
-        }
-    }
-
-    var resourceName: String {
-        switch self {
-        case .codex: "codex"
-        case .claude: "claude"
-        }
-    }
-
+private extension AgentTarget {
     func logoImage(installed: Bool) -> NSImage? {
-        let name = installed ? resourceName : "\(resourceName)-gray"
+        guard let logoAssetName else { return nil }
+        let name = installed ? logoAssetName : "\(logoAssetName)-gray"
         guard let url = Bundle.module.url(forResource: name, withExtension: "svg") else {
             return nil
         }

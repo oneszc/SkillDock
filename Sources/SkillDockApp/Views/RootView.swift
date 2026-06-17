@@ -56,7 +56,7 @@ struct RootView: View {
             Text("The existing folder will be replaced only after you confirm.")
         }
         .confirmationDialog(
-            "Remove this Skill from \(model.pendingUninstall?.target.displayName ?? "Agent")?",
+            "Remove this Skill from \(model.pendingUninstall.map { model.agentDisplayName(id: $0.agentID) } ?? "Agent")?",
             isPresented: Binding(
                 get: { model.pendingUninstall != nil },
                 set: { if !$0 { model.pendingUninstall = nil } }
@@ -118,6 +118,7 @@ struct RootView: View {
         } content: {
             SkillListView(
                 records: model.filteredRecords,
+                agentTargets: model.settings.agentTargets,
                 acceptsImportDrop: model.navigationSection == .library,
                 showsAgentFilter: model.navigationSection != .system,
                 agentFilter: $model.agentFilter,

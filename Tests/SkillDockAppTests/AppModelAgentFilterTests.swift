@@ -14,7 +14,7 @@ final class AppModelAgentFilterTests: XCTestCase {
             record(name: "not-installed", source: .library)
         ]
 
-        model.agentFilter = .target(.codex)
+        model.agentFilter = .agent(id: AgentTargetID.codex)
 
         XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["codex-only"])
     }
@@ -28,9 +28,30 @@ final class AppModelAgentFilterTests: XCTestCase {
             record(name: "both", source: .library, installation: .init(codex: true, claude: true))
         ]
 
-        model.agentFilter = .target(.claude)
+        model.agentFilter = .agent(id: AgentTargetID.claude)
 
         XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["claude-only", "both"])
+    }
+
+    func testAgentFilterUsesDynamicAgentID() {
+        let model = AppModel()
+        model.navigationSection = .library
+        model.records = [
+            record(
+                name: "gemini-skill",
+                source: .library,
+                installation: .init(agentIDs: [AgentTargetID.gemini])
+            ),
+            record(
+                name: "codex-skill",
+                source: .library,
+                installation: .init(agentIDs: [AgentTargetID.codex])
+            )
+        ]
+
+        model.agentFilter = .agent(id: AgentTargetID.gemini)
+
+        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["gemini-skill"])
     }
 
     private func record(

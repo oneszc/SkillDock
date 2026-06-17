@@ -15,11 +15,11 @@ final class AppModel {
     }
 
     enum PendingOverwrite {
-        case install(InstallTarget)
+        case install(String)
     }
 
     struct PendingUninstall {
-        let target: InstallTarget
+        let agentID: String
         let skillName: String
         let contentHash: String
         let isSystemSkill: Bool
@@ -83,7 +83,7 @@ final class AppModel {
             case .library:
                 record.skill.source == .library
             case .installed:
-                record.skill.installation.codex || record.skill.installation.claude
+                !record.skill.installation.agentIDs.isEmpty
             case .system:
                 record.skill.isSystem
             }
@@ -92,8 +92,8 @@ final class AppModel {
             switch (navigationSection, agentFilter) {
             case (.system, _), (_, .all):
                 true
-            case (_, .target(let target)):
-                isInstalled(record.skill.installation, in: target)
+            case (_, .agent(let id)):
+                isInstalled(record.skill.installation, in: id)
             }
         }
         return search.filter(agentFilteredRecords, query: searchQuery)
@@ -183,21 +183,22 @@ final class AppModel {
         }
     }
 
-    func requestInstall(to target: InstallTarget) async {
+    func requestInstall(to agentID: String) async {
         guard settings.defaultConflictStrategy == .overwrite else {
-            await installSelected(to: target, strategy: settings.defaultConflictStrategy)
+            await installSelected(to: agentID, strategy: settings.defaultConflictStrategy)
             return
         }
-        pendingOverwrite = .install(target)
+        pendingOverwrite = .install(agentID)
     }
 
-    func installSelected(to target: InstallTarget, strategy: ConflictStrategy) async {
-        guard let record = selectedRecord else { return }
+    func installSelected(to agentID: String, strategy: ConflictStrategy) async {
+        guard let record = selectedRecord,
+              let target = agentTarget(id: agentID)
+        else { return }
         do {
             let result = try await workspaceService.installSkill(
                 from: record.skill.path,
                 target: target,
-                settings: settings,
                 strategy: strategy,
                 isSystemSkill: record.skill.isSystem
             )
@@ -208,12 +209,12 @@ final class AppModel {
         }
     }
 
-    func requestTargetState(_ installed: Bool, target: InstallTarget) async {
+    func requestTargetState(_ installed: Bool, target: AgentTarget) async {
         if installed {
-            await requestInstall(to: target)
+            await requestInstall(to: target.id)
         } else if let record = selectedRecord {
             pendingUninstall = PendingUninstall(
-                target: target,
+                agentID: target.id,
                 skillName: record.skill.name,
                 contentHash: record.skill.contentHash,
                 isSystemSkill: record.skill.isSystem
@@ -225,14 +226,19 @@ final class AppModel {
         self.pendingUninstall = nil
 
         do {
+            guard let target = agentTarget(id: pendingUninstall.agentID) else {
+                errorMessage = "Install target is no longer available."
+                return
+            }
             try await workspaceService.uninstallSkill(
                 named: pendingUninstall.skillName,
                 contentHash: pendingUninstall.contentHash,
-                target: pendingUninstall.target,
-                settings: settings,
+                target: target,
+                libraryPath: settings.libraryPath,
+                allAgentTargets: settings.agentTargets,
                 isSystemSkill: pendingUninstall.isSystemSkill
             )
-            operationMessage = "Removed from \(pendingUninstall.target.displayName)."
+            operationMessage = "Removed from \(target.displayName)."
             await refresh()
         } catch {
             errorMessage = error.localizedDescription
@@ -405,13 +411,16 @@ final class AppModel {
         }
     }
 
-    private func isInstalled(_ installation: SkillInstallation, in target: InstallTarget) -> Bool {
-        switch target {
-        case .codex:
-            installation.codex
-        case .claude:
-            installation.claude
-        }
+    func agentTarget(id: String) -> AgentTarget? {
+        settings.agentTargets.first { $0.id == id && $0.isEnabled }
+    }
+
+    func agentDisplayName(id: String) -> String {
+        settings.agentTargets.first { $0.id == id }?.displayName ?? id
+    }
+
+    private func isInstalled(_ installation: SkillInstallation, in agentID: String) -> Bool {
+        installation.agentIDs.contains(agentID)
     }
 }
 

@@ -3,6 +3,7 @@ import SwiftUI
 
 struct SkillListView: View {
     let records: [SkillRecord]
+    let agentTargets: [AgentTarget]
     let acceptsImportDrop: Bool
     let showsAgentFilter: Bool
     @Binding var agentFilter: AgentFilter
@@ -68,9 +69,9 @@ struct SkillListView: View {
 
                 Divider()
 
-                ForEach(InstallTarget.allCases, id: \.self) { target in
+                ForEach(enabledAgentTargets, id: \.id) { target in
                     Button {
-                        agentFilter = .target(target)
+                        agentFilter = .agent(id: target.id)
                     } label: {
                         HStack {
                             AgentLogo(target: target, installed: true, size: 13)
@@ -97,15 +98,23 @@ struct SkillListView: View {
         .padding(.vertical, 10)
     }
 
+    private var enabledAgentTargets: [AgentTarget] {
+        agentTargets.filter(\.isEnabled)
+    }
+
     @ViewBuilder
     private var currentAgentFilterLabel: some View {
         switch agentFilter {
         case .all:
             Text("All Agents")
-        case .target(let target):
-            HStack(spacing: 6) {
-                AgentLogo(target: target, installed: true, size: 13)
-                Text(target.displayName)
+        case .agent(let id):
+            if let target = agentTargets.first(where: { $0.id == id }) {
+                HStack(spacing: 6) {
+                    AgentLogo(target: target, installed: true, size: 13)
+                    Text(target.displayName)
+                }
+            } else {
+                Text(id)
             }
         }
     }
