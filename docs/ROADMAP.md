@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.2 已发布，V0.3.3 已完成并发布 GitHub Release。
+V0.3.3 已完成并发布 GitHub Release。V0.4.0 主体功能代码已完成，等待产品验收和发布。
 
 ## V0.1 - Local Skill Library
 
@@ -174,19 +174,34 @@ docs/superpowers/specs/2026-06-08-v0.3-github-remote-skills-design.md
 docs/superpowers/plans/2026-06-16-v0.3.3-manual-updates-and-agent-filter.md
 ```
 
-## V0.4 - Sync Enhancements
+## V0.4 - Multi-Agent Targets
 
-目标：增强多工具同步能力。
+目标：让 SkillDock 的安装、扫描和筛选能力从固定 Codex / Claude 扩展为可配置 Agent Targets。
 
-状态：已完成 V0.4.0 计划，建议先做 Multi-Agent Targets 架构。
+状态：V0.4.0 主体功能代码已完成，安装包已生成，待产品负责人验收、合并和发布。
 
 V0.4.0 确认方向：
 
+已完成：
+
 - 将 Codex / Claude 写死逻辑改为动态 Agent Targets。
+- Codex / Claude 默认启用，旧设置可迁移。
 - Settings 支持启用 / 禁用 Agent Target 和编辑路径。
+- Settings 支持添加常用 Agent 建议项，默认禁用。
 - Library / Installed 筛选读取动态 Agent Target。
 - 详情页顶部 Agent Logo 和 Install Targets 动态渲染。
+- Skill 列表行动态显示已安装 Agent logo。
 - 安装 / 卸载逻辑支持自定义 Agent 目标。
+
+待完成：
+
+- 产品负责人按 `docs/testing/V0.4_ACCEPTANCE.md` 验收。
+- 合并到 `main` 并创建 GitHub V0.4.0 Release。
+
+已验证：
+
+- `swift test`：110 项全部通过。
+- `dist/SkillDock-0.4.0.zip` 已生成并独立解压验证通过。
 
 后续候选方向：
 

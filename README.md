@@ -6,12 +6,13 @@
 
 ### A native macOS workspace for your local AI Skills
 
-统一查看、理解、整理和同步 Codex / Claude Code Skills
+统一查看、理解、整理和同步 Codex / Claude Code / 自定义 Agent Skills
 
 Keep your personal Skill library clear, local, and under your control.
 
 <p>
-  <img src="https://img.shields.io/badge/version-v0.3.3-0A84FF?style=flat-square" alt="Version v0.3.3">
+  <img src="https://img.shields.io/badge/version-v0.3.3_release-0A84FF?style=flat-square" alt="Version v0.3.3 release">
+  <img src="https://img.shields.io/badge/v0.4.0-in_development-5856D6?style=flat-square" alt="V0.4.0 in development">
   <img src="https://img.shields.io/badge/macOS-26%2B-111111?style=flat-square&logo=apple&logoColor=white" alt="macOS 26 or later">
   <img src="https://img.shields.io/badge/SwiftUI-native-F05138?style=flat-square&logo=swift&logoColor=white" alt="Native SwiftUI">
   <img src="https://img.shields.io/badge/local--first-private-34C759?style=flat-square" alt="Local-first and private">
@@ -29,7 +30,7 @@ Keep your personal Skill library clear, local, and under your control.
 
 SkillDock 是一个原生 macOS AI Skill 管理器。
 
-它把散落在不同工具目录中的 Skills 汇总到一个清晰的工作区，让你快速判断每个 Skill 的用途、查看原始内容、维护独立中文备注，并安装到 Codex 或 Claude Code。
+它把散落在不同工具目录中的 Skills 汇总到一个清晰的工作区，让你快速判断每个 Skill 的用途、查看原始内容、维护独立中文备注，并安装到 Codex、Claude Code 或自定义 Agent 目录。
 
 SkillDock 不修改原始 Skill，也不试图成为 Skill 市场。它服务的是你自己的本地 Skill 资产。
 
@@ -43,7 +44,7 @@ SkillDock 不修改原始 Skill，也不试图成为 Skill 市场。它服务的
 | GitHub 导入 | 从公开 GitHub 仓库发现多个 Skills，并批量导入主技能库 |
 | 手动更新 | 对 GitHub 导入的 Skill 手动检查更新、预览文件变化并确认替换 |
 | 本地整理 | 使用中文描述、标签、适用场景、风险说明和使用建议整理 Skills |
-| 多工具安装 | 使用 Agent Logo、复选框和 Agent 筛选管理 Codex / Claude Code 安装状态 |
+| 多工具安装 | 使用 Agent Logo、复选框和 Agent 筛选管理 Codex / Claude Code / 自定义 Agent 安装状态 |
 | 安全卸载 | 仅移除所选 Agent 的精确 Skill 副本，保护主技能库和其他副本 |
 | 原始内容保护 | 中文备注和未来 AI 总结不会写入或修改原始 Skill |
 
@@ -66,7 +67,7 @@ SkillDock 默认扫描以下位置：
 ~/.claude/skills
 ```
 
-`~/AI-Skills` 是用户维护的主技能库；Codex 和 Claude Code 目录作为安装目标。
+`~/AI-Skills` 是用户维护的主技能库；Codex 和 Claude Code 目录作为默认安装目标。V0.4.0 开始，Settings 中可添加并启用更多自定义 Agent Targets。
 
 ## 安装与运行
 
@@ -109,10 +110,10 @@ SkillDock 采用 local-first 方式工作，不依赖云端服务。
 
 ## 当前状态
 
-- 最新版本：[`v0.3.3`](https://github.com/oneszc/SkillDock/releases/tag/v0.3.3) 已发布
-- 自动化测试：103 项通过
-- 当前阶段：V0.3.3 已完成手动远程更新与 Agent 筛选
-- 后续方向：更多 Agent 类型、多工具同步增强、AI 中文解读
+- 最新发布版本：[`v0.3.3`](https://github.com/oneszc/SkillDock/releases/tag/v0.3.3)
+- 自动化测试：110 项通过
+- 当前开发阶段：V0.4.0 Multi-Agent Targets 主体功能已完成，等待产品验收和发布
+- 后续方向：批量同步、多工具同步增强、AI 中文解读
 
 查看完整进度：
 

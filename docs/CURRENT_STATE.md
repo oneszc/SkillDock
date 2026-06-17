@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.3.3 已完成、产品负责人已验收，并发布 GitHub Release。
+V0.4.0 开发中，Multi-Agent Targets 主体功能代码已完成。
 
 ## Current Goal
 
-V0.3.3 已发布；V0.4.0 计划已创建，下一步可开启 Multi-Agent Targets 架构开发。
+完成 V0.4.0 产品验收、打包验证、合并主分支和 GitHub Release。
 
 ## Completed
 
@@ -190,9 +190,59 @@ V0.3.3 暂不包含：
 - 自动合并本地修改。
 - 新增 Codex / Claude 之外的 Agent 类型。
 
+### V0.4.0 Multi-Agent Targets（2026-06-17）
+
+已完成：
+
+- 已新增 `AgentTarget` 设置模型，Codex / Claude 默认启用。
+- 已将 `SkillSource` 从固定 Codex / Claude 扩展为动态 `.agent(id)`。
+- 已将安装状态从固定布尔值扩展为 `agentIDs` 集合。
+- Library 刷新会扫描设置中已启用的 Agent Targets，禁用项不扫描。
+- Library / Installed 筛选已从固定 Codex / Claude 改为动态 Agent ID。
+- 详情页顶部 Agent Logo 已动态渲染已启用 Agent Targets。
+- Install Targets 列表已动态渲染已启用 Agent Targets。
+- Skill 列表行右侧已按已安装 Agent 动态显示 logo。
+- 安装和卸载核心服务已支持自定义 `AgentTarget` 路径。
+- Settings 已新增 Agent Targets 管理，可启用 / 禁用并编辑路径。
+- Settings 已新增常用 Agent 建议项：Grok、Gemini、OpenCode、Antigravity、Hermes，默认禁用。
+- 已新增 V0.4 验收清单：`docs/testing/V0.4_ACCEPTANCE.md`。
+- 已新增 V0.4 Release notes：`docs/releases/v0.4.0.md`。
+- 打包脚本默认版本已更新为 `0.4.0`。
+
+已验证：
+
+- `swift test --filter AgentTargetSettingsTests`：通过。
+- `swift test --filter SkillScannerTests`：通过。
+- `swift test --filter SkillLibraryBuilderTests`：通过。
+- `swift test --filter SkillLibraryServiceTests`：通过。
+- `swift test --filter SkillWorkspaceServiceTests`：通过。
+- `swift test --filter AppModel`：通过。
+- `swift build --target SkillDockApp`：通过。
+- `swift test`：110 项全部通过。
+- `./scripts/package-app.sh`：已生成并验证 `dist/SkillDock.app` 和 `dist/SkillDock-0.4.0.zip`。
+- 独立解压 `dist/SkillDock-0.4.0.zip` 后运行 `./scripts/verify-app.sh`：通过。
+
+当前安装包：
+
+- `dist/SkillDock-0.4.0.zip`
+- SHA-256：`f9b995c620d3714262520db941aee9ad271abc4aa4766229aba249669099eca0`
+
+待验收 / 待发布：
+
+- 需要产品负责人按 `docs/testing/V0.4_ACCEPTANCE.md` 手动验收。
+- 验收后合并到 `main` 并创建 GitHub V0.4.0 Release。
+
+V0.4.0 暂不包含：
+
+- 批量同步。
+- Symlink 模式。
+- 后台自动同步。
+- AI 自动中文解读。
+- 私有 GitHub 仓库和登录。
+
 ## Not Yet Completed
 
-1. 开启 V0.4.0：动态 Agent Targets 架构。
+1. V0.4.0 产品负责人手动验收、打包、合并和发布。
 2. 后续补充正式 Developer ID 签名和公证。
 
 ### V0.3.0 GitHub Remote Import（2026-06-08）
