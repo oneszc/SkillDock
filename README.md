@@ -12,7 +12,7 @@ Keep your personal Skill library clear, local, and under your control.
 
 <p>
   <img src="https://img.shields.io/badge/version-v0.3.3_release-0A84FF?style=flat-square" alt="Version v0.3.3 release">
-  <img src="https://img.shields.io/badge/v0.4.0-in_development-5856D6?style=flat-square" alt="V0.4.0 in development">
+  <img src="https://img.shields.io/badge/v0.4.0-accepted-5856D6?style=flat-square" alt="V0.4.0 accepted">
   <img src="https://img.shields.io/badge/macOS-26%2B-111111?style=flat-square&logo=apple&logoColor=white" alt="macOS 26 or later">
   <img src="https://img.shields.io/badge/SwiftUI-native-F05138?style=flat-square&logo=swift&logoColor=white" alt="Native SwiftUI">
   <img src="https://img.shields.io/badge/local--first-private-34C759?style=flat-square" alt="Local-first and private">
@@ -112,7 +112,7 @@ SkillDock 采用 local-first 方式工作，不依赖云端服务。
 
 - 最新发布版本：[`v0.3.3`](https://github.com/oneszc/SkillDock/releases/tag/v0.3.3)
 - 自动化测试：110 项通过
-- 当前开发阶段：V0.4.0 Multi-Agent Targets 主体功能已完成，等待产品验收和发布
+- 当前开发阶段：V0.4.0 Multi-Agent Targets 已通过产品验收，等待合并和发布
 - 后续方向：批量同步、多工具同步增强、AI 中文解读
 
 查看完整进度：

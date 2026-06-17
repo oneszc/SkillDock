@@ -78,31 +78,36 @@ struct SettingsView: View {
                 id: AgentTargetID.grok,
                 displayName: "Grok",
                 path: home.appendingPathComponent("Grok-Skills", isDirectory: true),
-                isEnabled: false
+                isEnabled: false,
+                logoAssetName: "grok"
             ),
             AgentTarget(
                 id: AgentTargetID.gemini,
                 displayName: "Gemini",
                 path: home.appendingPathComponent("Gemini-Skills", isDirectory: true),
-                isEnabled: false
+                isEnabled: false,
+                logoAssetName: "gemini"
             ),
             AgentTarget(
                 id: AgentTargetID.openCode,
                 displayName: "OpenCode",
                 path: home.appendingPathComponent("OpenCode-Skills", isDirectory: true),
-                isEnabled: false
+                isEnabled: false,
+                logoAssetName: "opencode"
             ),
             AgentTarget(
                 id: AgentTargetID.antigravity,
                 displayName: "Antigravity",
                 path: home.appendingPathComponent("Antigravity-Skills", isDirectory: true),
-                isEnabled: false
+                isEnabled: false,
+                logoAssetName: "antigravity"
             ),
             AgentTarget(
                 id: AgentTargetID.hermes,
                 displayName: "Hermes",
                 path: home.appendingPathComponent("Hermes-Skills", isDirectory: true),
-                isEnabled: false
+                isEnabled: false,
+                logoAssetName: "hermesagent"
             )
         ]
     }

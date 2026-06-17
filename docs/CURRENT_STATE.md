@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.4.0 开发中，Multi-Agent Targets 主体功能代码已完成。
+V0.4.0 Multi-Agent Targets 已完成，并已通过产品负责人验收。
 
 ## Current Goal
 
-完成 V0.4.0 产品验收、打包验证、合并主分支和 GitHub Release。
+提交并推送 `codex/v0.4-development`，下一步可合并主分支并创建 GitHub V0.4.0 Release。
 
 ## Completed
 
@@ -205,6 +205,7 @@ V0.3.3 暂不包含：
 - 安装和卸载核心服务已支持自定义 `AgentTarget` 路径。
 - Settings 已新增 Agent Targets 管理，可启用 / 禁用并编辑路径。
 - Settings 已新增常用 Agent 建议项：Grok、Gemini、OpenCode、Antigravity、Hermes，默认禁用。
+- 产品负责人提供的 Grok、Gemini、OpenCode、Antigravity、Hermes 彩色和灰色品牌 Logo 已复制进项目资源，不依赖桌面文件。
 - 已新增 V0.4 验收清单：`docs/testing/V0.4_ACCEPTANCE.md`。
 - 已新增 V0.4 Release notes：`docs/releases/v0.4.0.md`。
 - 打包脚本默认版本已更新为 `0.4.0`。
@@ -225,12 +226,12 @@ V0.3.3 暂不包含：
 当前安装包：
 
 - `dist/SkillDock-0.4.0.zip`
-- SHA-256：`f9b995c620d3714262520db941aee9ad271abc4aa4766229aba249669099eca0`
+- SHA-256：`aacf5a6dc1244e718d2f7cc409decd4726672b2a66d587cf610b2eabe0ea33eb`
 
-待验收 / 待发布：
+验收 / 发布状态：
 
-- 需要产品负责人按 `docs/testing/V0.4_ACCEPTANCE.md` 手动验收。
-- 验收后合并到 `main` 并创建 GitHub V0.4.0 Release。
+- 产品负责人已按 `docs/testing/V0.4_ACCEPTANCE.md` 手动验收。
+- 待合并到 `main` 并创建 GitHub V0.4.0 Release。
 
 V0.4.0 暂不包含：
 
@@ -242,7 +243,7 @@ V0.4.0 暂不包含：
 
 ## Not Yet Completed
 
-1. V0.4.0 产品负责人手动验收、打包、合并和发布。
+1. V0.4.0 合并主分支和发布 GitHub Release。
 2. 后续补充正式 Developer ID 签名和公证。
 
 ### V0.3.0 GitHub Remote Import（2026-06-08）
@@ -300,13 +301,14 @@ V0.3.0 暂不包含：
 
 - Xcode 26.5 已安装并选中。
 - Swift 6.3.2 已安装。
-- `swift test`：103 项全部通过，最后验证于 2026-06-16。
-- `swift build -c release`：通过，最后验证于 2026-06-16。
+- `swift test`：110 项全部通过，最后验证于 2026-06-17。
+- `swift build -c release`：通过，最后验证于 2026-06-17。
 - V0.2.1 正式安装包 SHA-256：`e3e77eb13e2ba1046a78e24ef4d0780a0622b0679481677f936cedfba9f26f34`。
 - V0.3.0 正式安装包 SHA-256：`e7b2edf2020846c48577aa629425002c92be648bd4d76dbbc93a4988c82dc26a`。
 - V0.3.1 正式安装包 SHA-256：`1d3cf5137c4f5fcd0b5f388138f9f3eb6aaa1ac00e97053767066fd753b8157d`。
 - V0.3.2 正式安装包 SHA-256：`6f657b077134e63201525683f957bac76f152ab56422c10712cdc4c14e5530b6`。
 - V0.3.3 正式安装包 SHA-256：`35a74249bdabe8a4e8791a106d07b97f851ebb95183bb374d9e50e5a96545a80`。
+- V0.4.0 待发布安装包 SHA-256：`aacf5a6dc1244e718d2f7cc409decd4726672b2a66d587cf610b2eabe0ea33eb`。
 - 实现计划：`docs/superpowers/plans/2026-06-05-v0.1-local-skill-library.md`。
 - V0.2 实现计划：`docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`。
 - V0.2.1 设置页实现计划：`docs/superpowers/plans/2026-06-05-v0.2.1-settings-layout-and-appearance.md`。
@@ -319,22 +321,23 @@ V0.3.0 暂不包含：
 
 当前发布分支：`main`。
 
-截至 2026-06-16 的交接状态：
+截至 2026-06-17 的交接状态：
 
-- 最新功能实现：V0.3.3 手动远程更新检查、文件变化预览、本地修改保护、确认替换和 Agent 筛选。
-- V0.3.3 已通过产品负责人验收，并发布 GitHub Release。
-- 最新已发布版本：`v0.3.3`。
-- V0.4.0 计划已创建，建议下一步新建 `codex/v0.4-development` 分支执行。
+- 最新功能实现：V0.4.0 Multi-Agent Targets，支持动态 Agent 扫描、筛选、安装、卸载和设置管理。
+- V0.4.0 已通过产品负责人验收，当前在 `codex/v0.4-development` 分支。
+- 最新已发布版本仍为 `v0.3.3`；V0.4.0 待合并 `main` 后创建 GitHub Release。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
+- 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。
 
 第二台电脑开始工作的步骤：
 
 ```bash
 git clone https://github.com/oneszc/SkillDock.git
 cd SkillDock
-git switch main
-git pull --ff-only origin main
+git fetch origin
+git switch codex/v0.4-development
+git pull --ff-only origin codex/v0.4-development
 swift test
 ./scripts/run-app.sh
 ```
