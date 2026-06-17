@@ -99,4 +99,16 @@ final class SkillScannerTests: XCTestCase {
 
         XCTAssertEqual(try Data(contentsOf: skillFile), before)
     }
+
+    func testScansSkillForDynamicAgentSource() async throws {
+        let root = try Fixtures.temporaryDirectory()
+        try Fixtures.makeSkill(at: root.appendingPathComponent("sample-skill"))
+
+        let skills = await SkillScanner().scan([
+            ScanLocation(root: root, source: .agent("gemini"))
+        ])
+
+        XCTAssertEqual(skills.first?.source, .agent("gemini"))
+        XCTAssertEqual(skills.first?.installation.agentIDs, ["gemini"])
+    }
 }

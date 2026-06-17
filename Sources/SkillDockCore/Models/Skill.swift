@@ -1,16 +1,45 @@
 import Foundation
 
-public enum SkillSource: String, Codable, CaseIterable, Sendable {
+public enum SkillSource: Codable, Equatable, Hashable, Sendable {
     case library
-    case codex
-    case claude
+    case agent(String)
+
+    public static let codex = SkillSource.agent(AgentTargetID.codex)
+    public static let claude = SkillSource.agent(AgentTargetID.claude)
 
     public var displayName: String {
         switch self {
-        case .library: "Library"
-        case .codex: "Codex"
-        case .claude: "Claude"
+        case .library:
+            "Library"
+        case .agent(let id):
+            switch id {
+            case AgentTargetID.codex:
+                "Codex"
+            case AgentTargetID.claude:
+                "Claude"
+            default:
+                id
+            }
         }
+    }
+
+    public var rawValue: String {
+        switch self {
+        case .library:
+            "library"
+        case .agent(let id):
+            id
+        }
+    }
+
+    public init(from decoder: Decoder) throws {
+        let value = try decoder.singleValueContainer().decode(String.self)
+        self = value == "library" ? .library : .agent(value)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
     }
 }
 
@@ -25,12 +54,39 @@ public struct SkillMetadata: Equatable, Sendable {
 }
 
 public struct SkillInstallation: Codable, Equatable, Sendable {
-    public var codex: Bool
-    public var claude: Bool
+    public var agentIDs: Set<String>
+
+    public init(agentIDs: Set<String> = []) {
+        self.agentIDs = agentIDs
+    }
 
     public init(codex: Bool = false, claude: Bool = false) {
-        self.codex = codex
-        self.claude = claude
+        var ids = Set<String>()
+        if codex { ids.insert(AgentTargetID.codex) }
+        if claude { ids.insert(AgentTargetID.claude) }
+        self.agentIDs = ids
+    }
+
+    public var codex: Bool {
+        get { agentIDs.contains(AgentTargetID.codex) }
+        set {
+            if newValue {
+                agentIDs.insert(AgentTargetID.codex)
+            } else {
+                agentIDs.remove(AgentTargetID.codex)
+            }
+        }
+    }
+
+    public var claude: Bool {
+        get { agentIDs.contains(AgentTargetID.claude) }
+        set {
+            if newValue {
+                agentIDs.insert(AgentTargetID.claude)
+            } else {
+                agentIDs.remove(AgentTargetID.claude)
+            }
+        }
     }
 }
 

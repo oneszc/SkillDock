@@ -19,11 +19,12 @@ public actor SkillLibraryService {
     }
 
     public func refresh(settings: SkillSettings) async throws -> [SkillRecord] {
-        let skills = await scanner.scan([
-            ScanLocation(root: settings.libraryPath, source: .library),
-            ScanLocation(root: settings.codexPath, source: .codex),
-            ScanLocation(root: settings.claudePath, source: .claude)
-        ])
+        let agentLocations = settings.agentTargets
+            .filter(\.isEnabled)
+            .map { ScanLocation(root: $0.path, source: .agent($0.id)) }
+        let skills = await scanner.scan(
+            [ScanLocation(root: settings.libraryPath, source: .library)] + agentLocations
+        )
         let notes = try await notesStore.load()
         let remoteSources = try await remoteSourceStore.load()
         return builder

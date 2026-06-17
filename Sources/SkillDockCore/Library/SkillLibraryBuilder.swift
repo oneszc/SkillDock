@@ -36,10 +36,13 @@ public struct SkillLibraryBuilder: Sendable {
                 return nil
             }
 
-            preferred.installation = SkillInstallation(
-                codex: group.contains(where: { $0.source == .codex }),
-                claude: group.contains(where: { $0.source == .claude })
+            let installedAgentIDs = Set(
+                group.compactMap { skill -> String? in
+                    guard case .agent(let id) = skill.source else { return nil }
+                    return id
+                }
             )
+            preferred.installation = SkillInstallation(agentIDs: installedAgentIDs)
 
             let noteMatch = matchNote(for: preferred, notes: notes)
             return SkillRecord(
@@ -56,8 +59,7 @@ public struct SkillLibraryBuilder: Sendable {
     private func sourcePriority(_ source: SkillSource) -> Int {
         switch source {
         case .library: 0
-        case .codex: 1
-        case .claude: 2
+        case .agent: 1
         }
     }
 

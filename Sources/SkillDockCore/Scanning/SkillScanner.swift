@@ -90,10 +90,16 @@ public actor SkillScanner {
             isSystem: isSystem,
             isReadOnly: isSystem,
             contentHash: contentHash,
-            installation: SkillInstallation(
-                codex: source == .codex,
-                claude: source == .claude
-            )
+            installation: installation(for: source)
         )
+    }
+
+    private func installation(for source: SkillSource) -> SkillInstallation {
+        switch source {
+        case .library:
+            .init()
+        case .agent(let id):
+            .init(agentIDs: [id])
+        }
     }
 }

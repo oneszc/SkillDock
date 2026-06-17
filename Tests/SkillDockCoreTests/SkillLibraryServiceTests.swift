@@ -21,6 +21,52 @@ final class SkillLibraryServiceTests: XCTestCase {
         XCTAssertEqual(records.map(\.skill.name), ["codex-skill", "library-skill"])
     }
 
+    func testRefreshScansEnabledDynamicAgentTargets() async throws {
+        let home = try Fixtures.temporaryDirectory()
+        let libraryPath = home.appendingPathComponent("AI-Skills", isDirectory: true)
+        let codexPath = home.appendingPathComponent(".codex/skills", isDirectory: true)
+        let claudePath = home.appendingPathComponent(".claude/skills", isDirectory: true)
+        let geminiPath = home.appendingPathComponent(".gemini/skills", isDirectory: true)
+        var settings = SkillSettings(
+            libraryPath: libraryPath,
+            codexPath: codexPath,
+            claudePath: claudePath,
+            agentTargets: [
+                AgentTarget(
+                    id: AgentTargetID.codex,
+                    displayName: "Codex",
+                    path: codexPath,
+                    isEnabled: false,
+                    logoAssetName: "codex"
+                ),
+                AgentTarget(
+                    id: AgentTargetID.gemini,
+                    displayName: "Gemini",
+                    path: geminiPath,
+                    isEnabled: true
+                )
+            ]
+        )
+        settings.showSystemSkills = true
+        try Fixtures.makeSkill(
+            at: codexPath.appendingPathComponent("codex-skill"),
+            name: "codex-skill"
+        )
+        try Fixtures.makeSkill(
+            at: geminiPath.appendingPathComponent("gemini-skill"),
+            name: "gemini-skill"
+        )
+        let service = SkillLibraryService(
+            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory())
+        )
+
+        let records = try await service.refresh(settings: settings)
+
+        XCTAssertEqual(records.map(\.skill.name), ["gemini-skill"])
+        XCTAssertEqual(records.first?.skill.source, .agent(AgentTargetID.gemini))
+        XCTAssertEqual(records.first?.skill.installation.agentIDs, [AgentTargetID.gemini])
+    }
+
     func testRefreshHidesSystemSkillsWhenSettingIsDisabled() async throws {
         let home = try Fixtures.temporaryDirectory()
         var settings = SkillSettings.defaults(homeDirectory: home)
