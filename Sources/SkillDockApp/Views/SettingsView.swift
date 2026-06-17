@@ -18,11 +18,32 @@ struct SettingsView: View {
                 PathField(title: "Library", url: $model.settings.libraryPath) {
                     Task { await model.saveSettings() }
                 }
-                PathField(title: "Codex", url: $model.settings.codexPath) {
-                    Task { await model.saveSettings() }
+            }
+            Section("Agent Targets") {
+                ForEach($model.settings.agentTargets) { $target in
+                    VStack(alignment: .leading, spacing: 10) {
+                        Toggle(isOn: $target.isEnabled) {
+                            HStack(spacing: 10) {
+                                AgentLogo(target: target, installed: true, size: 16)
+                                Text(target.displayName)
+                            }
+                        }
+                        .onChange(of: target.isEnabled) { _, _ in
+                            Task { await model.saveSettings() }
+                        }
+
+                        PathField(title: "Path", url: $target.path) {
+                            Task { await model.saveSettings() }
+                        }
+                        .disabled(!target.isEnabled)
+                    }
+                    .padding(.vertical, 6)
                 }
-                PathField(title: "Claude", url: $model.settings.claudePath) {
-                    Task { await model.saveSettings() }
+
+                if hasMissingSuggestedAgents {
+                    Button("Add Suggested Agents") {
+                        addSuggestedAgents()
+                    }
                 }
             }
             Section("Behavior") {
@@ -43,6 +64,55 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .font(.body)
         .padding(VisualMetrics.contentPadding)
+    }
+
+    private var hasMissingSuggestedAgents: Bool {
+        let existingIDs = Set(model.settings.agentTargets.map(\.id))
+        return suggestedAgentTargets.contains { !existingIDs.contains($0.id) }
+    }
+
+    private var suggestedAgentTargets: [AgentTarget] {
+        let home = FileManager.default.homeDirectoryForCurrentUser
+        return [
+            AgentTarget(
+                id: AgentTargetID.grok,
+                displayName: "Grok",
+                path: home.appendingPathComponent("Grok-Skills", isDirectory: true),
+                isEnabled: false
+            ),
+            AgentTarget(
+                id: AgentTargetID.gemini,
+                displayName: "Gemini",
+                path: home.appendingPathComponent("Gemini-Skills", isDirectory: true),
+                isEnabled: false
+            ),
+            AgentTarget(
+                id: AgentTargetID.openCode,
+                displayName: "OpenCode",
+                path: home.appendingPathComponent("OpenCode-Skills", isDirectory: true),
+                isEnabled: false
+            ),
+            AgentTarget(
+                id: AgentTargetID.antigravity,
+                displayName: "Antigravity",
+                path: home.appendingPathComponent("Antigravity-Skills", isDirectory: true),
+                isEnabled: false
+            ),
+            AgentTarget(
+                id: AgentTargetID.hermes,
+                displayName: "Hermes",
+                path: home.appendingPathComponent("Hermes-Skills", isDirectory: true),
+                isEnabled: false
+            )
+        ]
+    }
+
+    private func addSuggestedAgents() {
+        let existingIDs = Set(model.settings.agentTargets.map(\.id))
+        model.settings.agentTargets.append(
+            contentsOf: suggestedAgentTargets.filter { !existingIDs.contains($0.id) }
+        )
+        Task { await model.saveSettings() }
     }
 }
 

@@ -31,7 +31,7 @@ struct SkillListView: View {
                     )
                 } else {
                     List(records, selection: $selectionID) { record in
-                        SkillRowView(record: record)
+                        SkillRowView(record: record, agentTargets: agentTargets)
                             .tag(record.id)
                     }
                     .navigationTitle("\(records.count) Skills")

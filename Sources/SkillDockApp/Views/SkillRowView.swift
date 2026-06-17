@@ -3,6 +3,7 @@ import SwiftUI
 
 struct SkillRowView: View {
     let record: SkillRecord
+    let agentTargets: [AgentTarget]
 
     var body: some View {
         HStack(spacing: 12) {
@@ -23,21 +24,19 @@ struct SkillRowView: View {
 
             Spacer(minLength: 8)
 
-            VStack(alignment: .trailing, spacing: 4) {
-                if record.skill.installation.codex {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
-                        .help("Installed in Codex")
-                }
-                if record.skill.installation.claude {
-                    Image(systemName: "checkmark.circle")
-                        .foregroundStyle(.secondary)
-                        .help("Installed in Claude")
+            HStack(spacing: 5) {
+                ForEach(installedTargets, id: \.id) { target in
+                    AgentLogo(target: target, installed: true, size: 13)
+                        .help("Installed in \(target.displayName)")
                 }
             }
             .font(.subheadline)
         }
         .padding(.vertical, VisualMetrics.rowVerticalPadding)
+    }
+
+    private var installedTargets: [AgentTarget] {
+        agentTargets.filter { record.skill.installation.agentIDs.contains($0.id) }
     }
 }
 
