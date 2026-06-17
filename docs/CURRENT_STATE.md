@@ -201,11 +201,12 @@ V0.3.3 暂不包含：
 - Library / Installed 筛选已从固定 Codex / Claude 改为动态 Agent ID。
 - 详情页顶部 Agent Logo 已动态渲染已启用 Agent Targets。
 - Install Targets 列表已动态渲染已启用 Agent Targets。
-- Skill 列表行右侧已按已安装 Agent 动态显示 logo。
+- Skill 列表行右侧优先显示 Codex / Claude，其他已安装 Agent 折叠为 `+N`。
 - 安装和卸载核心服务已支持自定义 `AgentTarget` 路径。
 - Settings 已新增 Agent Targets 管理，可启用 / 禁用并编辑路径。
 - Settings 已新增常用 Agent 建议项：Grok、Gemini、OpenCode、Antigravity、Hermes，默认禁用。
 - 产品负责人提供的 Grok、Gemini、OpenCode、Antigravity、Hermes 彩色和灰色品牌 Logo 已复制进项目资源，不依赖桌面文件。
+- Antigravity 已改用 PNG 品牌资源，避免 SVG 渐变在小尺寸下出现马赛克。
 - 已新增 V0.4 验收清单：`docs/testing/V0.4_ACCEPTANCE.md`。
 - 已新增 V0.4 Release notes：`docs/releases/v0.4.0.md`。
 - 打包脚本默认版本已更新为 `0.4.0`。
@@ -219,14 +220,14 @@ V0.3.3 暂不包含：
 - `swift test --filter SkillWorkspaceServiceTests`：通过。
 - `swift test --filter AppModel`：通过。
 - `swift build --target SkillDockApp`：通过。
-- `swift test`：110 项全部通过。
+- `swift test`：111 项全部通过。
 - `./scripts/package-app.sh`：已生成并验证 `dist/SkillDock.app` 和 `dist/SkillDock-0.4.0.zip`。
 - 独立解压 `dist/SkillDock-0.4.0.zip` 后运行 `./scripts/verify-app.sh`：通过。
 
 当前安装包：
 
 - `dist/SkillDock-0.4.0.zip`
-- SHA-256：`aacf5a6dc1244e718d2f7cc409decd4726672b2a66d587cf610b2eabe0ea33eb`
+- SHA-256：`fb7905fdc52976ac18d0e1d47ca7b709f4488b07141c75bf9202c5b665815fd8`
 
 验收 / 发布状态：
 
@@ -301,14 +302,14 @@ V0.3.0 暂不包含：
 
 - Xcode 26.5 已安装并选中。
 - Swift 6.3.2 已安装。
-- `swift test`：110 项全部通过，最后验证于 2026-06-17。
+- `swift test`：111 项全部通过，最后验证于 2026-06-17。
 - `swift build -c release`：通过，最后验证于 2026-06-17。
 - V0.2.1 正式安装包 SHA-256：`e3e77eb13e2ba1046a78e24ef4d0780a0622b0679481677f936cedfba9f26f34`。
 - V0.3.0 正式安装包 SHA-256：`e7b2edf2020846c48577aa629425002c92be648bd4d76dbbc93a4988c82dc26a`。
 - V0.3.1 正式安装包 SHA-256：`1d3cf5137c4f5fcd0b5f388138f9f3eb6aaa1ac00e97053767066fd753b8157d`。
 - V0.3.2 正式安装包 SHA-256：`6f657b077134e63201525683f957bac76f152ab56422c10712cdc4c14e5530b6`。
 - V0.3.3 正式安装包 SHA-256：`35a74249bdabe8a4e8791a106d07b97f851ebb95183bb374d9e50e5a96545a80`。
-- V0.4.0 待发布安装包 SHA-256：`aacf5a6dc1244e718d2f7cc409decd4726672b2a66d587cf610b2eabe0ea33eb`。
+- V0.4.0 待发布安装包 SHA-256：`fb7905fdc52976ac18d0e1d47ca7b709f4488b07141c75bf9202c5b665815fd8`。
 - 实现计划：`docs/superpowers/plans/2026-06-05-v0.1-local-skill-library.md`。
 - V0.2 实现计划：`docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`。
 - V0.2.1 设置页实现计划：`docs/superpowers/plans/2026-06-05-v0.2.1-settings-layout-and-appearance.md`。

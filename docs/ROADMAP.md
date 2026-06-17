@@ -190,7 +190,7 @@ V0.4.0 确认方向：
 - Settings 支持添加常用 Agent 建议项，默认禁用。
 - Library / Installed 筛选读取动态 Agent Target。
 - 详情页顶部 Agent Logo 和 Install Targets 动态渲染。
-- Skill 列表行动态显示已安装 Agent logo。
+- Skill 列表行优先显示 Codex / Claude，其他已安装 Agent 折叠为 `+N`。
 - 安装 / 卸载逻辑支持自定义 Agent 目标。
 - Grok、Gemini、OpenCode、Antigravity、Hermes 使用产品负责人提供的彩色和灰色品牌 logo。
 
@@ -200,7 +200,7 @@ V0.4.0 确认方向：
 
 已验证：
 
-- `swift test`：110 项全部通过。
+- `swift test`：111 项全部通过。
 - `dist/SkillDock-0.4.0.zip` 已生成并独立解压验证通过。
 
 后续候选方向：
