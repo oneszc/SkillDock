@@ -126,13 +126,29 @@ public actor SkillWorkspaceService {
         strategy: ConflictStrategy,
         isSystemSkill: Bool = false
     ) async throws -> SkillFileOperationResult {
-        let destination = switch target {
-        case .codex: settings.codexPath
-        case .claude: settings.claudePath
-        }
+        let destination = agentTarget(for: target, settings: settings).path
+        return try await installSkill(
+            from: source,
+            target: AgentTarget(
+                id: target.rawValue,
+                displayName: target.rawValue.capitalized,
+                path: destination,
+                isEnabled: true
+            ),
+            strategy: strategy,
+            isSystemSkill: isSystemSkill
+        )
+    }
+
+    public func installSkill(
+        from source: URL,
+        target: AgentTarget,
+        strategy: ConflictStrategy,
+        isSystemSkill: Bool = false
+    ) async throws -> SkillFileOperationResult {
         return try await fileOperator.copySkill(
             from: source,
-            to: destination,
+            to: target.path,
             strategy: strategy,
             isSystemSkill: isSystemSkill
         )
@@ -145,23 +161,37 @@ public actor SkillWorkspaceService {
         settings: SkillSettings,
         isSystemSkill: Bool = false
     ) async throws {
+        try await uninstallSkill(
+            named: name,
+            contentHash: contentHash,
+            target: agentTarget(for: target, settings: settings),
+            libraryPath: settings.libraryPath,
+            allAgentTargets: [
+                agentTarget(for: .codex, settings: settings),
+                agentTarget(for: .claude, settings: settings)
+            ],
+            isSystemSkill: isSystemSkill
+        )
+    }
+
+    public func uninstallSkill(
+        named name: String,
+        contentHash: String,
+        target: AgentTarget,
+        libraryPath: URL,
+        allAgentTargets: [AgentTarget],
+        isSystemSkill: Bool = false
+    ) async throws {
         guard !isSystemSkill else {
             throw SkillFileOperationError.systemSkillIsReadOnly
         }
 
-        let targetRoot = switch target {
-        case .codex: settings.codexPath
-        case .claude: settings.claudePath
-        }
-        let otherAgentRoot = switch target {
-        case .codex: settings.claudePath
-        case .claude: settings.codexPath
-        }
-        let source: SkillSource = switch target {
-        case .codex: .codex
-        case .claude: .claude
-        }
-        let resolvedLibraryRoot = resolved(settings.libraryPath)
+        let targetRoot = target.path
+        let otherAgentRoots = allAgentTargets
+            .filter { $0.id != target.id }
+            .map(\.path)
+        let source = SkillSource.agent(target.id)
+        let resolvedLibraryRoot = resolved(libraryPath)
         guard !path(resolved(targetRoot), isSameOrInside: resolvedLibraryRoot) else {
             throw SkillFileOperationError.destinationOutsideRoot
         }
@@ -194,8 +224,10 @@ public actor SkillWorkspaceService {
         guard !pathsOverlap(resolvedInstalledSkill, resolvedLibraryRoot) else {
             throw SkillFileOperationError.destinationOutsideRoot
         }
-        guard !pathsOverlap(resolvedInstalledSkill, resolved(otherAgentRoot)) else {
-            throw SkillFileOperationError.destinationOutsideRoot
+        for otherAgentRoot in otherAgentRoots {
+            guard !pathsOverlap(resolvedInstalledSkill, resolved(otherAgentRoot)) else {
+                throw SkillFileOperationError.destinationOutsideRoot
+            }
         }
 
         try beforeUninstallFinalValidation?(installedSkill.path)
@@ -216,6 +248,28 @@ public actor SkillWorkspaceService {
             from: targetRoot,
             isSystemSkill: finalInstalledSkill.isSystem
         )
+    }
+
+    private func agentTarget(for target: InstallTarget, settings: SkillSettings) -> AgentTarget {
+        switch target {
+        case .codex:
+            AgentTarget(
+                id: AgentTargetID.codex,
+                displayName: "Codex",
+                path: settings.codexPath,
+                isEnabled: true,
+                logoAssetName: "codex",
+                supportsSystemSkills: true
+            )
+        case .claude:
+            AgentTarget(
+                id: AgentTargetID.claude,
+                displayName: "Claude",
+                path: settings.claudePath,
+                isEnabled: true,
+                logoAssetName: "claude"
+            )
+        }
     }
 
     private func exactSkill(

@@ -97,6 +97,36 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         )
     }
 
+    func testInstallSkillCopiesToDynamicAgentTargetPath() async throws {
+        let source = try Fixtures.temporaryDirectory()
+        try Fixtures.makeSkill(
+            at: source.appendingPathComponent("sample-skill"),
+            name: "sample-skill"
+        )
+        let destination = try Fixtures.temporaryDirectory()
+        let target = AgentTarget(
+            id: AgentTargetID.gemini,
+            displayName: "Gemini",
+            path: destination,
+            isEnabled: true
+        )
+
+        _ = try await SkillWorkspaceService().installSkill(
+            from: source.appendingPathComponent("sample-skill"),
+            target: target,
+            strategy: .skip,
+            isSystemSkill: false
+        )
+
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: destination
+                    .appendingPathComponent("sample-skill/SKILL.md")
+                    .path
+            )
+        )
+    }
+
     func testUninstallRemovesOnlySelectedAgentCopy() async throws {
         let library = try Fixtures.temporaryDirectory()
         let codex = try Fixtures.temporaryDirectory()
@@ -133,6 +163,51 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(
             atPath: claude.appendingPathComponent(name).path
         ))
+    }
+
+    func testUninstallRemovesOnlyDynamicAgentCopy() async throws {
+        let targetRoot = try Fixtures.temporaryDirectory()
+        let otherRoot = try Fixtures.temporaryDirectory()
+        let library = try Fixtures.temporaryDirectory()
+        let name = "sample-skill"
+        try Fixtures.makeSkill(at: targetRoot.appendingPathComponent(name), name: name)
+        try Fixtures.makeSkill(at: otherRoot.appendingPathComponent(name), name: name)
+        let scanned = await SkillScanner().scan([
+            ScanLocation(root: targetRoot, source: .agent(AgentTargetID.gemini))
+        ])
+        let hash = try XCTUnwrap(scanned.first?.contentHash)
+        let target = AgentTarget(
+            id: AgentTargetID.gemini,
+            displayName: "Gemini",
+            path: targetRoot,
+            isEnabled: true
+        )
+        let otherTarget = AgentTarget(
+            id: AgentTargetID.openCode,
+            displayName: "OpenCode",
+            path: otherRoot,
+            isEnabled: true
+        )
+
+        try await SkillWorkspaceService().uninstallSkill(
+            named: name,
+            contentHash: hash,
+            target: target,
+            libraryPath: library,
+            allAgentTargets: [target, otherTarget],
+            isSystemSkill: false
+        )
+
+        XCTAssertFalse(
+            FileManager.default.fileExists(
+                atPath: targetRoot.appendingPathComponent(name).path
+            )
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: otherRoot.appendingPathComponent(name).path
+            )
+        )
     }
 
     func testUninstallDoesNotModifyLibraryOrNotes() async throws {
