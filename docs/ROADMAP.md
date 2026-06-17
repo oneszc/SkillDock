@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.3 已完成并发布 GitHub Release。V0.4.0 主体功能代码已完成，并已通过产品负责人验收。
+V0.3.3 已完成并发布 GitHub Release。V0.4.0 已完成、验收并发布 GitHub Release。
 
 ## V0.1 - Local Skill Library
 
@@ -178,7 +178,7 @@ docs/superpowers/plans/2026-06-16-v0.3.3-manual-updates-and-agent-filter.md
 
 目标：让 SkillDock 的安装、扫描和筛选能力从固定 Codex / Claude 扩展为可配置 Agent Targets。
 
-状态：V0.4.0 主体功能代码已完成，已通过产品负责人验收，待合并和发布。
+状态：V0.4.0 已完成、已通过产品负责人验收，并已发布 GitHub Release。
 
 V0.4.0 确认方向：
 
@@ -193,15 +193,13 @@ V0.4.0 确认方向：
 - Skill 列表行优先显示 Codex / Claude，其他已安装 Agent 折叠为 `+N`。
 - 安装 / 卸载逻辑支持自定义 Agent 目标。
 - Grok、Gemini、OpenCode、Antigravity、Hermes 使用产品负责人提供的彩色和灰色品牌 logo。
-
-待完成：
-
-- 合并到 `main` 并创建 GitHub V0.4.0 Release。
+- V0.4.0 发布后已补充列表 Agent 展示修复：已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才优先 Codex / Claude 并折叠其余为 `+N`。
 
 已验证：
 
 - `swift test`：111 项全部通过。
 - `dist/SkillDock-0.4.0.zip` 已生成并独立解压验证通过。
+- `swift test --filter SkillRowInstallBadgesTests`：3 项全部通过。
 
 后续候选方向：
 

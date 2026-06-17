@@ -25,12 +25,12 @@ struct SkillRowView: View {
             Spacer(minLength: 8)
 
             HStack(spacing: 5) {
-                ForEach(primaryInstalledTargets, id: \.id) { target in
+                ForEach(installBadges.visibleTargets, id: \.id) { target in
                     AgentLogo(target: target, installed: true, size: 13)
                         .help("Installed in \(target.displayName)")
                 }
-                if secondaryInstalledCount > 0 {
-                    Text("+\(secondaryInstalledCount)")
+                if installBadges.collapsedCount > 0 {
+                    Text("+\(installBadges.collapsedCount)")
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 5)
@@ -44,16 +44,8 @@ struct SkillRowView: View {
         .padding(.vertical, VisualMetrics.rowVerticalPadding)
     }
 
-    private var primaryInstalledTargets: [AgentTarget] {
-        [AgentTargetID.codex, AgentTargetID.claude].compactMap { id in
-            installedTargets.first { $0.id == id }
-        }
-    }
-
-    private var secondaryInstalledCount: Int {
-        installedTargets.filter { target in
-            target.id != AgentTargetID.codex && target.id != AgentTargetID.claude
-        }.count
+    private var installBadges: SkillRowInstallBadges {
+        SkillRowInstallBadges(installedTargets: installedTargets)
     }
 
     private var installedTargetsTooltip: String {
@@ -63,6 +55,33 @@ struct SkillRowView: View {
 
     private var installedTargets: [AgentTarget] {
         agentTargets.filter { record.skill.installation.agentIDs.contains($0.id) }
+    }
+}
+
+struct SkillRowInstallBadges {
+    let visibleTargets: [AgentTarget]
+    let collapsedCount: Int
+
+    init(installedTargets: [AgentTarget]) {
+        if installedTargets.count <= 2 {
+            visibleTargets = installedTargets
+            collapsedCount = 0
+            return
+        }
+
+        var badgeTargets = [AgentTargetID.codex, AgentTargetID.claude].compactMap { id in
+            installedTargets.first { $0.id == id }
+        }
+
+        if badgeTargets.count < 2 {
+            let remainingTargets = installedTargets.filter { target in
+                !badgeTargets.contains { $0.id == target.id }
+            }
+            badgeTargets.append(contentsOf: remainingTargets.prefix(2 - badgeTargets.count))
+        }
+
+        visibleTargets = Array(badgeTargets.prefix(2))
+        collapsedCount = max(0, installedTargets.count - visibleTargets.count)
     }
 }
 

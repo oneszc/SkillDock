@@ -6,7 +6,7 @@ V0.4.0 Multi-Agent Targets 已完成，并已通过产品负责人验收。
 
 ## Current Goal
 
-提交并推送 `codex/v0.4-development`，下一步可合并主分支并创建 GitHub V0.4.0 Release。
+V0.4.0 已发布。当前进入 V0.4.x 细节修复阶段，优先处理多 Agent 后出现的列表展示、设置页和安装体验细节。
 
 ## Completed
 
@@ -232,7 +232,17 @@ V0.3.3 暂不包含：
 验收 / 发布状态：
 
 - 产品负责人已按 `docs/testing/V0.4_ACCEPTANCE.md` 手动验收。
-- 待合并到 `main` 并创建 GitHub V0.4.0 Release。
+- 已合并到 `main`。
+- GitHub V0.4.0 Release 已发布：
+  - `https://github.com/oneszc/SkillDock/releases/tag/v0.4.0`
+
+### V0.4.0 列表 Agent 展示修复（2026-06-17）
+
+- 已修复 Skill 列表右侧 Agent Logo 折叠规则。
+- 当已安装 Agent 数量小于等于 2 个时，无论是否 Codex / Claude，都直接展示对应 Logo。
+- 当已安装 Agent 数量大于 2 个时，优先展示 Codex / Claude，其余 Agent 折叠为 `+N`。
+- 已增加 `SkillRowInstallBadgesTests` 回归测试，避免非 Codex / Claude 的 1-2 个安装状态被误折叠，并覆盖超过 2 个非默认 Agent 的补位展示。
+- 已验证：`swift test --filter SkillRowInstallBadgesTests` 3 项通过。
 
 V0.4.0 暂不包含：
 
@@ -244,8 +254,8 @@ V0.4.0 暂不包含：
 
 ## Not Yet Completed
 
-1. V0.4.0 合并主分支和发布 GitHub Release。
-2. 后续补充正式 Developer ID 签名和公证。
+1. 后续补充正式 Developer ID 签名和公证。
+2. V0.4.x 继续优化多 Agent 下的真实使用细节，例如批量同步入口、更多 Agent 的展示密度和设置页可读性。
 
 ### V0.3.0 GitHub Remote Import（2026-06-08）
 
@@ -309,7 +319,7 @@ V0.3.0 暂不包含：
 - V0.3.1 正式安装包 SHA-256：`1d3cf5137c4f5fcd0b5f388138f9f3eb6aaa1ac00e97053767066fd753b8157d`。
 - V0.3.2 正式安装包 SHA-256：`6f657b077134e63201525683f957bac76f152ab56422c10712cdc4c14e5530b6`。
 - V0.3.3 正式安装包 SHA-256：`35a74249bdabe8a4e8791a106d07b97f851ebb95183bb374d9e50e5a96545a80`。
-- V0.4.0 待发布安装包 SHA-256：`fb7905fdc52976ac18d0e1d47ca7b709f4488b07141c75bf9202c5b665815fd8`。
+- V0.4.0 正式安装包 SHA-256：`fb7905fdc52976ac18d0e1d47ca7b709f4488b07141c75bf9202c5b665815fd8`。
 - 实现计划：`docs/superpowers/plans/2026-06-05-v0.1-local-skill-library.md`。
 - V0.2 实现计划：`docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`。
 - V0.2.1 设置页实现计划：`docs/superpowers/plans/2026-06-05-v0.2.1-settings-layout-and-appearance.md`。
@@ -325,8 +335,9 @@ V0.3.0 暂不包含：
 截至 2026-06-17 的交接状态：
 
 - 最新功能实现：V0.4.0 Multi-Agent Targets，支持动态 Agent 扫描、筛选、安装、卸载和设置管理。
-- V0.4.0 已通过产品负责人验收，当前在 `codex/v0.4-development` 分支。
-- 最新已发布版本仍为 `v0.3.3`；V0.4.0 待合并 `main` 后创建 GitHub Release。
+- V0.4.0 已通过产品负责人验收，已合并并发布到 `main`。
+- 最新已发布版本为 `v0.4.0`。
+- V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。
@@ -337,9 +348,9 @@ V0.3.0 暂不包含：
 git clone https://github.com/oneszc/SkillDock.git
 cd SkillDock
 git fetch origin
-git switch codex/v0.4-development
-git pull --ff-only origin codex/v0.4-development
-swift test
+git switch main
+git pull --ff-only origin main
+swift test --filter SkillRowInstallBadgesTests
 ./scripts/run-app.sh
 ```
 
