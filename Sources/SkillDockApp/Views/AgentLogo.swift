@@ -27,9 +27,12 @@ private extension AgentTarget {
     func logoImage(installed: Bool) -> NSImage? {
         guard let logoAssetName else { return nil }
         let name = installed ? logoAssetName : "\(logoAssetName)-gray"
-        guard let url = Bundle.module.url(forResource: name, withExtension: "svg") else {
-            return nil
+        for fileExtension in ["png", "svg"] {
+            if let url = Bundle.module.url(forResource: name, withExtension: fileExtension),
+               let image = NSImage(contentsOf: url) {
+                return image
+            }
         }
-        return NSImage(contentsOf: url)
+        return nil
     }
 }

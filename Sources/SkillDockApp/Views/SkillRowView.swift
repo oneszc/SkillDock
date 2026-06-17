@@ -25,14 +25,40 @@ struct SkillRowView: View {
             Spacer(minLength: 8)
 
             HStack(spacing: 5) {
-                ForEach(installedTargets, id: \.id) { target in
+                ForEach(primaryInstalledTargets, id: \.id) { target in
                     AgentLogo(target: target, installed: true, size: 13)
                         .help("Installed in \(target.displayName)")
+                }
+                if secondaryInstalledCount > 0 {
+                    Text("+\(secondaryInstalledCount)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(.quaternary, in: Capsule())
+                        .help(installedTargetsTooltip)
                 }
             }
             .font(.subheadline)
         }
         .padding(.vertical, VisualMetrics.rowVerticalPadding)
+    }
+
+    private var primaryInstalledTargets: [AgentTarget] {
+        [AgentTargetID.codex, AgentTargetID.claude].compactMap { id in
+            installedTargets.first { $0.id == id }
+        }
+    }
+
+    private var secondaryInstalledCount: Int {
+        installedTargets.filter { target in
+            target.id != AgentTargetID.codex && target.id != AgentTargetID.claude
+        }.count
+    }
+
+    private var installedTargetsTooltip: String {
+        let names = installedTargets.map(\.displayName).joined(separator: ", ")
+        return names.isEmpty ? "Not installed" : "Installed in \(names)"
     }
 
     private var installedTargets: [AgentTarget] {
