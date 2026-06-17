@@ -22,7 +22,8 @@ final class AgentTargetSettingsTests: XCTestCase {
                 id: AgentTargetID.gemini,
                 displayName: "Gemini",
                 path: URL(fileURLWithPath: "/Users/designer/.gemini/skills", isDirectory: true),
-                isEnabled: false
+                isEnabled: false,
+                logoAssetName: "gemini"
             )
         )
 
@@ -30,5 +31,40 @@ final class AgentTargetSettingsTests: XCTestCase {
         let decoded = try JSONDecoder().decode(SkillSettings.self, from: data)
 
         XCTAssertEqual(decoded.agentTargets, settings.agentTargets)
+    }
+
+    func testDecodingOlderAgentTargetsFillsKnownLogoAssetNames() throws {
+        let json = """
+        {
+          "libraryPath": "/Users/designer/AI-Skills",
+          "codexPath": "/Users/designer/.codex/skills",
+          "claudePath": "/Users/designer/.claude/skills",
+          "agentTargets": [
+            {
+              "id": "grok",
+              "displayName": "Grok",
+              "path": "/Users/designer/Grok-Skills",
+              "isEnabled": false,
+              "supportsSystemSkills": false
+            },
+            {
+              "id": "hermes",
+              "displayName": "Hermes",
+              "path": "/Users/designer/Hermes-Skills",
+              "isEnabled": false,
+              "supportsSystemSkills": false
+            }
+          ],
+          "showSystemSkills": true,
+          "defaultInstallTargets": ["codex", "claude"],
+          "defaultConflictStrategy": "skip",
+          "appearanceMode": "system"
+        }
+        """
+
+        let decoded = try JSONDecoder().decode(SkillSettings.self, from: Data(json.utf8))
+
+        XCTAssertEqual(decoded.agentTargets[0].logoAssetName, "grok")
+        XCTAssertEqual(decoded.agentTargets[1].logoAssetName, "hermesagent")
     }
 }

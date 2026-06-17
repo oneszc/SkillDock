@@ -40,7 +40,7 @@ public struct SkillSettings: Codable, Equatable, Sendable {
         self.libraryPath = libraryPath
         self.codexPath = codexPath
         self.claudePath = claudePath
-        self.agentTargets = agentTargets ?? [
+        self.agentTargets = Self.normalizedAgentTargets(agentTargets ?? [
             AgentTarget(
                 id: AgentTargetID.codex,
                 displayName: "Codex",
@@ -56,7 +56,7 @@ public struct SkillSettings: Codable, Equatable, Sendable {
                 isEnabled: true,
                 logoAssetName: "claude"
             )
-        ]
+        ])
         self.showSystemSkills = showSystemSkills
         self.defaultInstallTargets = defaultInstallTargets
         self.defaultConflictStrategy = defaultConflictStrategy
@@ -91,27 +91,42 @@ public struct SkillSettings: Codable, Equatable, Sendable {
         libraryPath = try container.decode(URL.self, forKey: .libraryPath)
         codexPath = try container.decode(URL.self, forKey: .codexPath)
         claudePath = try container.decode(URL.self, forKey: .claudePath)
-        agentTargets = try container.decodeIfPresent([AgentTarget].self, forKey: .agentTargets)
-            ?? [
-                AgentTarget(
-                    id: AgentTargetID.codex,
-                    displayName: "Codex",
-                    path: codexPath,
-                    isEnabled: true,
-                    logoAssetName: "codex",
-                    supportsSystemSkills: true
-                ),
-                AgentTarget(
-                    id: AgentTargetID.claude,
-                    displayName: "Claude",
-                    path: claudePath,
-                    isEnabled: true,
-                    logoAssetName: "claude"
-                )
-            ]
+        agentTargets = Self.normalizedAgentTargets(
+            try container.decodeIfPresent([AgentTarget].self, forKey: .agentTargets)
+                ?? [
+                    AgentTarget(
+                        id: AgentTargetID.codex,
+                        displayName: "Codex",
+                        path: codexPath,
+                        isEnabled: true,
+                        logoAssetName: "codex",
+                        supportsSystemSkills: true
+                    ),
+                    AgentTarget(
+                        id: AgentTargetID.claude,
+                        displayName: "Claude",
+                        path: claudePath,
+                        isEnabled: true,
+                        logoAssetName: "claude"
+                    )
+                ]
+        )
         showSystemSkills = try container.decode(Bool.self, forKey: .showSystemSkills)
         defaultInstallTargets = try container.decode([InstallTarget].self, forKey: .defaultInstallTargets)
         defaultConflictStrategy = try container.decode(ConflictStrategy.self, forKey: .defaultConflictStrategy)
         appearanceMode = try container.decodeIfPresent(AppearanceMode.self, forKey: .appearanceMode) ?? .system
+    }
+
+    private static func normalizedAgentTargets(_ targets: [AgentTarget]) -> [AgentTarget] {
+        targets.map { target in
+            guard target.logoAssetName == nil,
+                  let logoAssetName = AgentTargetID.defaultLogoAssetName(for: target.id)
+            else {
+                return target
+            }
+            var normalized = target
+            normalized.logoAssetName = logoAssetName
+            return normalized
+        }
     }
 }

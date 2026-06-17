@@ -33,6 +33,27 @@ public enum AgentTargetID {
     public static let openCode = "opencode"
     public static let antigravity = "antigravity"
     public static let hermes = "hermes"
+
+    public static func defaultLogoAssetName(for id: String) -> String? {
+        switch id {
+        case codex:
+            "codex"
+        case claude:
+            "claude"
+        case grok:
+            "grok"
+        case gemini:
+            "gemini"
+        case openCode:
+            "opencode"
+        case antigravity:
+            "antigravity"
+        case hermes:
+            "hermesagent"
+        default:
+            nil
+        }
+    }
 }
 
 public extension AgentTarget {
