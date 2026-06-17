@@ -47,6 +47,18 @@ final class SkillMarkdownParserTests: XCTestCase {
         XCTAssertEqual(firstHash, secondHash)
     }
 
+    func testHashIgnoresGitMetadataDirectory() throws {
+        let directory = try Fixtures.temporaryDirectory()
+        try Fixtures.write("# Skill", to: directory.appendingPathComponent("SKILL.md"))
+        let firstHash = try SkillHasher().hash(directory: directory)
+
+        try Fixtures.write("git log state", to: directory.appendingPathComponent(".git/logs/HEAD"))
+        try Fixtures.write("git config", to: directory.appendingPathComponent(".git/config"))
+        let secondHash = try SkillHasher().hash(directory: directory)
+
+        XCTAssertEqual(firstHash, secondHash)
+    }
+
     func testHashIncludesImportantHiddenFiles() throws {
         let directory = try Fixtures.temporaryDirectory()
         try Fixtures.write("# Skill", to: directory.appendingPathComponent("SKILL.md"))

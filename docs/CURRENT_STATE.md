@@ -244,6 +244,20 @@ V0.3.3 暂不包含：
 - 已增加 `SkillRowInstallBadgesTests` 回归测试，避免非 Codex / Claude 的 1-2 个安装状态被误折叠，并覆盖超过 2 个非默认 Agent 的补位展示。
 - 已验证：`swift test --filter SkillRowInstallBadgesTests` 3 项通过。
 
+### V0.4.0 Git 元数据更新误判修复（2026-06-17）
+
+- 已修复从 GitHub 克隆来的 Skill 在 `Check Update` 时把 `.git/logs/HEAD` 误判为 Skill 本地修改的问题。
+- `SkillHasher` 现在会忽略 `.git` 目录，Git 管理元数据不再影响 Skill 内容 Hash。
+- `RemoteUpdateService` 的文件变化预览现在会忽略 `.git` 目录，更新弹窗不会再显示 `.git/logs/HEAD` 这类仓库内部文件。
+- `.skill-config` 等重要隐藏文件仍会参与 Hash，不会因为跳过 `.git` 而忽略真实 Skill 配置。
+- 已增加回归测试：
+  - `SkillMarkdownParserTests/testHashIgnoresGitMetadataDirectory`
+  - `RemoteUpdateServiceTests/testCheckIgnoresGitMetadataChangesInsideSkillDirectory`
+- 已验证：
+  - `swift test --filter RemoteUpdateServiceTests`：7 项通过。
+  - `swift test --filter SkillMarkdownParserTests`：6 项通过。
+  - `swift build --target SkillDockApp`：通过。
+
 V0.4.0 暂不包含：
 
 - 批量同步。
@@ -314,6 +328,9 @@ V0.3.0 暂不包含：
 - Swift 6.3.2 已安装。
 - `swift test`：111 项全部通过，最后验证于 2026-06-17。
 - `swift build -c release`：通过，最后验证于 2026-06-17。
+- `swift test --filter RemoteUpdateServiceTests`：7 项通过，最后验证于 2026-06-17。
+- `swift test --filter SkillMarkdownParserTests`：6 项通过，最后验证于 2026-06-17。
+- `swift build --target SkillDockApp`：通过，最后验证于 2026-06-17。
 - V0.2.1 正式安装包 SHA-256：`e3e77eb13e2ba1046a78e24ef4d0780a0622b0679481677f936cedfba9f26f34`。
 - V0.3.0 正式安装包 SHA-256：`e7b2edf2020846c48577aa629425002c92be648bd4d76dbbc93a4988c82dc26a`。
 - V0.3.1 正式安装包 SHA-256：`1d3cf5137c4f5fcd0b5f388138f9f3eb6aaa1ac00e97053767066fd753b8157d`。
@@ -338,6 +355,7 @@ V0.3.0 暂不包含：
 - V0.4.0 已通过产品负责人验收，已合并并发布到 `main`。
 - 最新已发布版本为 `v0.4.0`。
 - V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
+- V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。
@@ -350,7 +368,8 @@ cd SkillDock
 git fetch origin
 git switch main
 git pull --ff-only origin main
-swift test --filter SkillRowInstallBadgesTests
+swift test --filter RemoteUpdateServiceTests
+swift test --filter SkillMarkdownParserTests
 ./scripts/run-app.sh
 ```
 

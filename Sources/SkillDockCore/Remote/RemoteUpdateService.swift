@@ -137,7 +137,12 @@ public actor RemoteUpdateService {
 
         var files: [String: URL] = [:]
         for case let file as URL in enumerator {
+            if file.lastPathComponent == ".git" {
+                enumerator.skipDescendants()
+                continue
+            }
             guard file.lastPathComponent != ".DS_Store" else { continue }
+            guard !file.pathComponents.contains(".git") else { continue }
             let values = try file.resourceValues(forKeys: [.isRegularFileKey])
             guard values.isRegularFile == true else { continue }
             files[relativePath(for: file, in: directory)] = file

@@ -194,12 +194,15 @@ V0.4.0 确认方向：
 - 安装 / 卸载逻辑支持自定义 Agent 目标。
 - Grok、Gemini、OpenCode、Antigravity、Hermes 使用产品负责人提供的彩色和灰色品牌 logo。
 - V0.4.0 发布后已补充列表 Agent 展示修复：已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才优先 Codex / Claude 并折叠其余为 `+N`。
+- V0.4.0 发布后已补充 GitHub 克隆 Skill 的更新误判修复：`.git` 元数据不参与内容 Hash 和更新 diff，避免无真实内容变化时误报本地修改。
 
 已验证：
 
 - `swift test`：111 项全部通过。
 - `dist/SkillDock-0.4.0.zip` 已生成并独立解压验证通过。
 - `swift test --filter SkillRowInstallBadgesTests`：3 项全部通过。
+- `swift test --filter RemoteUpdateServiceTests`：7 项全部通过。
+- `swift test --filter SkillMarkdownParserTests`：6 项全部通过。
 
 后续候选方向：
 

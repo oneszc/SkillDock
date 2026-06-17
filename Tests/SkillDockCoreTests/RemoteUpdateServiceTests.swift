@@ -45,6 +45,26 @@ final class RemoteUpdateServiceTests: XCTestCase {
         XCTAssertNotEqual(update.currentContentHash, fixture.installedHash)
     }
 
+    func testCheckIgnoresGitMetadataChangesInsideSkillDirectory() async throws {
+        let fixture = try await makeUpdateFixture()
+        defer { try? FileManager.default.removeItem(at: fixture.root) }
+        try Fixtures.write(
+            "local git log state",
+            to: fixture.localSkill.appendingPathComponent(".git/logs/HEAD")
+        )
+        try Fixtures.write(
+            "remote git log state",
+            to: fixture.remoteSkill.appendingPathComponent(".git/logs/HEAD")
+        )
+
+        let update = try await fixture.service.check(fixture.source)
+
+        XCTAssertEqual(update.status, .upToDate)
+        XCTAssertEqual(update.currentContentHash, fixture.installedHash)
+        XCTAssertEqual(update.remoteContentHash, fixture.installedHash)
+        XCTAssertEqual(update.modifiedFiles, [])
+    }
+
     func testCheckBuildsFileChangePreview() async throws {
         let fixture = try await makeUpdateFixture()
         defer { try? FileManager.default.removeItem(at: fixture.root) }

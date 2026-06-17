@@ -14,9 +14,17 @@ public struct SkillHasher: Sendable {
             return SHA256.hash(data: Data()).hexString
         }
 
-        let files = enumerator.compactMap { $0 as? URL }
+        let files = enumerator.compactMap { item -> URL? in
+            guard let url = item as? URL else { return nil }
+            if url.lastPathComponent == ".git" {
+                enumerator.skipDescendants()
+                return nil
+            }
+            return url
+        }
             .filter { url in
                 guard url.lastPathComponent != ".DS_Store" else { return false }
+                guard !url.pathComponents.contains(".git") else { return false }
                 return (try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile) == true
             }
             .sorted { relativePath(for: $0, in: directory) < relativePath(for: $1, in: directory) }
