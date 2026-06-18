@@ -10,35 +10,35 @@ struct TranslationEmptyView: View {
             switch state {
             case .missingConfiguration:
                 ContentUnavailableView {
-                    Label("尚未配置翻译", systemImage: "key")
+                    Label("Translation Not Configured", systemImage: "key")
                 } description: {
-                    Text("请先在设置中配置 DeepSeek API Key。")
+                    Text("Configure your DeepSeek API Key in Settings.")
                 } actions: {
-                    Button("前往设置", action: onOpenSettings)
+                    Button("Open Settings", action: onOpenSettings)
                 }
             case .empty:
                 ContentUnavailableView {
-                    Label("尚未生成译文", systemImage: "character.book.closed")
+                    Label("No Translation Yet", systemImage: "character.book.closed")
                 } description: {
-                    Text("SkillDock 会将当前 SKILL.md 发送给 DeepSeek 生成中文译文。")
+                    Text("SkillDock will send the current SKILL.md to DeepSeek to generate a Chinese translation.")
                 } actions: {
-                    Button("生成译文", action: onGenerate)
+                    Button("Generate Translation", action: onGenerate)
                         .buttonStyle(.borderedProminent)
                 }
             case .generating:
                 ContentUnavailableView {
                     ProgressView()
-                    Text("正在生成译文")
+                    Text("Generating Translation")
                 } description: {
-                    Text("完成前可以继续查看原文。")
+                    Text("You can continue reading the original while this completes.")
                 }
             case .failed(let message):
                 ContentUnavailableView {
-                    Label("生成失败", systemImage: "exclamationmark.triangle")
+                    Label("Translation Failed", systemImage: "exclamationmark.triangle")
                 } description: {
                     Text(message)
                 } actions: {
-                    Button("重试", action: onGenerate)
+                    Button("Retry", action: onGenerate)
                 }
             case .original, .available:
                 EmptyView()

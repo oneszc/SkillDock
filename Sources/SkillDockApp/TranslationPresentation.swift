@@ -5,7 +5,7 @@ enum TranslationLanguage: String, CaseIterable, Identifiable {
     case translated
 
     var id: Self { self }
-    var title: String { self == .original ? "原文" : "译文" }
+    var title: String { self == .original ? "Original" : "Translation" }
 }
 
 enum TranslationContentState: Equatable {

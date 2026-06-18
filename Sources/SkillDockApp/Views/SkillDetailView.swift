@@ -21,13 +21,13 @@ struct SkillDetailView: View {
             .task(id: record.id) {
                 hasAPIKey = await model.hasTranslationAPIKey()
             }
-            .alert("重新生成译文？", isPresented: $confirmsRegeneration) {
-                Button("取消", role: .cancel) {}
-                Button("重新生成") {
+            .alert("Regenerate Translation?", isPresented: $confirmsRegeneration) {
+                Button("Cancel", role: .cancel) {}
+                Button("Regenerate") {
                     Task { await model.generateSelectedTranslation() }
                 }
             } message: {
-                Text("现有译文会被新译文覆盖，并产生新的 API 使用量。")
+                Text("The existing translation will be replaced and additional API usage will be incurred.")
             }
         } else {
             ContentUnavailableView(
@@ -163,14 +163,14 @@ struct SkillDetailView: View {
             VStack(spacing: 0) {
                 HStack {
                     if isStale {
-                        Label("原内容已变化，译文可能已过期", systemImage: "exclamationmark.triangle.fill")
+                        Label("The source has changed. This translation may be outdated.", systemImage: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
                     } else {
-                        Label("AI 生成译文", systemImage: "sparkles")
+                        Label("AI-generated translation", systemImage: "sparkles")
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
-                    Button(isStale ? "更新译文" : "重新生成") {
+                    Button(isStale ? "Update Translation" : "Regenerate") {
                         confirmsRegeneration = true
                     }
                 }

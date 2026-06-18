@@ -65,7 +65,7 @@ struct AITranslationSettingsView: View {
 
             Section("Privacy") {
                 Label {
-                    Text("只有在你主动生成译文时，当前 Skill 的 SKILL.md 内容才会发送给 DeepSeek。")
+                    Text("The current Skill's SKILL.md is sent to DeepSeek only when you generate a translation.")
                 } icon: {
                     Image(systemName: "hand.raised")
                 }
