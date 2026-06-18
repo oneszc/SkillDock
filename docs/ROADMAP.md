@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.3 已完成并发布 GitHub Release。V0.4.0 已完成、验收并发布；V0.4.1 维护更新已发布 GitHub Release。
+V0.3.3 已完成并发布 GitHub Release。V0.4.0 已完成、验收并发布；V0.4.1 维护更新已发布。V0.5.0 已完成开发和产品验收，进入正式发布。
 
 ## V0.1 - Local Skill Library
 
@@ -231,7 +231,7 @@ docs/superpowers/plans/2026-06-16-v0.4-multi-agent-targets.md
 
 目标：使用 DeepSeek 为单个 Skill 生成可切换查看的中文译文。
 
-状态：功能开发和自动化验证已完成，等待产品负责人按 V0.5 验收清单测试真实 API 与界面。
+状态：功能开发、自动化验证和产品负责人手动验收均已完成，发布版本为 V0.5.0。
 
 V0.5 确认范围：
 

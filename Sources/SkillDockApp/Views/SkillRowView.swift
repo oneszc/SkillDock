@@ -58,10 +58,6 @@ struct SkillRowView: View {
     }
 
     private var rowDescription: String {
-        if !record.isTranslationStale,
-           let translated = record.translation?.translatedDescription.nonEmpty {
-            return translated
-        }
         return record.skill.description ?? record.skill.source.displayName
     }
 }
@@ -90,11 +86,5 @@ struct SkillRowInstallBadges {
 
         visibleTargets = Array(badgeTargets.prefix(2))
         collapsedCount = max(0, installedTargets.count - visibleTargets.count)
-    }
-}
-
-private extension String {
-    var nonEmpty: String? {
-        isEmpty ? nil : self
     }
 }

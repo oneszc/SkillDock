@@ -15,7 +15,6 @@ struct SkillListView: View {
         VStack(spacing: 0) {
             if showsAgentFilter {
                 agentFilterBar
-                Divider()
             }
 
             Group {

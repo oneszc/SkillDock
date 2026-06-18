@@ -1,3 +1,4 @@
+import AppKit
 import SkillDockCore
 import SwiftUI
 
@@ -13,7 +14,6 @@ struct SkillDetailView: View {
         if let record {
             VStack(spacing: 0) {
                 detailHeader(record)
-                Divider()
                 content(for: record)
             }
             .navigationTitle(record.skill.name)
@@ -79,37 +79,44 @@ struct SkillDetailView: View {
                 .labelStyle(.titleAndIcon)
                 .font(.body)
 
-                if let source = record.remoteSource {
-                    HStack(spacing: 12) {
-                        Label("GitHub", systemImage: "network")
-                            .foregroundStyle(.secondary)
-                        Text("\(source.owner)/\(source.repository)")
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .textSelection(.enabled)
-                        if source.branch != "HEAD" {
-                            Text(source.branch)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(.quaternary, in: Capsule())
-                        }
-                        Spacer(minLength: 0)
-                        Button {
-                            Task { await model.checkSelectedRemoteUpdate() }
-                        } label: {
-                            Label(
-                                model.isCheckingRemoteUpdate ? "Checking" : "Check Update",
-                                systemImage: "arrow.clockwise"
-                            )
-                        }
-                        .disabled(model.isCheckingRemoteUpdate)
-                    }
-                    .font(.callout)
-                }
             }
             .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
+
+            if let source = record.remoteSource {
+                HStack(spacing: 12) {
+                    if let githubLogoImage {
+                        Image(nsImage: githubLogoImage)
+                            .resizable()
+                            .renderingMode(.template)
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                            .foregroundStyle(.secondary)
+                    }
+                    Text("GitHub")
+                        .foregroundStyle(.secondary)
+                    Text("\(source.owner)/\(source.repository)")
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .textSelection(.enabled)
+                    if source.branch != "HEAD" {
+                        Text(source.branch)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(.quaternary, in: Capsule())
+                    }
+                    Button {
+                        Task { await model.checkSelectedRemoteUpdate() }
+                    } label: {
+                        Text(model.isCheckingRemoteUpdate ? "Checking…" : "Check Update")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.tint)
+                    .disabled(model.isCheckingRemoteUpdate)
+                }
+                .font(.callout)
+            }
 
             HStack(spacing: 18) {
                 Picker("Detail", selection: $tab) {
@@ -119,7 +126,7 @@ struct SkillDetailView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .frame(width: 470)
+                .fixedSize(horizontal: true, vertical: false)
 
                 Spacer(minLength: 0)
 
@@ -136,11 +143,22 @@ struct SkillDetailView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(VisualMetrics.contentPadding)
+        .padding(.horizontal, VisualMetrics.contentPadding)
+        .padding(.top, VisualMetrics.contentPadding)
+        .padding(.bottom, 12)
     }
 
     private var enabledAgentTargets: [AgentTarget] {
         model.settings.agentTargets.filter(\.isEnabled)
+    }
+
+    private var githubLogoImage: NSImage? {
+        guard let url = Bundle.module.url(forResource: "github", withExtension: "svg"),
+              let image = NSImage(contentsOf: url) else {
+            return nil
+        }
+        image.isTemplate = true
+        return image
     }
 
     @ViewBuilder
