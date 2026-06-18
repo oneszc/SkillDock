@@ -13,6 +13,13 @@ final class AppModel {
         case failed(skillID: String, message: String)
     }
 
+    enum TranslationConnectionState: Equatable {
+        case idle
+        case testing
+        case succeeded
+        case failed(String)
+    }
+
     enum NoteSaveState: Equatable {
         case idle
         case pending
@@ -56,6 +63,8 @@ final class AppModel {
     var isRemoteUpdatePreviewPresented = false
     var isCheckingRemoteUpdate = false
     var translationOperationState: TranslationOperationState = .idle
+    var translationConnectionState: TranslationConnectionState = .idle
+    var translationAPIKey = ""
 
     private let settingsStore: SettingsStore
     private let libraryService: SkillLibraryService
@@ -63,6 +72,7 @@ final class AppModel {
     private let importPreviewService: ImportPreviewService
     private let remoteUpdateService: RemoteUpdateService
     private let translationService: any SkillTranslationServicing
+    private let translationCredentialStore: any TranslationCredentialStoring
     private let search = SkillSearch()
     private var noteSaveTask: Task<Void, Never>?
     private var noteDraftSkill: Skill?
@@ -78,7 +88,8 @@ final class AppModel {
                 zipProvider: GitHubZipRepositoryProvider()
             )
         ),
-        translationService: any SkillTranslationServicing = SkillTranslationService()
+        translationService: any SkillTranslationServicing = SkillTranslationService(),
+        translationCredentialStore: any TranslationCredentialStoring = KeychainTranslationCredentialStore()
     ) {
         self.settingsStore = settingsStore
         self.libraryService = libraryService
@@ -86,6 +97,7 @@ final class AppModel {
         self.importPreviewService = importPreviewService
         self.remoteUpdateService = remoteUpdateService
         self.translationService = translationService
+        self.translationCredentialStore = translationCredentialStore
     }
 
     var filteredRecords: [SkillRecord] {
@@ -155,6 +167,54 @@ final class AppModel {
 
     func hasTranslationAPIKey() async -> Bool {
         await translationService.hasAPIKey(settings: settings.translation)
+    }
+
+    func loadTranslationAPIKey() async {
+        do {
+            translationAPIKey = try await translationCredentialStore.apiKey(
+                providerID: settings.translation.providerID
+            ) ?? ""
+        } catch {
+            translationConnectionState = .failed(error.localizedDescription)
+        }
+    }
+
+    func saveTranslationAPIKey(_ apiKey: String) async {
+        let trimmed = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        do {
+            if trimmed.isEmpty {
+                try await translationCredentialStore.deleteAPIKey(
+                    providerID: settings.translation.providerID
+                )
+            } else {
+                try await translationCredentialStore.saveAPIKey(
+                    trimmed,
+                    providerID: settings.translation.providerID
+                )
+            }
+            translationAPIKey = trimmed
+            translationConnectionState = .idle
+        } catch {
+            translationConnectionState = .failed(error.localizedDescription)
+        }
+    }
+
+    func saveTranslationConfiguration() async {
+        do {
+            try await settingsStore.save(settings)
+        } catch {
+            translationConnectionState = .failed("Translation settings could not be saved.")
+        }
+    }
+
+    func testTranslationConnection() async {
+        translationConnectionState = .testing
+        do {
+            try await translationService.testConnection(settings: settings.translation)
+            translationConnectionState = .succeeded
+        } catch {
+            translationConnectionState = .failed(error.localizedDescription)
+        }
     }
 
     func generateSelectedTranslation() async {

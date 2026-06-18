@@ -17,6 +17,8 @@ struct SettingsWindowView: View {
             switch selection {
             case .general:
                 SettingsView(model: model)
+            case .aiTranslation:
+                AITranslationSettingsView(model: model)
             }
         }
         .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
@@ -25,18 +27,21 @@ struct SettingsWindowView: View {
 
 enum SettingsSection: String, CaseIterable, Identifiable {
     case general
+    case aiTranslation
 
     var id: Self { self }
 
     var title: String {
         switch self {
         case .general: "General"
+        case .aiTranslation: "AI Translation"
         }
     }
 
     var systemImage: String {
         switch self {
         case .general: "gearshape"
+        case .aiTranslation: "character.book.closed"
         }
     }
 }
