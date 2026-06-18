@@ -115,5 +115,6 @@ https://api-docs.deepseek.com/updates/
 
 边界：
 
-- 第一版固定使用 DeepSeek 官方 API 地址。
-- 不加入其他供应商、自定义 Prompt 或自定义 API 地址。
+- 第一版 DeepSeek Provider 固定使用官方 API 地址。
+- 第一版界面不加入其他供应商、自定义 Prompt 或自定义 API 地址。
+- 翻译业务使用可扩展 Provider 接口，DeepSeek 只是首个实现，不作为业务层固定依赖。

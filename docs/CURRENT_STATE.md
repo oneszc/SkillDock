@@ -262,7 +262,8 @@ V0.3.3 暂不包含：
 
 已确认：
 
-- 第一版只支持 DeepSeek，通过 Settings 配置 API Key、模型和连接测试。
+- 第一版界面只开放 DeepSeek，通过 Settings 配置 API Key、模型和连接测试。
+- 底层使用可扩展 Translation Provider 接口，避免在详情页、存储和翻译状态中写死 DeepSeek。
 - 详情页删除 `Chinese Notes`，保留 `SKILL.md / Files / Install`。
 - `原文 / 译文` 与内容导航同排但左右分组，只在 `SKILL.md` 页面显示。
 - Skill 名称始终显示原文；译文同时覆盖顶部介绍和完整 `SKILL.md` 正文。

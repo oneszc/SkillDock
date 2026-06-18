@@ -229,7 +229,8 @@ docs/superpowers/plans/2026-06-16-v0.4-multi-agent-targets.md
 V0.5 确认范围：
 
 - Settings 新增 `AI Translation` 分类。
-- 第一版只支持 DeepSeek，配置 API Key、模型和连接测试。
+- 第一版界面只开放 DeepSeek，配置 API Key、模型和连接测试。
+- 底层使用可扩展 Translation Provider 接口，不把 DeepSeek 写死在详情页、存储或翻译状态逻辑中。
 - API Key 使用 macOS Keychain 保存。
 - 详情页删除 `Chinese Notes`，内容导航调整为 `SKILL.md / Files / Install`。
 - `SKILL.md` 页面在内容导航右侧增加独立的 `原文 / 译文` 切换。
@@ -243,7 +244,7 @@ V0.5 暂不包含：
 
 - 批量或后台自动翻译。
 - 手动编辑译文。
-- 多模型供应商、自定义 API 地址和自定义 Prompt。
+- 其他模型供应商的界面接入、自定义 API 地址和自定义 Prompt。
 - 翻译 Skill 名称或 `SKILL.md` 之外的文件。
 - AI 风险评级、标签和使用建议扩写。
 

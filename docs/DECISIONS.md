@@ -277,7 +277,8 @@ https://developer.apple.com/cn/sf-symbols/
 
 决定：
 
-- V0.5 第一版只支持 DeepSeek。
+- V0.5 第一版界面只开放 DeepSeek，但底层使用可扩展 Translation Provider 接口。
+- DeepSeek 作为首个 Provider 实现注册，详情页、译文存储和状态逻辑不依赖 DeepSeek 专属类型。
 - Settings 新增独立的 `AI Translation` 分类，配置 API Key、模型和连接测试。
 - 详情页删除 `Chinese Notes`，在 `SKILL.md` 页面增加独立的 `原文 / 译文` 切换。
 - 语言切换与 `SKILL.md / Files / Install` 同排但左右分组，不混为同一个 Tab。
@@ -289,5 +290,6 @@ https://developer.apple.com/cn/sf-symbols/
 
 - 原文 / 译文更符合阅读完整 Skill 的心智模型，比结构化手动备注更直接。
 - 保持 Skill 原始身份，避免名称翻译造成搜索和跨 Agent 识别混乱。
-- 单供应商、手动触发和只读结果可以控制第一版复杂度、API 成本和数据风险。
+- 首期只开放一个供应商、手动触发和只读结果，可以控制第一版复杂度、API 成本和数据风险。
+- 提前隔离 Provider 边界，后续接入其他模型时不需要重写译文业务流程。
 - 独立存储继续遵守“不修改原始 Skill”的产品原则。
