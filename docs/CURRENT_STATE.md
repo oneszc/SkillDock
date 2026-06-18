@@ -2,7 +2,7 @@
 
 ## Current Stage
 
-V0.4.1 维护版本已完成，待发布 GitHub Release。
+V0.4.1 维护版本已完成并发布 GitHub Release。
 
 ## Current Goal
 
@@ -286,6 +286,7 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - 已新增 Release notes：`docs/releases/v0.4.1.md`。
 - 打包脚本默认版本已更新为 `0.4.1`。
 - V0.5 规划文档已纳入主分支，但本安装包不包含 V0.5 功能。
+- GitHub Release 已发布：`https://github.com/oneszc/SkillDock/releases/tag/v0.4.1`
 
 已验证：
 
@@ -395,7 +396,7 @@ V0.3.0 暂不包含：
 
 - 最新功能实现：V0.4.0 Multi-Agent Targets，支持动态 Agent 扫描、筛选、安装、卸载和设置管理。
 - V0.4.0 已通过产品负责人验收，已合并并发布到 `main`。
-- 最新待发布版本为 `v0.4.1`，安装包、Release notes 和发布验证已完成。
+- 最新已发布版本为 `v0.4.1`，安装包、Release notes 和发布验证均已完成。
 - V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
 - V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
 - V0.5 已确认 DeepSeek 单 Skill 译文方案，规划文档已完成，尚未开始功能开发。

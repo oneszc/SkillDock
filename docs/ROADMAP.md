@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.3 已完成并发布 GitHub Release。V0.4.0 已完成、验收并发布；V0.4.1 维护更新已完成发布准备。
+V0.3.3 已完成并发布 GitHub Release。V0.4.0 已完成、验收并发布；V0.4.1 维护更新已发布 GitHub Release。
 
 ## V0.1 - Local Skill Library
 
