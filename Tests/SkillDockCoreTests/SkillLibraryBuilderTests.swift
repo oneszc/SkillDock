@@ -47,6 +47,36 @@ final class SkillLibraryBuilderTests: XCTestCase {
         XCTAssertEqual(record?.isNoteStale, true)
     }
 
+    func testAttachesCurrentAndStaleTranslationMatches() {
+        let skill = makeSkill(source: .library, hash: "new")
+        let translation = SkillTranslation(
+            skillName: skill.name,
+            source: skill.source,
+            contentHash: "old",
+            translatedDescription: "中文介绍",
+            translatedMarkdown: "# 中文正文",
+            providerID: TranslationProviderID.deepSeek,
+            model: DeepSeekModel.flash.rawValue,
+            generatedAt: Date(timeIntervalSince1970: 1)
+        )
+
+        let staleRecord = SkillLibraryBuilder().build(
+            skills: [skill],
+            notes: [],
+            translations: [translation]
+        ).first
+        let currentSkill = makeSkill(source: .library, hash: "old")
+        let currentRecord = SkillLibraryBuilder().build(
+            skills: [currentSkill],
+            notes: [],
+            translations: [translation]
+        ).first
+
+        XCTAssertEqual(staleRecord?.translation, translation)
+        XCTAssertEqual(staleRecord?.isTranslationStale, true)
+        XCTAssertEqual(currentRecord?.isTranslationStale, false)
+    }
+
     private func makeSkill(source: SkillSource, hash: String) -> Skill {
         Skill(
             id: "\(source.rawValue):sample:\(hash)",

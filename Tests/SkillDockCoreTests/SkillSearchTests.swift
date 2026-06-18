@@ -10,13 +10,13 @@ final class SkillSearchTests: XCTestCase {
         XCTAssertEqual(search.filter(records, query: "description").count, 1)
     }
 
-    func testSearchMatchesChineseDescriptionAndTagsButNotLegacyChineseName() {
+    func testSearchMatchesCurrentTranslationButNotLegacyNotes() {
         let records = [makeRecord()]
         let search = SkillSearch()
 
         XCTAssertTrue(search.filter(records, query: "示例技能").isEmpty)
-        XCTAssertEqual(search.filter(records, query: "帮助理解").count, 1)
-        XCTAssertEqual(search.filter(records, query: "设计").count, 1)
+        XCTAssertTrue(search.filter(records, query: "旧备注").isEmpty)
+        XCTAssertEqual(search.filter(records, query: "中文介绍").count, 1)
     }
 
     func testSystemFilterReturnsOnlySystemSkills() {
@@ -45,7 +45,7 @@ final class SkillSearchTests: XCTestCase {
         let note = SkillNote(
             key: SkillNoteKey(name: skill.name, source: skill.source, contentHash: skill.contentHash),
             chineseName: "示例技能",
-            chineseDescription: "帮助理解这个技能。",
+            chineseDescription: "旧备注内容。",
             tags: ["设计"],
             useCases: [],
             riskLevel: .low,
@@ -53,6 +53,22 @@ final class SkillSearchTests: XCTestCase {
             usageNote: "",
             updatedAt: Date(timeIntervalSince1970: 1)
         )
-        return SkillRecord(skill: skill, note: note, isNoteStale: false)
+        let translation = SkillTranslation(
+            skillName: skill.name,
+            source: skill.source,
+            contentHash: skill.contentHash,
+            translatedDescription: "中文介绍内容。",
+            translatedMarkdown: "# 中文正文",
+            providerID: TranslationProviderID.deepSeek,
+            model: DeepSeekModel.flash.rawValue,
+            generatedAt: Date(timeIntervalSince1970: 1)
+        )
+        return SkillRecord(
+            skill: skill,
+            note: note,
+            isNoteStale: false,
+            translation: translation,
+            isTranslationStale: false
+        )
     }
 }

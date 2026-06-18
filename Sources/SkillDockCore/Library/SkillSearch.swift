@@ -19,17 +19,12 @@ public struct SkillSearch: Sendable {
 
     private func searchableText(for record: SkillRecord) -> String {
         let skill = record.skill
-        let note = record.note
         return [
             skill.name,
             skill.description ?? "",
             skill.path.path,
             skill.source.displayName,
-            note?.chineseDescription ?? "",
-            note?.tags.joined(separator: " ") ?? "",
-            note?.useCases.joined(separator: " ") ?? "",
-            note?.riskNote ?? "",
-            note?.usageNote ?? ""
+            record.isTranslationStale ? "" : record.translation?.translatedDescription ?? ""
         ]
         .joined(separator: " ")
         .lowercased()
