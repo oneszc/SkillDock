@@ -4,6 +4,10 @@ import SwiftUI
 struct SkillDetailView: View {
     @Bindable var model: AppModel
     @State private var tab: DetailTab = .markdown
+    @State private var language: TranslationLanguage = .original
+    @State private var hasAPIKey = false
+    @State private var confirmsRegeneration = false
+    @Environment(\.openWindow) private var openWindow
     let record: SkillRecord?
 
     var body: some View {
@@ -14,6 +18,17 @@ struct SkillDetailView: View {
                 content(for: record)
             }
             .navigationTitle(record.skill.name)
+            .task(id: record.id) {
+                hasAPIKey = await model.hasTranslationAPIKey()
+            }
+            .alert("重新生成译文？", isPresented: $confirmsRegeneration) {
+                Button("取消", role: .cancel) {}
+                Button("重新生成") {
+                    Task { await model.generateSelectedTranslation() }
+                }
+            } message: {
+                Text("现有译文会被新译文覆盖，并产生新的 API 使用量。")
+            }
         } else {
             ContentUnavailableView(
                 "Select a Skill",
@@ -29,16 +44,10 @@ struct SkillDetailView: View {
                 .font(.system(size: 32, weight: .semibold))
                 .textSelection(.enabled)
 
-            if let englishDescription = record.skill.description?.nonEmpty {
-                Text(englishDescription)
+            if let description = presentation(for: record).description?.nonEmpty {
+                Text(description)
                     .font(.title3)
                     .foregroundStyle(.secondary)
-                    .textSelection(.enabled)
-            }
-
-            if let chineseDescription = record.note?.chineseDescription.nonEmpty {
-                Text(chineseDescription)
-                    .font(.title3)
                     .textSelection(.enabled)
             }
 
@@ -99,13 +108,29 @@ struct SkillDetailView: View {
                 .font(.callout)
             }
 
-            Picker("Detail", selection: $tab) {
-                ForEach(DetailTab.allCases) { item in
-                    Label(item.title, systemImage: item.systemImage).tag(item)
+            HStack(spacing: 18) {
+                Picker("Detail", selection: $tab) {
+                    ForEach(DetailTab.allCases) { item in
+                        Label(item.title, systemImage: item.systemImage).tag(item)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(maxWidth: 660)
+
+                Spacer(minLength: 0)
+
+                if tab == .markdown {
+                    Picker("Language", selection: $language) {
+                        ForEach(TranslationLanguage.allCases) { item in
+                            Text(item.title).tag(item)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .frame(width: 150)
                 }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
         }
         .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -120,14 +145,79 @@ struct SkillDetailView: View {
     private func content(for record: SkillRecord) -> some View {
         switch tab {
         case .markdown:
-            MarkdownPreviewView(markdown: model.markdown)
+            translationContent(for: record)
         case .files:
             FilesView(paths: model.filePaths)
-        case .notes:
-            NotesEditorView(model: model)
         case .install:
             installView(record)
         }
+    }
+
+    @ViewBuilder
+    private func translationContent(for record: SkillRecord) -> some View {
+        let presentation = presentation(for: record)
+        switch presentation.state {
+        case .original:
+            MarkdownPreviewView(markdown: presentation.markdown)
+        case .available(let isStale):
+            VStack(spacing: 0) {
+                HStack {
+                    if isStale {
+                        Label("原内容已变化，译文可能已过期", systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                    } else {
+                        Label("AI 生成译文", systemImage: "sparkles")
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button(isStale ? "更新译文" : "重新生成") {
+                        confirmsRegeneration = true
+                    }
+                }
+                .font(.callout)
+                .padding(.horizontal, VisualMetrics.contentPadding)
+                .padding(.vertical, 10)
+                .background(.quaternary)
+                MarkdownPreviewView(markdown: presentation.markdown)
+            }
+        case .missingConfiguration, .empty, .generating, .failed:
+            TranslationEmptyView(
+                state: presentation.state,
+                onGenerate: {
+                    Task { await model.generateSelectedTranslation() }
+                },
+                onOpenSettings: {
+                    model.settingsSection = .aiTranslation
+                    openWindow(id: "settings")
+                }
+            )
+        }
+    }
+
+    private func presentation(for record: SkillRecord) -> TranslationPresentation {
+        let operation = model.translationOperationState
+        let isGenerating: Bool
+        let errorMessage: String?
+        switch operation {
+        case .generating(let skillID) where skillID == record.id:
+            isGenerating = true
+            errorMessage = nil
+        case .failed(let skillID, let message) where skillID == record.id:
+            isGenerating = false
+            errorMessage = message
+        default:
+            isGenerating = false
+            errorMessage = nil
+        }
+        return TranslationPresentation(
+            record: record,
+            originalMarkdown: model.markdown,
+            language: language,
+            showsMarkdown: tab == .markdown,
+            isGenerating: isGenerating,
+            errorMessage: errorMessage,
+            hasAPIKey: hasAPIKey
+        )
     }
 
     private func isInstalled(_ target: AgentTarget, in record: SkillRecord) -> Bool {
@@ -184,7 +274,6 @@ struct SkillDetailView: View {
 private enum DetailTab: String, CaseIterable, Identifiable {
     case markdown
     case files
-    case notes
     case install
 
     var id: Self { self }
@@ -193,7 +282,6 @@ private enum DetailTab: String, CaseIterable, Identifiable {
         switch self {
         case .markdown: "SKILL.md"
         case .files: "Files"
-        case .notes: "Chinese Notes"
         case .install: "Install"
         }
     }
@@ -202,7 +290,6 @@ private enum DetailTab: String, CaseIterable, Identifiable {
         switch self {
         case .markdown: "doc.text"
         case .files: "folder"
-        case .notes: "character.book.closed"
         case .install: "square.and.arrow.down"
         }
     }

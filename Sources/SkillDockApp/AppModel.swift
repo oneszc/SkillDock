@@ -65,6 +65,7 @@ final class AppModel {
     var translationOperationState: TranslationOperationState = .idle
     var translationConnectionState: TranslationConnectionState = .idle
     var translationAPIKey = ""
+    var settingsSection: SettingsSection = .general
 
     private let settingsStore: SettingsStore
     private let libraryService: SkillLibraryService

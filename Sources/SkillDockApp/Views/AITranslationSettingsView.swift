@@ -50,8 +50,10 @@ struct AITranslationSettingsView: View {
 
                 HStack {
                     Button {
-                        saveAPIKey()
-                        Task { await model.testTranslationConnection() }
+                        Task {
+                            await model.saveTranslationAPIKey(apiKey)
+                            await model.testTranslationConnection()
+                        }
                     } label: {
                         Label("Test Connection", systemImage: "network")
                     }
