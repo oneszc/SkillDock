@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5 DeepSeek Skill Translation 已完成开发、自动化验证和产品负责人手动验收，正在发布 V0.5.0。
+V0.5 DeepSeek Skill Translation 已完成开发、验收、主线合并和 V0.5.0 正式发布。
 
 ## Current Goal
 
-完成 V0.5.0 主线合并、安装包验证和 GitHub Release 发布。
+从 `main` 开始下一版本规划；V0.5.0 保持维护状态。
 
 ## Completed
 
@@ -306,7 +306,7 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - 原始 Skill 内容保护、译文独立存储和切换 Skill 后结果归属验收通过。
 - 验收清单：`docs/testing/V0.5_ACCEPTANCE.md`。
 
-### V0.5.0 Release Preparation（2026-06-18）
+### V0.5.0 Release（2026-06-18）
 
 - 产品负责人已完成 V0.5 功能与视觉验收。
 - 详情页完成导航左右对齐、GitHub 来源展示和更新入口布局优化。
@@ -318,6 +318,8 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - `dist/SkillDock-0.5.0.zip` 已生成并独立解压验证通过。
 - 包内版本：`0.5.0`。
 - SHA-256：`4469b69998934f1c04024096b24a0f0893021b9075c7332f7b46457d7068c0b5`。
+- `codex/v0.5-development` 已合并到 `main`。
+- GitHub Release：`https://github.com/oneszc/SkillDock/releases/tag/v0.5.0`
 
 ### V0.4.1 Maintenance Release（2026-06-18）
 
@@ -438,11 +440,11 @@ V0.3.0 暂不包含：
 
 - 最新功能实现：V0.5 DeepSeek Skill Translation，已完成自动化验证和产品负责人手动验收。
 - V0.4.0 已通过产品负责人验收，已合并并发布到 `main`。
-- 当前准备发布版本为 `v0.5.0`，Release notes 和验收记录已完成。
+- 最新已发布版本为 `v0.5.0`，安装包、Release notes 和发布验证均已完成。
 - V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
 - V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
 - V0.5 已完成 Provider、Keychain、译文存储、Settings 和详情页 Original / Translation 体验。
-- 下一步完成主线合并、安装包校验和 GitHub V0.5.0 Release；发布后从 `main` 继续下一版本规划。
+- V0.5.0 已合并到 `main` 并发布 GitHub Release；下一步从 `main` 继续下一版本规划。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。
