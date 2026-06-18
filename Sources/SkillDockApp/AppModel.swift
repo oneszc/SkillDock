@@ -6,6 +6,13 @@ import SkillDockCore
 @MainActor
 @Observable
 final class AppModel {
+    enum TranslationOperationState: Equatable {
+        case idle
+        case generating(skillID: String)
+        case succeeded(skillID: String)
+        case failed(skillID: String, message: String)
+    }
+
     enum NoteSaveState: Equatable {
         case idle
         case pending
@@ -48,12 +55,14 @@ final class AppModel {
     var remoteUpdate: RemoteSkillUpdate?
     var isRemoteUpdatePreviewPresented = false
     var isCheckingRemoteUpdate = false
+    var translationOperationState: TranslationOperationState = .idle
 
     private let settingsStore: SettingsStore
     private let libraryService: SkillLibraryService
     private let workspaceService: SkillWorkspaceService
     private let importPreviewService: ImportPreviewService
     private let remoteUpdateService: RemoteUpdateService
+    private let translationService: any SkillTranslationServicing
     private let search = SkillSearch()
     private var noteSaveTask: Task<Void, Never>?
     private var noteDraftSkill: Skill?
@@ -68,13 +77,15 @@ final class AppModel {
                 cloneProvider: GitCloneRepositoryProvider(),
                 zipProvider: GitHubZipRepositoryProvider()
             )
-        )
+        ),
+        translationService: any SkillTranslationServicing = SkillTranslationService()
     ) {
         self.settingsStore = settingsStore
         self.libraryService = libraryService
         self.workspaceService = workspaceService
         self.importPreviewService = importPreviewService
         self.remoteUpdateService = remoteUpdateService
+        self.translationService = translationService
     }
 
     var filteredRecords: [SkillRecord] {
@@ -140,6 +151,45 @@ final class AppModel {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    func hasTranslationAPIKey() async -> Bool {
+        await translationService.hasAPIKey(settings: settings.translation)
+    }
+
+    func generateSelectedTranslation() async {
+        guard let record = selectedRecord else { return }
+        let skill = record.skill
+        let sourceMarkdown = markdown
+        translationOperationState = .generating(skillID: skill.id)
+
+        do {
+            let translation = try await translationService.generate(
+                skill: skill,
+                markdown: sourceMarkdown,
+                settings: settings.translation
+            )
+            updateRecord(id: skill.id, translation: translation)
+            translationOperationState = .succeeded(skillID: skill.id)
+        } catch {
+            translationOperationState = .failed(
+                skillID: skill.id,
+                message: error.localizedDescription
+            )
+        }
+    }
+
+    private func updateRecord(id: SkillRecord.ID, translation: SkillTranslation) {
+        guard let index = records.firstIndex(where: { $0.id == id }) else { return }
+        let record = records[index]
+        records[index] = SkillRecord(
+            skill: record.skill,
+            note: record.note,
+            isNoteStale: record.isNoteStale,
+            remoteSource: record.remoteSource,
+            translation: translation,
+            isTranslationStale: translation.contentHash != record.skill.contentHash
+        )
     }
 
     func loadNoteDraft() async {
