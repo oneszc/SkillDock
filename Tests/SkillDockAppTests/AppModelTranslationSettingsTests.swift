@@ -61,13 +61,32 @@ final class AppModelTranslationSettingsTests: XCTestCase {
             .failed(TranslationProviderError.invalidAPIKey.localizedDescription)
         )
     }
+
+    func testCredentialAvailabilityIsReadFromKeychainOnlyOncePerSession() async {
+        let credentials = AppMemoryCredentialStore(values: ["deepseek": "secret"])
+        let model = AppModel(
+            translationService: AppStubTranslationService(),
+            translationCredentialStore: credentials
+        )
+
+        await model.refreshTranslationCredentialStatus()
+        await model.refreshTranslationCredentialStatus()
+
+        XCTAssertEqual(model.translationCredentialStatus, .available)
+        let readCount = await credentials.readCount
+        XCTAssertEqual(readCount, 1)
+    }
 }
 
 private actor AppMemoryCredentialStore: TranslationCredentialStoring {
     var values: [String: String]
+    private(set) var readCount = 0
 
     init(values: [String: String] = [:]) { self.values = values }
-    func apiKey(providerID: String) -> String? { values[providerID] }
+    func apiKey(providerID: String) -> String? {
+        readCount += 1
+        return values[providerID]
+    }
     func saveAPIKey(_ apiKey: String, providerID: String) { values[providerID] = apiKey }
     func deleteAPIKey(providerID: String) { values.removeValue(forKey: providerID) }
     func value(providerID: String) -> String? { values[providerID] }

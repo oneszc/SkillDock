@@ -5,7 +5,6 @@ struct SkillDetailView: View {
     @Bindable var model: AppModel
     @State private var tab: DetailTab = .markdown
     @State private var language: TranslationLanguage = .original
-    @State private var hasAPIKey = false
     @State private var confirmsRegeneration = false
     @Environment(\.openWindow) private var openWindow
     let record: SkillRecord?
@@ -18,8 +17,9 @@ struct SkillDetailView: View {
                 content(for: record)
             }
             .navigationTitle(record.skill.name)
-            .task(id: record.id) {
-                hasAPIKey = await model.hasTranslationAPIKey()
+            .task(id: language) {
+                guard language == .translated else { return }
+                await model.refreshTranslationCredentialStatus()
             }
             .alert("Regenerate Translation?", isPresented: $confirmsRegeneration) {
                 Button("Cancel", role: .cancel) {}
@@ -216,7 +216,7 @@ struct SkillDetailView: View {
             showsMarkdown: tab == .markdown,
             isGenerating: isGenerating,
             errorMessage: errorMessage,
-            hasAPIKey: hasAPIKey
+            hasAPIKey: model.translationCredentialStatus == .available
         )
     }
 

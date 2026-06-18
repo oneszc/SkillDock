@@ -20,6 +20,12 @@ final class AppModel {
         case failed(String)
     }
 
+    enum TranslationCredentialStatus: Equatable {
+        case unknown
+        case available
+        case missing
+    }
+
     enum NoteSaveState: Equatable {
         case idle
         case pending
@@ -65,6 +71,7 @@ final class AppModel {
     var translationOperationState: TranslationOperationState = .idle
     var translationConnectionState: TranslationConnectionState = .idle
     var translationAPIKey = ""
+    var translationCredentialStatus: TranslationCredentialStatus = .unknown
     var settingsSection: SettingsSection = .general
 
     private let settingsStore: SettingsStore
@@ -167,7 +174,22 @@ final class AppModel {
     }
 
     func hasTranslationAPIKey() async -> Bool {
-        await translationService.hasAPIKey(settings: settings.translation)
+        await refreshTranslationCredentialStatus()
+        return translationCredentialStatus == .available
+    }
+
+    func refreshTranslationCredentialStatus() async {
+        guard translationCredentialStatus == .unknown else { return }
+        do {
+            let key = try await translationCredentialStore.apiKey(
+                providerID: settings.translation.providerID
+            )
+            translationCredentialStatus = key?.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            ).isEmpty == false ? .available : .missing
+        } catch {
+            translationCredentialStatus = .missing
+        }
     }
 
     func loadTranslationAPIKey() async {
@@ -175,6 +197,7 @@ final class AppModel {
             translationAPIKey = try await translationCredentialStore.apiKey(
                 providerID: settings.translation.providerID
             ) ?? ""
+            translationCredentialStatus = translationAPIKey.isEmpty ? .missing : .available
         } catch {
             translationConnectionState = .failed(error.localizedDescription)
         }
@@ -194,6 +217,7 @@ final class AppModel {
                 )
             }
             translationAPIKey = trimmed
+            translationCredentialStatus = trimmed.isEmpty ? .missing : .available
             translationConnectionState = .idle
         } catch {
             translationConnectionState = .failed(error.localizedDescription)
