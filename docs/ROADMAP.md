@@ -222,15 +222,33 @@ docs/superpowers/plans/2026-06-16-v0.4-multi-agent-targets.md
 
 ## V0.5 - AI Chinese Interpretation
 
-目标：让中文解读从手动备注升级为 AI 辅助理解。
+目标：使用 DeepSeek 为单个 Skill 生成可切换查看的中文译文。
 
-候选方向：
+状态：设计方向已确认，待编写实施计划和开发。
 
-- 单个 skill 自动生成中文解读。
-- 批量生成中文解读。
-- 风险说明自动初判。
-- 使用场景自动提炼。
+V0.5 确认范围：
 
-展开时机：
+- Settings 新增 `AI Translation` 分类。
+- 第一版只支持 DeepSeek，配置 API Key、模型和连接测试。
+- API Key 使用 macOS Keychain 保存。
+- 详情页删除 `Chinese Notes`，内容导航调整为 `SKILL.md / Files / Install`。
+- `SKILL.md` 页面在内容导航右侧增加独立的 `原文 / 译文` 切换。
+- Skill 名称始终显示原文，不参与翻译。
+- 译文同时覆盖顶部介绍文案和完整 `SKILL.md` 正文。
+- 译文只读，支持手动生成、重新生成和内容变化后的失效提示。
+- 译文保存在 SkillDock 应用数据目录，不修改原始 Skill。
+- 旧中文备注数据保留，但不再展示或参与新译文生成。
 
-手动中文备注的数据结构稳定后再做。
+V0.5 暂不包含：
+
+- 批量或后台自动翻译。
+- 手动编辑译文。
+- 多模型供应商、自定义 API 地址和自定义 Prompt。
+- 翻译 Skill 名称或 `SKILL.md` 之外的文件。
+- AI 风险评级、标签和使用建议扩写。
+
+设计规格：
+
+```text
+docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
+```

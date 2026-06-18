@@ -29,7 +29,7 @@ SkillDock 的核心价值是：
 2. 查看 Skill 文件结构和 `SKILL.md` 原文。
 3. 把外部 skill 收进自己的主技能库。
 4. 同步到 Codex / Claude Code。
-5. 在不修改原始 Skill 的前提下，提供中文描述、标签、风险说明和使用建议。
+5. 在不修改原始 Skill 的前提下，提供可切换查看的中文译文。
 
 ## Main Concepts
 

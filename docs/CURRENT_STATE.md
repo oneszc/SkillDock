@@ -6,7 +6,7 @@ V0.4.0 Multi-Agent Targets 已完成，并已通过产品负责人验收。
 
 ## Current Goal
 
-V0.4.0 已发布。当前进入 V0.4.x 细节修复阶段，优先处理多 Agent 后出现的列表展示、设置页和安装体验细节。
+V0.4.0 已发布。V0.5 DeepSeek Skill Translation 已完成方向确认，下一步是编写实施计划并开发。
 
 ## Completed
 
@@ -258,6 +258,24 @@ V0.3.3 暂不包含：
   - `swift test --filter SkillMarkdownParserTests`：6 项通过。
   - `swift build --target SkillDockApp`：通过。
 
+### V0.5 DeepSeek Skill Translation 设计确认（2026-06-18）
+
+已确认：
+
+- 第一版只支持 DeepSeek，通过 Settings 配置 API Key、模型和连接测试。
+- 详情页删除 `Chinese Notes`，保留 `SKILL.md / Files / Install`。
+- `原文 / 译文` 与内容导航同排但左右分组，只在 `SKILL.md` 页面显示。
+- Skill 名称始终显示原文；译文同时覆盖顶部介绍和完整 `SKILL.md` 正文。
+- 译文只读、独立保存，可重新生成；原文变化后保留旧译文并提示更新。
+- 不修改原始 Skill，不后台自动翻译，不翻译其他文件。
+- 旧中文备注数据保留，但 V0.5 不再展示或用于生成译文。
+
+设计规格：
+
+```text
+docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
+```
+
 V0.4.0 暂不包含：
 
 - 批量同步。
@@ -356,6 +374,7 @@ V0.3.0 暂不包含：
 - 最新已发布版本为 `v0.4.0`。
 - V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
 - V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
+- V0.5 已确认 DeepSeek 单 Skill 译文方案，尚未开始开发；下一步先形成实施计划。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。

@@ -272,3 +272,22 @@ https://developer.apple.com/cn/sf-symbols/
 
 - 卸载确认按钮无法执行真实删除，属于已发布核心功能缺陷，需要优先发布修复。
 - 使用标准递增版本号，避免使用非标准的 `v0.3.1.1`。
+
+## 2026-06-18 - V0.5 Uses DeepSeek For Read-only Skill Translation
+
+决定：
+
+- V0.5 第一版只支持 DeepSeek。
+- Settings 新增独立的 `AI Translation` 分类，配置 API Key、模型和连接测试。
+- 详情页删除 `Chinese Notes`，在 `SKILL.md` 页面增加独立的 `原文 / 译文` 切换。
+- 语言切换与 `SKILL.md / Files / Install` 同排但左右分组，不混为同一个 Tab。
+- Skill 名称始终显示原文；译文只覆盖顶部介绍和完整 `SKILL.md` 正文。
+- 译文只读并独立保存，支持重新生成和内容变化后的失效提示。
+- 旧中文备注数据保留但不再展示，不自动迁移进 AI 译文。
+
+原因：
+
+- 原文 / 译文更符合阅读完整 Skill 的心智模型，比结构化手动备注更直接。
+- 保持 Skill 原始身份，避免名称翻译造成搜索和跨 Agent 识别混乱。
+- 单供应商、手动触发和只读结果可以控制第一版复杂度、API 成本和数据风险。
+- 独立存储继续遵守“不修改原始 Skill”的产品原则。

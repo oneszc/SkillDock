@@ -96,3 +96,24 @@ https://www.figma.com/community/file/1543337041090580818
 不直接照搬：
 
 - SkillDock 需要更完整的主技能库和多工具同步。
+
+## DeepSeek API
+
+官方文档：
+
+```text
+https://api-docs.deepseek.com/api/create-chat-completion
+https://api-docs.deepseek.com/guides/json_mode/
+https://api-docs.deepseek.com/updates/
+```
+
+用于 V0.5：
+
+- 调用 Chat Completions 生成中文译文。
+- 使用 JSON Output 返回中文介绍和完整 Markdown 两个字段。
+- 跟踪官方模型名称变化，避免将已停用模型写死在应用中。
+
+边界：
+
+- 第一版固定使用 DeepSeek 官方 API 地址。
+- 不加入其他供应商、自定义 Prompt 或自定义 API 地址。

@@ -79,7 +79,7 @@ https://developer.apple.com/cn/sf-symbols/
 - 已安装 / 未安装。
 - 只读 / 可编辑。
 - 系统 skill / 个人 skill。
-- 有中文备注 / 无中文备注。
+- 有译文 / 无译文 / 译文需要更新。
 - 有 scripts 风险提示。
 
 ## Visual Style
@@ -108,7 +108,7 @@ https://developer.apple.com/cn/sf-symbols/
 
 - 查看 `SKILL.md`。
 - 查看文件结构。
-- 编辑中文备注。
+- 切换查看原文和中文译文。
 - Reveal in Finder。
 - Copy Path。
 - 安装 / 同步到目标工具。
