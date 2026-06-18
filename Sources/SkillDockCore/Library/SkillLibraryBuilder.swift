@@ -5,6 +5,8 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
     public let note: SkillNote?
     public let isNoteStale: Bool
     public let remoteSource: RemoteSkillSource?
+    public let translation: SkillTranslation?
+    public let isTranslationStale: Bool
 
     public var id: String { skill.id }
 
@@ -12,19 +14,27 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
         skill: Skill,
         note: SkillNote?,
         isNoteStale: Bool,
-        remoteSource: RemoteSkillSource? = nil
+        remoteSource: RemoteSkillSource? = nil,
+        translation: SkillTranslation? = nil,
+        isTranslationStale: Bool = false
     ) {
         self.skill = skill
         self.note = note
         self.isNoteStale = isNoteStale
         self.remoteSource = remoteSource
+        self.translation = translation
+        self.isTranslationStale = isTranslationStale
     }
 }
 
 public struct SkillLibraryBuilder: Sendable {
     public init() {}
 
-    public func build(skills: [Skill], notes: [SkillNote]) -> [SkillRecord] {
+    public func build(
+        skills: [Skill],
+        notes: [SkillNote],
+        translations: [SkillTranslation] = []
+    ) -> [SkillRecord] {
         let groups = Dictionary(grouping: skills) {
             "\($0.name.lowercased()):\($0.contentHash)"
         }
@@ -45,10 +55,13 @@ public struct SkillLibraryBuilder: Sendable {
             preferred.installation = SkillInstallation(agentIDs: installedAgentIDs)
 
             let noteMatch = matchNote(for: preferred, notes: notes)
+            let translationMatch = matchTranslation(for: preferred, translations: translations)
             return SkillRecord(
                 skill: preferred,
                 note: noteMatch?.note,
-                isNoteStale: noteMatch?.isStale ?? false
+                isNoteStale: noteMatch?.isStale ?? false,
+                translation: translationMatch?.translation,
+                isTranslationStale: translationMatch?.isStale ?? false
             )
         }
         .sorted {
@@ -74,5 +87,21 @@ public struct SkillLibraryBuilder: Sendable {
             return nil
         }
         return SkillNoteMatch(note: latest, isStale: true)
+    }
+
+    private func matchTranslation(
+        for skill: Skill,
+        translations: [SkillTranslation]
+    ) -> SkillTranslationMatch? {
+        let candidates = translations.filter {
+            $0.skillName == skill.name && $0.source == skill.source
+        }
+        if let exact = candidates.first(where: { $0.contentHash == skill.contentHash }) {
+            return SkillTranslationMatch(translation: exact, isStale: false)
+        }
+        guard let latest = candidates.max(by: { $0.generatedAt < $1.generatedAt }) else {
+            return nil
+        }
+        return SkillTranslationMatch(translation: latest, isStale: true)
     }
 }

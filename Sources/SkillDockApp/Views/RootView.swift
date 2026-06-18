@@ -167,5 +167,6 @@ struct RootView: View {
                 .disabled(model.isRefreshing)
             }
         }
+        .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
     }
 }

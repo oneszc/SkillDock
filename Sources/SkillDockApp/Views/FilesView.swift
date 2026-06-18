@@ -7,8 +7,15 @@ struct FilesView: View {
         List(paths, id: \.self) { path in
             Label(path, systemImage: path.contains(".") ? "doc" : "folder")
                 .font(.body)
-                .padding(.vertical, 4)
                 .textSelection(.enabled)
+                .listRowInsets(
+                    EdgeInsets(
+                        top: 4,
+                        leading: 0,
+                        bottom: 4,
+                        trailing: 0
+                    )
+                )
         }
     }
 }

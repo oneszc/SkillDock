@@ -16,7 +16,9 @@ struct MarkdownPreviewView: View {
                 .textSelection(.enabled)
                 .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(VisualMetrics.contentPadding)
+                .padding(.horizontal, VisualMetrics.contentPadding)
+                .padding(.top, 12)
+                .padding(.bottom, VisualMetrics.contentPadding)
         }
     }
 

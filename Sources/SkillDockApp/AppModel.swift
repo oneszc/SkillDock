@@ -6,6 +6,26 @@ import SkillDockCore
 @MainActor
 @Observable
 final class AppModel {
+    enum TranslationOperationState: Equatable {
+        case idle
+        case generating(skillID: String)
+        case succeeded(skillID: String)
+        case failed(skillID: String, message: String)
+    }
+
+    enum TranslationConnectionState: Equatable {
+        case idle
+        case testing
+        case succeeded
+        case failed(String)
+    }
+
+    enum TranslationCredentialStatus: Equatable {
+        case unknown
+        case available
+        case missing
+    }
+
     enum NoteSaveState: Equatable {
         case idle
         case pending
@@ -48,12 +68,19 @@ final class AppModel {
     var remoteUpdate: RemoteSkillUpdate?
     var isRemoteUpdatePreviewPresented = false
     var isCheckingRemoteUpdate = false
+    var translationOperationState: TranslationOperationState = .idle
+    var translationConnectionState: TranslationConnectionState = .idle
+    var translationAPIKey = ""
+    var translationCredentialStatus: TranslationCredentialStatus = .unknown
+    var settingsSection: SettingsSection = .general
 
     private let settingsStore: SettingsStore
     private let libraryService: SkillLibraryService
     private let workspaceService: SkillWorkspaceService
     private let importPreviewService: ImportPreviewService
     private let remoteUpdateService: RemoteUpdateService
+    private let translationService: any SkillTranslationServicing
+    private let translationCredentialStore: any TranslationCredentialStoring
     private let search = SkillSearch()
     private var noteSaveTask: Task<Void, Never>?
     private var noteDraftSkill: Skill?
@@ -68,13 +95,17 @@ final class AppModel {
                 cloneProvider: GitCloneRepositoryProvider(),
                 zipProvider: GitHubZipRepositoryProvider()
             )
-        )
+        ),
+        translationService: any SkillTranslationServicing = SkillTranslationService(),
+        translationCredentialStore: any TranslationCredentialStoring = KeychainTranslationCredentialStore()
     ) {
         self.settingsStore = settingsStore
         self.libraryService = libraryService
         self.workspaceService = workspaceService
         self.importPreviewService = importPreviewService
         self.remoteUpdateService = remoteUpdateService
+        self.translationService = translationService
+        self.translationCredentialStore = translationCredentialStore
     }
 
     var filteredRecords: [SkillRecord] {
@@ -140,6 +171,110 @@ final class AppModel {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    func hasTranslationAPIKey() async -> Bool {
+        await refreshTranslationCredentialStatus()
+        return translationCredentialStatus == .available
+    }
+
+    func refreshTranslationCredentialStatus() async {
+        guard translationCredentialStatus == .unknown else { return }
+        do {
+            let key = try await translationCredentialStore.apiKey(
+                providerID: settings.translation.providerID
+            )
+            translationCredentialStatus = key?.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            ).isEmpty == false ? .available : .missing
+        } catch {
+            translationCredentialStatus = .missing
+        }
+    }
+
+    func loadTranslationAPIKey() async {
+        do {
+            translationAPIKey = try await translationCredentialStore.apiKey(
+                providerID: settings.translation.providerID
+            ) ?? ""
+            translationCredentialStatus = translationAPIKey.isEmpty ? .missing : .available
+        } catch {
+            translationConnectionState = .failed(error.localizedDescription)
+        }
+    }
+
+    func saveTranslationAPIKey(_ apiKey: String) async {
+        let trimmed = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        do {
+            if trimmed.isEmpty {
+                try await translationCredentialStore.deleteAPIKey(
+                    providerID: settings.translation.providerID
+                )
+            } else {
+                try await translationCredentialStore.saveAPIKey(
+                    trimmed,
+                    providerID: settings.translation.providerID
+                )
+            }
+            translationAPIKey = trimmed
+            translationCredentialStatus = trimmed.isEmpty ? .missing : .available
+            translationConnectionState = .idle
+        } catch {
+            translationConnectionState = .failed(error.localizedDescription)
+        }
+    }
+
+    func saveTranslationConfiguration() async {
+        do {
+            try await settingsStore.save(settings)
+        } catch {
+            translationConnectionState = .failed("Translation settings could not be saved.")
+        }
+    }
+
+    func testTranslationConnection() async {
+        translationConnectionState = .testing
+        do {
+            try await translationService.testConnection(settings: settings.translation)
+            translationConnectionState = .succeeded
+        } catch {
+            translationConnectionState = .failed(error.localizedDescription)
+        }
+    }
+
+    func generateSelectedTranslation() async {
+        guard let record = selectedRecord else { return }
+        let skill = record.skill
+        let sourceMarkdown = markdown
+        translationOperationState = .generating(skillID: skill.id)
+
+        do {
+            let translation = try await translationService.generate(
+                skill: skill,
+                markdown: sourceMarkdown,
+                settings: settings.translation
+            )
+            updateRecord(id: skill.id, translation: translation)
+            translationOperationState = .succeeded(skillID: skill.id)
+        } catch {
+            translationOperationState = .failed(
+                skillID: skill.id,
+                message: error.localizedDescription
+            )
+        }
+    }
+
+    private func updateRecord(id: SkillRecord.ID, translation: SkillTranslation) {
+        guard let index = records.firstIndex(where: { $0.id == id }) else { return }
+        let record = records[index]
+        records[index] = SkillRecord(
+            skill: record.skill,
+            note: record.note,
+            isNoteStale: record.isNoteStale,
+            remoteSource: record.remoteSource,
+            translation: translation,
+            isTranslationStale: translation.contentHash != record.skill.contentHash
+        )
     }
 
     func loadNoteDraft() async {

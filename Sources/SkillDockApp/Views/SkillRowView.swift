@@ -16,7 +16,7 @@ struct SkillRowView: View {
                 Text(record.skill.name)
                     .font(.headline)
                     .lineLimit(1)
-                Text(record.note?.chineseDescription.nonEmpty ?? record.skill.description ?? record.skill.source.displayName)
+                Text(rowDescription)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -56,6 +56,10 @@ struct SkillRowView: View {
     private var installedTargets: [AgentTarget] {
         agentTargets.filter { record.skill.installation.agentIDs.contains($0.id) }
     }
+
+    private var rowDescription: String {
+        return record.skill.description ?? record.skill.source.displayName
+    }
 }
 
 struct SkillRowInstallBadges {
@@ -82,11 +86,5 @@ struct SkillRowInstallBadges {
 
         visibleTargets = Array(badgeTargets.prefix(2))
         collapsedCount = max(0, installedTargets.count - visibleTargets.count)
-    }
-}
-
-private extension String {
-    var nonEmpty: String? {
-        isEmpty ? nil : self
     }
 }

@@ -26,6 +26,7 @@ public struct SkillSettings: Codable, Equatable, Sendable {
     public var defaultInstallTargets: [InstallTarget]
     public var defaultConflictStrategy: ConflictStrategy
     public var appearanceMode: AppearanceMode
+    public var translation: TranslationSettings
 
     public init(
         libraryPath: URL,
@@ -35,7 +36,8 @@ public struct SkillSettings: Codable, Equatable, Sendable {
         showSystemSkills: Bool = true,
         defaultInstallTargets: [InstallTarget] = [.codex, .claude],
         defaultConflictStrategy: ConflictStrategy = .skip,
-        appearanceMode: AppearanceMode = .system
+        appearanceMode: AppearanceMode = .system,
+        translation: TranslationSettings = .init()
     ) {
         self.libraryPath = libraryPath
         self.codexPath = codexPath
@@ -61,6 +63,7 @@ public struct SkillSettings: Codable, Equatable, Sendable {
         self.defaultInstallTargets = defaultInstallTargets
         self.defaultConflictStrategy = defaultConflictStrategy
         self.appearanceMode = appearanceMode
+        self.translation = translation
     }
 
     public static func defaults(homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser) -> Self {
@@ -84,6 +87,7 @@ public struct SkillSettings: Codable, Equatable, Sendable {
         case defaultInstallTargets
         case defaultConflictStrategy
         case appearanceMode
+        case translation
     }
 
     public init(from decoder: Decoder) throws {
@@ -115,6 +119,7 @@ public struct SkillSettings: Codable, Equatable, Sendable {
         defaultInstallTargets = try container.decode([InstallTarget].self, forKey: .defaultInstallTargets)
         defaultConflictStrategy = try container.decode(ConflictStrategy.self, forKey: .defaultConflictStrategy)
         appearanceMode = try container.decodeIfPresent(AppearanceMode.self, forKey: .appearanceMode) ?? .system
+        translation = try container.decodeIfPresent(TranslationSettings.self, forKey: .translation) ?? .init()
     }
 
     private static func normalizedAgentTargets(_ targets: [AgentTarget]) -> [AgentTarget] {
