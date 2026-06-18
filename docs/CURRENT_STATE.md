@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.4.0 Multi-Agent Targets 已完成，并已通过产品负责人验收。
+V0.4.1 维护版本已完成，待发布 GitHub Release。
 
 ## Current Goal
 
-V0.4.0 已发布。V0.5 DeepSeek Skill Translation 已完成方向确认，下一步是编写实施计划并开发。
+V0.4.1 发布后开启 V0.5 DeepSeek Skill Translation 开发。
 
 ## Completed
 
@@ -277,6 +277,28 @@ V0.3.3 暂不包含：
 docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 ```
 
+### V0.4.1 Maintenance Release（2026-06-18）
+
+发布范围：
+
+- Skill 安装到不超过 2 个 Agent 时直接展示全部 Logo；超过 2 个时优先 Codex / Claude 并折叠其余 Agent。
+- `.git` 元数据不再参与 Skill 内容 Hash 和远程更新 diff，避免无真实内容变化时误报本地修改。
+- 已新增 Release notes：`docs/releases/v0.4.1.md`。
+- 打包脚本默认版本已更新为 `0.4.1`。
+- V0.5 规划文档已纳入主分支，但本安装包不包含 V0.5 功能。
+
+已验证：
+
+- `swift test`：116 项全部通过。
+- `./scripts/package-app.sh`：已生成并验证 `dist/SkillDock.app` 和 `dist/SkillDock-0.4.1.zip`。
+- 独立解压后运行 `./scripts/verify-app.sh`：通过。
+- 包内版本：`0.4.1`。
+
+当前安装包：
+
+- `dist/SkillDock-0.4.1.zip`
+- SHA-256：`dd7dfee5dbe3280d1aff99e4991012c4fb820576cd0994aad58eff2deb71aca9`
+
 V0.4.0 暂不包含：
 
 - 批量同步。
@@ -345,7 +367,7 @@ V0.3.0 暂不包含：
 
 - Xcode 26.5 已安装并选中。
 - Swift 6.3.2 已安装。
-- `swift test`：111 项全部通过，最后验证于 2026-06-17。
+- `swift test`：116 项全部通过，最后验证于 2026-06-18。
 - `swift build -c release`：通过，最后验证于 2026-06-17。
 - `swift test --filter RemoteUpdateServiceTests`：7 项通过，最后验证于 2026-06-17。
 - `swift test --filter SkillMarkdownParserTests`：6 项通过，最后验证于 2026-06-17。
@@ -356,6 +378,7 @@ V0.3.0 暂不包含：
 - V0.3.2 正式安装包 SHA-256：`6f657b077134e63201525683f957bac76f152ab56422c10712cdc4c14e5530b6`。
 - V0.3.3 正式安装包 SHA-256：`35a74249bdabe8a4e8791a106d07b97f851ebb95183bb374d9e50e5a96545a80`。
 - V0.4.0 正式安装包 SHA-256：`fb7905fdc52976ac18d0e1d47ca7b709f4488b07141c75bf9202c5b665815fd8`。
+- V0.4.1 正式安装包 SHA-256：`dd7dfee5dbe3280d1aff99e4991012c4fb820576cd0994aad58eff2deb71aca9`。
 - 实现计划：`docs/superpowers/plans/2026-06-05-v0.1-local-skill-library.md`。
 - V0.2 实现计划：`docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`。
 - V0.2.1 设置页实现计划：`docs/superpowers/plans/2026-06-05-v0.2.1-settings-layout-and-appearance.md`。
@@ -368,14 +391,14 @@ V0.3.0 暂不包含：
 
 当前发布分支：`main`。
 
-截至 2026-06-17 的交接状态：
+截至 2026-06-18 的交接状态：
 
 - 最新功能实现：V0.4.0 Multi-Agent Targets，支持动态 Agent 扫描、筛选、安装、卸载和设置管理。
 - V0.4.0 已通过产品负责人验收，已合并并发布到 `main`。
-- 最新已发布版本为 `v0.4.0`。
+- 最新待发布版本为 `v0.4.1`，安装包、Release notes 和发布验证已完成。
 - V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
 - V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
-- V0.5 已确认 DeepSeek 单 Skill 译文方案，尚未开始开发；下一步先形成实施计划。
+- V0.5 已确认 DeepSeek 单 Skill 译文方案，规划文档已完成，尚未开始功能开发。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。

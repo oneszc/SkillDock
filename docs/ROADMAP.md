@@ -4,7 +4,7 @@
 
 V0.1 和 V0.2 均已发布。
 
-V0.3.3 已完成并发布 GitHub Release。V0.4.0 已完成、验收并发布 GitHub Release。
+V0.3.3 已完成并发布 GitHub Release。V0.4.0 已完成、验收并发布；V0.4.1 维护更新已完成发布准备。
 
 ## V0.1 - Local Skill Library
 
@@ -196,6 +196,12 @@ V0.4.0 确认方向：
 - V0.4.0 发布后已补充列表 Agent 展示修复：已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才优先 Codex / Claude 并折叠其余为 `+N`。
 - V0.4.0 发布后已补充 GitHub 克隆 Skill 的更新误判修复：`.git` 元数据不参与内容 Hash 和更新 diff，避免无真实内容变化时误报本地修改。
 
+V0.4.1 发布范围：
+
+- 收录列表 Agent 展示规则修复。
+- 收录 GitHub 克隆 Skill 的 `.git` 元数据更新误判修复。
+- 不包含 V0.5 AI 中文译文功能。
+
 已验证：
 
 - `swift test`：111 项全部通过。
@@ -203,6 +209,7 @@ V0.4.0 确认方向：
 - `swift test --filter SkillRowInstallBadgesTests`：3 项全部通过。
 - `swift test --filter RemoteUpdateServiceTests`：7 项全部通过。
 - `swift test --filter SkillMarkdownParserTests`：6 项全部通过。
+- V0.4.1 发布前完整验证：`swift test` 116 项全部通过，`dist/SkillDock-0.4.1.zip` 已独立解压验证通过。
 
 后续候选方向：
 
