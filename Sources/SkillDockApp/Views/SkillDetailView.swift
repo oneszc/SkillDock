@@ -40,73 +40,76 @@ struct SkillDetailView: View {
 
     private func detailHeader(_ record: SkillRecord) -> some View {
         VStack(alignment: .leading, spacing: VisualMetrics.sectionSpacing) {
-            Text(record.skill.name)
-                .font(.system(size: 32, weight: .semibold))
-                .textSelection(.enabled)
-
-            if let description = presentation(for: record).description?.nonEmpty {
-                Text(description)
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: VisualMetrics.sectionSpacing) {
+                Text(record.skill.name)
+                    .font(.system(size: 32, weight: .semibold))
                     .textSelection(.enabled)
-            }
 
-            HStack(spacing: 12) {
-                ForEach(enabledAgentTargets, id: \.id) { target in
-                    let installed = isInstalled(target, in: record)
-
-                    Button {
-                        guard !record.skill.isSystem, !installed else { return }
-                        Task { await model.requestInstall(to: target.id) }
-                    } label: {
-                        AgentLogo(target: target, installed: installed, size: 18)
-                    }
-                    .buttonStyle(.plain)
-                    .allowsHitTesting(!record.skill.isSystem && !installed)
-                    .help(installed ? "Installed in \(target.displayName)" : "Install to \(target.displayName)")
-                    .accessibilityLabel("\(target.displayName) installation status")
-                    .accessibilityValue(
-                        accessibilityValue(installed: installed, isSystem: record.skill.isSystem)
-                    )
-                }
-
-                if record.skill.isSystem {
-                    Label("Read-only", systemImage: "lock.fill")
+                if let description = presentation(for: record).description?.nonEmpty {
+                    Text(description)
+                        .font(.title3)
                         .foregroundStyle(.secondary)
-                }
-            }
-            .labelStyle(.titleAndIcon)
-            .font(.body)
-
-            if let source = record.remoteSource {
-                HStack(spacing: 12) {
-                    Label("GitHub", systemImage: "network")
-                        .foregroundStyle(.secondary)
-                    Text("\(source.owner)/\(source.repository)")
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
                         .textSelection(.enabled)
-                    if source.branch != "HEAD" {
-                        Text(source.branch)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(.quaternary, in: Capsule())
-                    }
-                    Spacer(minLength: 0)
-                    Button {
-                        Task { await model.checkSelectedRemoteUpdate() }
-                    } label: {
-                        Label(
-                            model.isCheckingRemoteUpdate ? "Checking" : "Check Update",
-                            systemImage: "arrow.clockwise"
+                }
+
+                HStack(spacing: 12) {
+                    ForEach(enabledAgentTargets, id: \.id) { target in
+                        let installed = isInstalled(target, in: record)
+
+                        Button {
+                            guard !record.skill.isSystem, !installed else { return }
+                            Task { await model.requestInstall(to: target.id) }
+                        } label: {
+                            AgentLogo(target: target, installed: installed, size: 18)
+                        }
+                        .buttonStyle(.plain)
+                        .allowsHitTesting(!record.skill.isSystem && !installed)
+                        .help(installed ? "Installed in \(target.displayName)" : "Install to \(target.displayName)")
+                        .accessibilityLabel("\(target.displayName) installation status")
+                        .accessibilityValue(
+                            accessibilityValue(installed: installed, isSystem: record.skill.isSystem)
                         )
                     }
-                    .disabled(model.isCheckingRemoteUpdate)
+
+                    if record.skill.isSystem {
+                        Label("Read-only", systemImage: "lock.fill")
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                .font(.callout)
+                .labelStyle(.titleAndIcon)
+                .font(.body)
+
+                if let source = record.remoteSource {
+                    HStack(spacing: 12) {
+                        Label("GitHub", systemImage: "network")
+                            .foregroundStyle(.secondary)
+                        Text("\(source.owner)/\(source.repository)")
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .textSelection(.enabled)
+                        if source.branch != "HEAD" {
+                            Text(source.branch)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(.quaternary, in: Capsule())
+                        }
+                        Spacer(minLength: 0)
+                        Button {
+                            Task { await model.checkSelectedRemoteUpdate() }
+                        } label: {
+                            Label(
+                                model.isCheckingRemoteUpdate ? "Checking" : "Check Update",
+                                systemImage: "arrow.clockwise"
+                            )
+                        }
+                        .disabled(model.isCheckingRemoteUpdate)
+                    }
+                    .font(.callout)
+                }
             }
+            .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
 
             HStack(spacing: 18) {
                 Picker("Detail", selection: $tab) {
@@ -116,7 +119,7 @@ struct SkillDetailView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .frame(maxWidth: 660)
+                .frame(width: 470)
 
                 Spacer(minLength: 0)
 
@@ -132,7 +135,6 @@ struct SkillDetailView: View {
                 }
             }
         }
-        .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(VisualMetrics.contentPadding)
     }
