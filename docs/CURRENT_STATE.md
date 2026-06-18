@@ -6,7 +6,7 @@ V0.4.1 维护版本已完成并发布 GitHub Release。
 
 ## Current Goal
 
-V0.4.1 发布后开启 V0.5 DeepSeek Skill Translation 开发。
+V0.5 DeepSeek Skill Translation 已进入开发，当前完成基础数据与 Provider 层，下一步接入 AppModel 和界面。
 
 ## Completed
 
@@ -276,6 +276,24 @@ V0.3.3 暂不包含：
 ```text
 docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 ```
+
+### V0.5 Development Progress（2026-06-18）
+
+已完成：
+
+- 已建立 `codex/v0.5-development` 开发分支。
+- 已新增实施计划：`docs/superpowers/plans/2026-06-18-v0.5-deepseek-skill-translation.md`。
+- 已新增 Provider 中立的翻译设置，旧 `settings.json` 可兼容加载，API Key 不进入普通配置。
+- 已新增 macOS Keychain 凭据存储，并按 Provider ID 隔离 API Key。
+- 已新增 Translation Provider 接口、DeepSeek 请求实现、JSON 输出解析和安全错误映射。
+- 已新增独立 `translations.json` 存储、内容 Hash 过期识别和有效译文中文搜索。
+- 旧 `notes.json` 保留不删除，V0.5 新流程不再用旧备注作为搜索数据。
+
+下一步：
+
+- 实现翻译服务与 AppModel 状态，确保切换 Skill 时不会写错译文。
+- 新增 Settings 的 AI Translation 分类。
+- 完成详情页原文 / 译文切换并移除 Chinese Notes 入口。
 
 ### V0.4.1 Maintenance Release（2026-06-18）
 
