@@ -231,7 +231,7 @@ docs/superpowers/plans/2026-06-16-v0.4-multi-agent-targets.md
 
 目标：使用 DeepSeek 为单个 Skill 生成可切换查看的中文译文。
 
-状态：实施计划已完成，基础数据、Keychain、DeepSeek Provider 和译文存储层已进入开发分支。
+状态：功能开发和自动化验证已完成，等待产品负责人按 V0.5 验收清单测试真实 API 与界面。
 
 V0.5 确认范围：
 

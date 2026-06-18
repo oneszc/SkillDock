@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.4.1 维护版本已完成并发布 GitHub Release。
+V0.5 DeepSeek Skill Translation 已完成自动化开发验证，等待产品负责人手动验收。
 
 ## Current Goal
 
-V0.5 DeepSeek Skill Translation 已进入开发，当前完成基础数据与 Provider 层，下一步接入 AppModel 和界面。
+按 `docs/testing/V0.5_ACCEPTANCE.md` 完成真实 API、视觉和交互验收。
 
 ## Completed
 
@@ -288,12 +288,22 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - 已新增 Translation Provider 接口、DeepSeek 请求实现、JSON 输出解析和安全错误映射。
 - 已新增独立 `translations.json` 存储、内容 Hash 过期识别和有效译文中文搜索。
 - 旧 `notes.json` 保留不删除，V0.5 新流程不再用旧备注作为搜索数据。
+- 已完成翻译服务与 AppModel 状态，生成中切换 Skill 不会写错译文。
+- Settings 已新增 AI Translation、Keychain 凭据编辑、模型选择和连接测试。
+- 详情页已移除 Chinese Notes，并新增原文 / 译文、空状态、失败重试、过期提醒和重新生成。
+- 列表和搜索仅使用当前有效译文，过期译文回退原始介绍。
 
-下一步：
+已验证：
 
-- 实现翻译服务与 AppModel 状态，确保切换 Skill 时不会写错译文。
-- 新增 Settings 的 AI Translation 分类。
-- 完成详情页原文 / 译文切换并移除 Chinese Notes 入口。
+- `swift test`：139 项全部通过。
+- `swift build -c release --product SkillDockApp`：通过。
+- `git diff --check`：通过。
+
+待验收：
+
+- 使用真实 DeepSeek API Key 执行连接与单 Skill 翻译。
+- 核对详情页语言控件、Markdown 译文和错误状态的实际视觉表现。
+- 验收清单：`docs/testing/V0.5_ACCEPTANCE.md`。
 
 ### V0.4.1 Maintenance Release（2026-06-18）
 
@@ -386,8 +396,8 @@ V0.3.0 暂不包含：
 
 - Xcode 26.5 已安装并选中。
 - Swift 6.3.2 已安装。
-- `swift test`：116 项全部通过，最后验证于 2026-06-18。
-- `swift build -c release`：通过，最后验证于 2026-06-17。
+- `swift test`：139 项全部通过，最后验证于 2026-06-18。
+- `swift build -c release --product SkillDockApp`：通过，最后验证于 2026-06-18。
 - `swift test --filter RemoteUpdateServiceTests`：7 项通过，最后验证于 2026-06-17。
 - `swift test --filter SkillMarkdownParserTests`：6 项通过，最后验证于 2026-06-17。
 - `swift build --target SkillDockApp`：通过，最后验证于 2026-06-17。
@@ -412,12 +422,13 @@ V0.3.0 暂不包含：
 
 截至 2026-06-18 的交接状态：
 
-- 最新功能实现：V0.4.0 Multi-Agent Targets，支持动态 Agent 扫描、筛选、安装、卸载和设置管理。
+- 最新功能实现：V0.5 DeepSeek Skill Translation，已完成自动化开发验证，等待手动验收。
 - V0.4.0 已通过产品负责人验收，已合并并发布到 `main`。
 - 最新已发布版本为 `v0.4.1`，安装包、Release notes 和发布验证均已完成。
 - V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
 - V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
-- V0.5 已确认 DeepSeek 单 Skill 译文方案，规划文档已完成，尚未开始功能开发。
+- V0.5 已完成 Provider、Keychain、译文存储、Settings 和详情页原文 / 译文体验。
+- 下一步按 `docs/testing/V0.5_ACCEPTANCE.md` 使用真实 API Key 验收，未验收前不合并 `main`、不发布 Release。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。
