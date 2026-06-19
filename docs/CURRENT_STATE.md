@@ -458,6 +458,17 @@ V0.3.0 暂不包含：
 - 已校准中英文文案，并明确翻译功能会把所选 `SKILL.md` 内容发送给 DeepSeek。
 - 已检查 1440×900 桌面端和 390×844 移动端，无横向溢出；语言切换与页面控制台检查通过。
 
+### GitHub 介绍页 Product Grid 视觉升级（2026-06-19）
+
+- 已使用 Product Design 工作流并选定 Vercel 风格的 `Product Grid` 方向。
+- 独立介绍页已改为白底、强排版、细网格和轻量分隔线的产品化视觉系统。
+- Hero 从左右结构改为居中结构，主文案为 `Your AI Skills. One place.`。
+- 已用 HTML / CSS 实现简化版三栏 SkillDock 界面，页面不再引用真实软件截图，避免暴露本机数据并降低后续维护成本。
+- 功能区域已从浮层卡片改为平面分隔网格；下载、安装和 FAQ 保留当前 V0.5.0 真实内容。
+- 已补充键盘焦点和 `prefers-reduced-motion` 支持。
+- 已完成 1440×1024 视觉对比和 390×844 移动端验证；语言切换、FAQ、下载链接及控制台检查通过。
+- 设计 QA：`/Users/zhaoning/Desktop/SkillDock/design-qa.md`，结果为 `passed`。
+
 第二台电脑开始工作的步骤：
 
 ```bash
