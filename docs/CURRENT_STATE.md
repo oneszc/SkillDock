@@ -449,6 +449,15 @@ V0.3.0 暂不包含：
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。
 
+### GitHub 介绍页真实性修正（2026-06-19）
+
+- 已修正独立介绍页 `/Users/zhaoning/Desktop/SkillDock/skilldock-landing.html`。
+- 头部和界面预览已替换为当前 V0.5.0 真实软件截图 `skilldock-app-screenshot.png`。
+- 已删除不支持的 Homebrew、DMG 和 Skill Registry 表述，下载入口改为 GitHub 最新 Release ZIP。
+- 已同步修正版本、macOS 26+、多 Agent、GitHub 导入、手动更新和 DeepSeek 翻译说明。
+- 已校准中英文文案，并明确翻译功能会把所选 `SKILL.md` 内容发送给 DeepSeek。
+- 已检查 1440×900 桌面端和 390×844 移动端，无横向溢出；语言切换与页面控制台检查通过。
+
 第二台电脑开始工作的步骤：
 
 ```bash
