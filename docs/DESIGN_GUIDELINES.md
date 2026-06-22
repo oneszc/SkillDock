@@ -81,6 +81,7 @@ https://developer.apple.com/cn/sf-symbols/
 - 系统 skill / 个人 skill。
 - 有译文 / 无译文 / 译文需要更新。
 - 有 scripts 风险提示。
+- Skill 来源是 Library、Agent Copy、Personal、Plugin 还是 System。
 
 ## Visual Style
 
@@ -103,6 +104,7 @@ https://developer.apple.com/cn/sf-symbols/
 - 是否已安装到 Codex / Claude。
 - 是否有中文备注。
 - 是否可能有风险。
+- 当前数字统计的是已安装副本，还是 Codex 可用能力。
 
 详情页优先帮助用户完成动作：
 

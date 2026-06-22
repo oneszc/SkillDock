@@ -54,6 +54,16 @@ SkillDock 的核心价值是：
 
 这些目录是安装目标，不是资产源头。
 
+### Codex Available Skill Sources
+
+Codex 可调用的 Skill 不一定都位于 `~/.codex/skills`，还可能来自：
+
+- `~/.agents/skills` 等个人共享目录。
+- Codex System Skills。
+- 已安装插件提供的 Skills。
+
+SkillDock 将“已安装到 Agent 的副本”和“Codex 当前可用的能力”作为不同概念展示，不用一个数字混合表达。
+
 ### Valid Skill
 
 只要某个文件夹包含 `SKILL.md`，就识别为一个 skill。

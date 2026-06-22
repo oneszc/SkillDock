@@ -260,3 +260,42 @@ V0.5 暂不包含：
 ```text
 docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 ```
+
+## V0.5.1 - System Skill Classification Hotfix
+
+目标：修复相同 Skill 跨 Library、Agent 和 Codex System 合并后丢失 System 来源的问题。
+
+状态：方案已确认，待编写实施计划和开发。
+
+确认范围：
+
+- 合并逻辑 Skill 时保留所有物理副本的来源信息。
+- System 页面按是否存在 System 副本判断，不再只依赖首选副本。
+- `~/.codex/skills/.system` 中 5 个有效 Skill 应全部显示。
+- 从 System 页面打开时使用 System 副本并保持只读。
+- Installed 与 System 是可重叠视图，数量不相加。
+- 增加 Library、Codex System、Claude 三处相同副本的回归测试。
+
+V0.5.1 不扩大扫描目录，不接入 Personal 或 Plugin Skill。
+
+## V0.6 - Codex Available Skills
+
+目标：在不混淆“已安装副本”和“Codex 可用能力”的前提下，扩展 Personal、Plugin 和 System Skill 的来源覆盖。
+
+状态：方向已确认，V0.5.1 完成后进入详细设计和开发。
+
+确认方向：
+
+- 新增独立的 Codex Available 来源层，并用 `Available` 取代单独的 `System` 一级入口。
+- 首先支持 `~/.agents/skills` 等 Personal Skill 来源。
+- Plugin Skill 通过稳定的插件清单或元数据读取，不直接全量扫描内部 cache。
+- Available 支持 `Personal / Plugin / System` 来源筛选和来源标签。
+- Plugin 与 System Skill 只读，不由 SkillDock 安装、卸载或更新。
+- 相同名称和内容跨来源合并，但必须保留全部来源信息。
+- 不承诺数量与 Codex 永久完全一致，界面需明确统计口径。
+
+设计规格：
+
+```text
+docs/superpowers/specs/2026-06-22-skill-source-coverage-and-system-classification-design.md
+```

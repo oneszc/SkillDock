@@ -293,3 +293,21 @@ https://developer.apple.com/cn/sf-symbols/
 - 首期只开放一个供应商、手动触发和只读结果，可以控制第一版复杂度、API 成本和数据风险。
 - 提前隔离 Provider 边界，后续接入其他模型时不需要重写译文业务流程。
 - 独立存储继续遵守“不修改原始 Skill”的产品原则。
+
+## 2026-06-22 - Separate Installed Copies From Codex Available Skills
+
+决定：
+
+- V0.5.1 先修复重复 Skill 合并后丢失 Codex System 来源的问题。
+- 合并后的逻辑 Skill 必须保留所有物理副本来源，页面归属不能只依赖首选副本。
+- Installed 与 System 保持可重叠视图，System 数量是 Installed 的子集，不与 Installed 相加。
+- V0.6 新增独立的 Codex Available 来源层，逐步覆盖 Personal、Plugin 和 System Skill。
+- Plugin Skill 不直接通过全量扫描 `~/.codex/plugins/cache` 获取，优先使用稳定清单或插件元数据。
+- SkillDock 不承诺数量与 Codex 完全相等，但必须明确统计口径和来源。
+
+原因：
+
+- Codex 客户端统计的是当前可调用的聚合能力，SkillDock 当前统计的是配置 Agent Target 中的去重副本，两者不是同一概念。
+- 直接把插件 Skill 计入 Installed 会误导用户对安装、卸载和所有权的理解。
+- 保留完整来源信息可以修复 System 分类，同时为 Personal 和 Plugin 来源扩展建立稳定基础。
+- Codex cache 属于内部实现细节，直接依赖会带来旧版本重复、禁用插件误收录和升级兼容风险。
