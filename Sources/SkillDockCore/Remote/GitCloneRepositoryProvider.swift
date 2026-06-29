@@ -4,16 +4,19 @@ public actor GitCloneRepositoryProvider: RemoteRepositoryProviding {
     private let repositoriesDirectory: URL
     private let commandRunner: CommandRunner
     private let fileManager: FileManager
+    private let pluginDetector: RemoteRepositoryPluginDetector
 
     public init(
         repositoriesDirectory: URL? = nil,
         commandRunner: CommandRunner = .init(),
-        fileManager: FileManager = .default
+        fileManager: FileManager = .default,
+        pluginDetector: RemoteRepositoryPluginDetector = .init()
     ) {
         self.repositoriesDirectory = repositoriesDirectory
             ?? Self.defaultRepositoriesDirectory(fileManager: fileManager)
         self.commandRunner = commandRunner
         self.fileManager = fileManager
+        self.pluginDetector = pluginDetector
     }
 
     public func acquire(
@@ -62,7 +65,8 @@ public actor GitCloneRepositoryProvider: RemoteRepositoryProviding {
             localRoot: localRoot,
             method: .gitClone,
             commit: commit,
-            requiresCleanup: false
+            requiresCleanup: false,
+            pluginManifestKinds: pluginDetector.detect(in: localRoot)
         )
     }
 
