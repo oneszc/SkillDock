@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5 DeepSeek Skill Translation 已完成开发、验收、主线合并和 V0.5.0 正式发布。
+V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已完成代码开发、完整测试和打包验证，当前分支为 `codex/v0.5.1-development`，待产品负责人验收和发布。
 
 ## Current Goal
 
-先完成 V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示，再进入 V0.6 Codex Available Skills 规划与开发；V0.5.0 保持维护状态。
+等待产品负责人按 `docs/testing/V0.5.1_ACCEPTANCE.md` 验收；通过后合并主线并发布 GitHub Release，再进入 V0.6 Codex Available Skills 规划与开发。
 
 ## Completed
 
@@ -321,6 +321,42 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - `codex/v0.5-development` 已合并到 `main`。
 - GitHub Release：`https://github.com/oneszc/SkillDock/releases/tag/v0.5.0`
 
+### V0.5.1 System Classification And Plugin Import Notice（2026-06-29）
+
+已完成：
+
+- 合并相同名称和内容 Hash 的 Skill 时，保留全部物理副本来源。
+- System 页面按是否存在 Codex `.system` 副本判断，不再被 Library 首选副本覆盖。
+- 从 System 页面打开同名 Skill 时，详情读取 System 副本路径并保持只读。
+- 从 Library 页面打开同名 Skill 时，仍使用 Library 副本，不受 System 副本影响为只读。
+- Installed 与 System 继续作为可重叠视图，不要求数量相加。
+- GitHub 导入时识别 `.codex-plugin/plugin.json` 和 `.claude-plugin/plugin.json`。
+- 识别到 Agent Plugin 仓库时，导入页显示边界提示：SkillDock 只导入 Skills，不安装插件 hooks、runtime / extension 配置、官方注册状态或官方插件更新流程。
+- GitHub 多 Skill 导入页新增 Select All / Deselect All。
+- 已新增验收清单：`docs/testing/V0.5.1_ACCEPTANCE.md`。
+- 已新增 Release notes：`docs/releases/v0.5.1.md`。
+- 打包脚本默认版本已更新为 `0.5.1`。
+
+已验证：
+
+- `swift test --filter SkillLibraryBuilderTests`：6 项通过。
+- `swift test --filter AppModelAgentFilterTests`：5 项通过。
+- `swift test --filter RemoteRepositoryPluginDetectorTests`：3 项通过。
+- `swift test --filter RemoteSkillScannerTests`：1 项通过。
+- `swift test --filter RemoteImportModelTests`：1 项通过。
+- `git diff --check`：通过。
+- `swift test`：148 项全部通过。
+- `./scripts/package-app.sh`：已生成并验证 `dist/SkillDock.app` 和 `dist/SkillDock-0.5.1.zip`。
+- 独立解压 `dist/SkillDock-0.5.1.zip` 后运行 `./scripts/verify-app.sh`：通过。
+- 包内版本：`0.5.1`。
+- SHA-256：`32c4ad550af5c00d14549bc9ed8d1eb80e76777f461121efa4f27fed7b1af6e9`。
+- 打包脚本已清理扩展属性并使用 `ditto --norsrc`，避免 ZIP 解压后出现 `._` AppleDouble 文件导致签名校验失败。
+
+待完成：
+
+- 产品负责人按 `docs/testing/V0.5.1_ACCEPTANCE.md` 手动验收。
+- 合并主线并发布 GitHub Release。
+
 ### V0.4.1 Maintenance Release（2026-06-18）
 
 发布范围：
@@ -433,10 +469,11 @@ V0.3.0 暂不包含：
 - V0.3 实施计划：`docs/superpowers/plans/2026-06-08-v0.3-github-remote-skills.md`。
 - V0.3.3 实施计划：`docs/superpowers/plans/2026-06-16-v0.3.3-manual-updates-and-agent-filter.md`。
 - V0.4.0 实施计划：`docs/superpowers/plans/2026-06-16-v0.4-multi-agent-targets.md`。
+- V0.5.1 实施计划：`docs/superpowers/plans/2026-06-29-v0.5.1-system-classification-and-plugin-import-notice.md`。
 
 ## Handoff Note
 
-当前发布分支：`main`。
+当前开发分支：`codex/v0.5.1-development`。
 
 截至 2026-06-22 的交接状态：
 
@@ -446,8 +483,8 @@ V0.3.0 暂不包含：
 - V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
 - V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
 - V0.5 已完成 Provider、Keychain、译文存储、Settings 和详情页 Original / Translation 体验。
-- V0.5.0 已合并到 `main` 并发布 GitHub Release；下一步从 `main` 继续下一版本规划。
-- 已确认 V0.5.1 System 分类修复、GitHub Agent Plugin 导入提示和 V0.6 Codex Available Skills 分阶段方案。
+- V0.5.0 已合并到 `main` 并发布 GitHub Release；V0.5.1 已从 `main` 开启开发分支。
+- 已确认 V0.5.1 System 分类修复、GitHub Agent Plugin 导入提示和 V0.6 Codex Available Skills 分阶段方案，实施计划已写入 `docs/superpowers/plans/2026-06-29-v0.5.1-system-classification-and-plugin-import-notice.md`。
 - 当前诊断：SkillDock 的 Installed 数量按配置 Agent Target 去重统计；Codex 客户端数量还包含 Personal、Plugin 等可用来源。
 - 当前已知 Bug：`skill-installer` 的 Library、Codex System、Claude 副本内容相同，合并后丢失 System 标记，导致 System 只显示 4 个而不是 5 个。
 - 当前 GitHub 导入体验待优化：`obra/superpowers` 这类 Agent Plugin 仓库可识别出 14 个 Skills，但 SkillDock 只导入 Skill 文件内容，不保留插件级 hooks、runtime / extension 配置、官方注册状态和官方更新流程；V0.5.1 需要在导入页明确提示用户如需完整插件能力，应走 Codex / Claude Code 官方插件安装方式。

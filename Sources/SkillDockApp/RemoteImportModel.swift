@@ -44,6 +44,29 @@ final class RemoteImportModel {
         candidates.filter(\.isSelected).count
     }
 
+    var hasPluginNotice: Bool {
+        repository?.pluginManifestKinds.isEmpty == false
+    }
+
+    var pluginNoticeAgentNames: String {
+        repository?.pluginManifestKinds
+            .map(\.displayName)
+            .sorted()
+            .joined(separator: " / ") ?? "Codex / Claude Code"
+    }
+
+    func selectAllCandidates() {
+        for index in candidates.indices {
+            candidates[index].isSelected = true
+        }
+    }
+
+    func deselectAllCandidates() {
+        for index in candidates.indices {
+            candidates[index].isSelected = false
+        }
+    }
+
     func inspect(libraryPath: URL) async {
         isWorking = true
         errorMessage = nil

@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP_NAME="SkillDock"
 BUNDLE_ID="com.oneszc.SkillDock"
-VERSION="${SKILLDOCK_VERSION:-0.5.0}"
+VERSION="${SKILLDOCK_VERSION:-0.5.1}"
 BUILD_DIR="$ROOT_DIR/.build/release"
 DIST_DIR="$ROOT_DIR/dist"
 APP_DIR="$DIST_DIR/$APP_NAME.app"
@@ -54,10 +54,11 @@ cat > "$CONTENTS_DIR/Info.plist" <<PLIST
 </plist>
 PLIST
 
+xattr -cr "$APP_DIR"
 codesign --force --options runtime --sign - "$APP_DIR"
 
 rm -f "$DIST_DIR/$APP_NAME-$VERSION.zip"
-ditto -c -k --keepParent "$APP_DIR" "$DIST_DIR/$APP_NAME-$VERSION.zip"
+COPYFILE_DISABLE=1 ditto -c -k --norsrc --keepParent "$APP_DIR" "$DIST_DIR/$APP_NAME-$VERSION.zip"
 
 "$ROOT_DIR/scripts/verify-app.sh" "$APP_DIR"
 echo "Created $APP_DIR"

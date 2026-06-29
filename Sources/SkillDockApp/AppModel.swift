@@ -112,11 +112,11 @@ final class AppModel {
         let sectionRecords = records.filter { record in
             switch navigationSection {
             case .library:
-                record.skill.source == .library
+                record.hasLibraryCopy
             case .installed:
-                !record.skill.installation.agentIDs.isEmpty
+                record.hasInstalledCopy
             case .system:
-                record.skill.isSystem
+                record.hasSystemCopy
             }
         }
         let agentFilteredRecords = sectionRecords.filter { record in
@@ -131,7 +131,10 @@ final class AppModel {
     }
 
     var selectedRecord: SkillRecord? {
-        records.first { $0.id == selectionID }
+        guard let record = records.first(where: { $0.id == selectionID }) else {
+            return nil
+        }
+        return presentedRecord(record)
     }
 
     func start() async {
@@ -273,7 +276,8 @@ final class AppModel {
             isNoteStale: record.isNoteStale,
             remoteSource: record.remoteSource,
             translation: translation,
-            isTranslationStale: translation.contentHash != record.skill.contentHash
+            isTranslationStale: translation.contentHash != record.skill.contentHash,
+            physicalCopies: record.physicalCopies
         )
     }
 
@@ -556,6 +560,35 @@ final class AppModel {
 
     private func isInstalled(_ installation: SkillInstallation, in agentID: String) -> Bool {
         installation.agentIDs.contains(agentID)
+    }
+
+    private func presentedRecord(_ record: SkillRecord) -> SkillRecord {
+        guard navigationSection == .system,
+              let systemCopy = record.systemCopy
+        else {
+            return record
+        }
+        let systemSkill = Skill(
+            id: record.skill.id,
+            name: record.skill.name,
+            description: record.skill.description,
+            path: systemCopy.path,
+            source: systemCopy.source,
+            hasScripts: record.skill.hasScripts,
+            isSystem: systemCopy.isSystem,
+            isReadOnly: systemCopy.isReadOnly,
+            contentHash: systemCopy.contentHash,
+            installation: record.skill.installation
+        )
+        return SkillRecord(
+            skill: systemSkill,
+            note: record.note,
+            isNoteStale: record.isNoteStale,
+            remoteSource: record.remoteSource,
+            translation: record.translation,
+            isTranslationStale: record.isTranslationStale,
+            physicalCopies: record.physicalCopies
+        )
     }
 }
 

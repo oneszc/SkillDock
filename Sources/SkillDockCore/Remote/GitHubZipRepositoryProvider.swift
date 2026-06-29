@@ -27,19 +27,22 @@ public actor GitHubZipRepositoryProvider: RemoteRepositoryProviding {
     private let fileManager: FileManager
     private let metadataResolver: MetadataResolver
     private let archiveDownloader: ArchiveDownloader
+    private let pluginDetector: RemoteRepositoryPluginDetector
 
     public init(
         temporaryDirectory: URL? = nil,
         commandRunner: CommandRunner = .init(),
         fileManager: FileManager = .default,
         metadataResolver: @escaping MetadataResolver = GitHubZipRepositoryProvider.resolveMetadata,
-        archiveDownloader: @escaping ArchiveDownloader = GitHubZipRepositoryProvider.downloadArchive
+        archiveDownloader: @escaping ArchiveDownloader = GitHubZipRepositoryProvider.downloadArchive,
+        pluginDetector: RemoteRepositoryPluginDetector = .init()
     ) {
         self.temporaryDirectory = temporaryDirectory ?? fileManager.temporaryDirectory
         self.commandRunner = commandRunner
         self.fileManager = fileManager
         self.metadataResolver = metadataResolver
         self.archiveDownloader = archiveDownloader
+        self.pluginDetector = pluginDetector
     }
 
     public func acquire(_ reference: GitHubRepositoryReference) async throws -> RemoteRepository {
@@ -79,7 +82,8 @@ public actor GitHubZipRepositoryProvider: RemoteRepositoryProviding {
             localRoot: contents[0],
             method: .zip,
             commit: metadata.commit,
-            requiresCleanup: true
+            requiresCleanup: true,
+            pluginManifestKinds: pluginDetector.detect(in: contents[0])
         )
     }
 
