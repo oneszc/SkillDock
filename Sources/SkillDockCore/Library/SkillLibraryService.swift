@@ -40,7 +40,8 @@ public actor SkillLibraryService {
                     isNoteStale: record.isNoteStale,
                     remoteSource: remoteSource(for: record.skill, in: remoteSources),
                     translation: record.translation,
-                    isTranslationStale: record.isTranslationStale
+                    isTranslationStale: record.isTranslationStale,
+                    physicalCopies: record.physicalCopies
                 )
             }
             .filter { settings.showSystemSkills || !$0.skill.isSystem }

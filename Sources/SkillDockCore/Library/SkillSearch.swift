@@ -11,7 +11,7 @@ public struct SkillSearch: Sendable {
         let normalizedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
         return records.filter { record in
-            guard !systemOnly || record.skill.isSystem else { return false }
+            guard !systemOnly || record.hasSystemCopy else { return false }
             guard !normalizedQuery.isEmpty else { return true }
             return searchableText(for: record).contains(normalizedQuery)
         }

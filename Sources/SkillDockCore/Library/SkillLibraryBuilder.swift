@@ -15,7 +15,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
     }
 
     public var hasInstalledCopy: Bool {
-        physicalCopies.contains {
+        !skill.installation.agentIDs.isEmpty || physicalCopies.contains {
             if case .agent = $0.source { return true }
             return false
         }
