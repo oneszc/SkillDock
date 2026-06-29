@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5 DeepSeek Skill Translation 已完成开发、验收、主线合并和 V0.5.0 正式发布。
+V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已开启开发，当前分支为 `codex/v0.5.1-development`。
 
 ## Current Goal
 
-先完成 V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示，再进入 V0.6 Codex Available Skills 规划与开发；V0.5.0 保持维护状态。
+按实施计划完成 V0.5.1 两个小范围修复：保留合并 Skill 的全部物理来源、在 GitHub Agent Plugin 仓库导入时提示边界并提供批量选择入口；完成后再进入 V0.6 Codex Available Skills 规划与开发。
 
 ## Completed
 
@@ -433,10 +433,11 @@ V0.3.0 暂不包含：
 - V0.3 实施计划：`docs/superpowers/plans/2026-06-08-v0.3-github-remote-skills.md`。
 - V0.3.3 实施计划：`docs/superpowers/plans/2026-06-16-v0.3.3-manual-updates-and-agent-filter.md`。
 - V0.4.0 实施计划：`docs/superpowers/plans/2026-06-16-v0.4-multi-agent-targets.md`。
+- V0.5.1 实施计划：`docs/superpowers/plans/2026-06-29-v0.5.1-system-classification-and-plugin-import-notice.md`。
 
 ## Handoff Note
 
-当前发布分支：`main`。
+当前开发分支：`codex/v0.5.1-development`。
 
 截至 2026-06-22 的交接状态：
 
@@ -446,8 +447,8 @@ V0.3.0 暂不包含：
 - V0.4.0 发布后的小修复：列表中已安装 Agent 数量小于等于 2 个时直接展示 Logo，超过 2 个才折叠为 `+N`。
 - V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
 - V0.5 已完成 Provider、Keychain、译文存储、Settings 和详情页 Original / Translation 体验。
-- V0.5.0 已合并到 `main` 并发布 GitHub Release；下一步从 `main` 继续下一版本规划。
-- 已确认 V0.5.1 System 分类修复、GitHub Agent Plugin 导入提示和 V0.6 Codex Available Skills 分阶段方案。
+- V0.5.0 已合并到 `main` 并发布 GitHub Release；V0.5.1 已从 `main` 开启开发分支。
+- 已确认 V0.5.1 System 分类修复、GitHub Agent Plugin 导入提示和 V0.6 Codex Available Skills 分阶段方案，实施计划已写入 `docs/superpowers/plans/2026-06-29-v0.5.1-system-classification-and-plugin-import-notice.md`。
 - 当前诊断：SkillDock 的 Installed 数量按配置 Agent Target 去重统计；Codex 客户端数量还包含 Personal、Plugin 等可用来源。
 - 当前已知 Bug：`skill-installer` 的 Library、Codex System、Claude 副本内容相同，合并后丢失 System 标记，导致 System 只显示 4 个而不是 5 个。
 - 当前 GitHub 导入体验待优化：`obra/superpowers` 这类 Agent Plugin 仓库可识别出 14 个 Skills，但 SkillDock 只导入 Skill 文件内容，不保留插件级 hooks、runtime / extension 配置、官方注册状态和官方更新流程；V0.5.1 需要在导入页明确提示用户如需完整插件能力，应走 Codex / Claude Code 官方插件安装方式。

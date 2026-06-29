@@ -265,7 +265,7 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 
 目标：修复相同 Skill 跨 Library、Agent 和 Codex System 合并后丢失 System 来源的问题，并在 GitHub 导入 Agent Plugin 仓库时明确提示 SkillDock 与官方插件安装的边界。
 
-状态：方案已确认，待编写实施计划和开发。
+状态：已开启开发，实施计划见 `docs/superpowers/plans/2026-06-29-v0.5.1-system-classification-and-plugin-import-notice.md`。
 
 确认范围：
 
