@@ -16,6 +16,45 @@ final class SkillLibraryBuilderTests: XCTestCase {
         XCTAssertEqual(records.first?.skill.installation, SkillInstallation(codex: true, claude: true))
     }
 
+    func testMergedRecordPreservesAllPhysicalCopies() {
+        let library = makeSkill(source: .library, hash: "same")
+        let codexSystem = makeSkill(
+            source: .codex,
+            hash: "same",
+            path: URL(fileURLWithPath: "/tmp/codex/.system/sample-skill"),
+            isSystem: true
+        )
+        let claude = makeSkill(source: .claude, hash: "same")
+
+        let record = SkillLibraryBuilder()
+            .build(skills: [library, codexSystem, claude], notes: [])
+            .first
+
+        XCTAssertEqual(record?.skill.source, .library)
+        XCTAssertEqual(record?.skill.installation, SkillInstallation(codex: true, claude: true))
+        XCTAssertEqual(record?.physicalCopies.count, 3)
+        XCTAssertEqual(record?.hasSystemCopy, true)
+        XCTAssertEqual(record?.systemCopy?.path, codexSystem.path)
+    }
+
+    func testSystemCopyDoesNotMakePreferredLibrarySkillReadOnly() {
+        let library = makeSkill(source: .library, hash: "same")
+        let codexSystem = makeSkill(
+            source: .codex,
+            hash: "same",
+            path: URL(fileURLWithPath: "/tmp/codex/.system/sample-skill"),
+            isSystem: true
+        )
+
+        let record = SkillLibraryBuilder()
+            .build(skills: [library, codexSystem], notes: [])
+            .first
+
+        XCTAssertEqual(record?.skill.path, library.path)
+        XCTAssertEqual(record?.skill.isSystem, false)
+        XCTAssertEqual(record?.hasSystemCopy, true)
+    }
+
     func testKeepsDifferentContentHashesAsDistinctRecords() {
         let skills = [
             makeSkill(source: .library, hash: "first"),
@@ -77,16 +116,21 @@ final class SkillLibraryBuilderTests: XCTestCase {
         XCTAssertEqual(currentRecord?.isTranslationStale, false)
     }
 
-    private func makeSkill(source: SkillSource, hash: String) -> Skill {
+    private func makeSkill(
+        source: SkillSource,
+        hash: String,
+        path: URL? = nil,
+        isSystem: Bool = false
+    ) -> Skill {
         Skill(
             id: "\(source.rawValue):sample:\(hash)",
             name: "sample-skill",
             description: "Sample description",
-            path: URL(fileURLWithPath: "/tmp/\(source.rawValue)/sample-skill"),
+            path: path ?? URL(fileURLWithPath: "/tmp/\(source.rawValue)/sample-skill"),
             source: source,
             hasScripts: false,
-            isSystem: false,
-            isReadOnly: false,
+            isSystem: isSystem,
+            isReadOnly: isSystem,
             contentHash: hash,
             installation: SkillInstallation(
                 codex: source == .codex,

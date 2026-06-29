@@ -7,8 +7,27 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
     public let remoteSource: RemoteSkillSource?
     public let translation: SkillTranslation?
     public let isTranslationStale: Bool
+    public let physicalCopies: [SkillPhysicalCopy]
 
     public var id: String { skill.id }
+    public var hasLibraryCopy: Bool {
+        physicalCopies.contains { $0.source == .library }
+    }
+
+    public var hasInstalledCopy: Bool {
+        physicalCopies.contains {
+            if case .agent = $0.source { return true }
+            return false
+        }
+    }
+
+    public var hasSystemCopy: Bool {
+        physicalCopies.contains { $0.isSystem }
+    }
+
+    public var systemCopy: SkillPhysicalCopy? {
+        physicalCopies.first { $0.isSystem }
+    }
 
     public init(
         skill: Skill,
@@ -16,7 +35,8 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
         isNoteStale: Bool,
         remoteSource: RemoteSkillSource? = nil,
         translation: SkillTranslation? = nil,
-        isTranslationStale: Bool = false
+        isTranslationStale: Bool = false,
+        physicalCopies: [SkillPhysicalCopy] = []
     ) {
         self.skill = skill
         self.note = note
@@ -24,6 +44,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
         self.remoteSource = remoteSource
         self.translation = translation
         self.isTranslationStale = isTranslationStale
+        self.physicalCopies = physicalCopies.isEmpty ? [skill.physicalCopy] : physicalCopies
     }
 }
 
@@ -53,6 +74,14 @@ public struct SkillLibraryBuilder: Sendable {
                 }
             )
             preferred.installation = SkillInstallation(agentIDs: installedAgentIDs)
+            let physicalCopies = group
+                .map(\.physicalCopy)
+                .sorted {
+                    if sourcePriority($0.source) == sourcePriority($1.source) {
+                        return $0.path.path.localizedCaseInsensitiveCompare($1.path.path) == .orderedAscending
+                    }
+                    return sourcePriority($0.source) < sourcePriority($1.source)
+                }
 
             let noteMatch = matchNote(for: preferred, notes: notes)
             let translationMatch = matchTranslation(for: preferred, translations: translations)
@@ -61,7 +90,8 @@ public struct SkillLibraryBuilder: Sendable {
                 note: noteMatch?.note,
                 isNoteStale: noteMatch?.isStale ?? false,
                 translation: translationMatch?.translation,
-                isTranslationStale: translationMatch?.isStale ?? false
+                isTranslationStale: translationMatch?.isStale ?? false,
+                physicalCopies: physicalCopies
             )
         }
         .sorted {

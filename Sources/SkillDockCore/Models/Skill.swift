@@ -90,6 +90,28 @@ public struct SkillInstallation: Codable, Equatable, Sendable {
     }
 }
 
+public struct SkillPhysicalCopy: Codable, Equatable, Sendable {
+    public let source: SkillSource
+    public let path: URL
+    public let isSystem: Bool
+    public let isReadOnly: Bool
+    public let contentHash: String
+
+    public init(
+        source: SkillSource,
+        path: URL,
+        isSystem: Bool,
+        isReadOnly: Bool,
+        contentHash: String
+    ) {
+        self.source = source
+        self.path = path
+        self.isSystem = isSystem
+        self.isReadOnly = isReadOnly
+        self.contentHash = contentHash
+    }
+}
+
 public struct Skill: Identifiable, Codable, Equatable, Sendable {
     public let id: String
     public let name: String
@@ -124,5 +146,17 @@ public struct Skill: Identifiable, Codable, Equatable, Sendable {
         self.isReadOnly = isReadOnly
         self.contentHash = contentHash
         self.installation = installation
+    }
+}
+
+public extension Skill {
+    var physicalCopy: SkillPhysicalCopy {
+        SkillPhysicalCopy(
+            source: source,
+            path: path,
+            isSystem: isSystem,
+            isReadOnly: isReadOnly,
+            contentHash: contentHash
+        )
     }
 }
