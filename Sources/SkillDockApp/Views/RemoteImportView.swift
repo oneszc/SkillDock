@@ -87,7 +87,31 @@ struct RemoteImportView: View {
                     LabeledContent("Skills found", value: "\(appModel.remoteImport.candidates.count)")
                 }
             }
+            if appModel.remoteImport.hasPluginNotice {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("This repository is an Agent Plugin.", systemImage: "puzzlepiece.extension")
+                            .font(.body.weight(.semibold))
+                        Text("SkillDock can import the included Skills for reading, collection, manual sync, and manual update checks.")
+                            .foregroundStyle(.secondary)
+                        Text("To preserve plugin hooks, runtime behavior, official registration, and plugin updates, install the full plugin through \(appModel.remoteImport.pluginNoticeAgentNames).")
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
             Section("Choose Skills") {
+                HStack {
+                    Text("\(appModel.remoteImport.selectedCount) selected")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Select All") {
+                        appModel.remoteImport.selectAllCandidates()
+                    }
+                    Button("Deselect All") {
+                        appModel.remoteImport.deselectAllCandidates()
+                    }
+                }
                 ForEach($appModel.remoteImport.candidates) { $candidate in
                     VStack(alignment: .leading, spacing: 8) {
                         Toggle(isOn: $candidate.isSelected) {
