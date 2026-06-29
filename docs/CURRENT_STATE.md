@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已完成代码开发、完整测试和打包验证，当前分支为 `codex/v0.5.1-development`，待产品负责人验收和发布。
+V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已合并到 `main`，完整测试和打包验证通过，待 GitHub Release 发布。
 
 ## Current Goal
 
-等待产品负责人按 `docs/testing/V0.5.1_ACCEPTANCE.md` 验收；通过后合并主线并发布 GitHub Release，再进入 V0.6 Codex Available Skills 规划与开发。
+发布 GitHub Release `v0.5.1`，然后进入 V0.6 Codex Available Skills 规划与开发。
 
 ## Completed
 
@@ -354,8 +354,7 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 
 待完成：
 
-- 产品负责人按 `docs/testing/V0.5.1_ACCEPTANCE.md` 手动验收。
-- 合并主线并发布 GitHub Release。
+- GitHub Release 发布。
 
 ### V0.4.1 Maintenance Release（2026-06-18）
 
@@ -450,7 +449,7 @@ V0.3.0 暂不包含：
 
 - Xcode 26.5 已安装并选中。
 - Swift 6.3.2 已安装。
-- `swift test`：139 项全部通过，最后验证于 2026-06-18。
+- `swift test`：148 项全部通过，最后验证于 2026-06-29。
 - `swift build -c release --product SkillDockApp`：通过，最后验证于 2026-06-18。
 - `swift test --filter RemoteUpdateServiceTests`：7 项通过，最后验证于 2026-06-17。
 - `swift test --filter SkillMarkdownParserTests`：6 项通过，最后验证于 2026-06-17。
