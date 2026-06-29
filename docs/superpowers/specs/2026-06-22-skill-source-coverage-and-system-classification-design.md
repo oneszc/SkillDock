@@ -1,12 +1,14 @@
-# Skill Source Coverage And System Classification Design
+# Skill Source Coverage, System Classification, And Plugin Import Notice Design
 
 ## 1. Goal
 
-修复 SkillDock 在合并重复 Skill 时丢失 Codex System 来源的问题，并在下一版本扩展 Codex 可用 Skill 的来源覆盖，让用户能区分：
+修复 SkillDock 在合并重复 Skill 时丢失 Codex System 来源的问题，在 GitHub 导入 Agent Plugin 仓库时提示 Skill 与 Plugin 安装边界，并在下一版本扩展 Codex 可用 Skill 的来源覆盖，让用户能区分：
 
 - 自己管理的 Skill 资产。
 - 已安装到 Agent 的 Skill 副本。
 - Codex 内置的 System Skill。
+- GitHub 仓库中可导入的 Skill 文件夹。
+- 需要 Agent 官方插件安装器处理的 Plugin 能力。
 - Codex 通过个人共享目录或插件提供的可用 Skill。
 
 目标不是强行让 SkillDock 的数字等于 Codex，而是让统计范围、来源和去重规则清楚、可解释。
@@ -30,9 +32,9 @@ System 分类还有一个独立问题：
 
 ## 3. Version Split
 
-### V0.5.1 — System Classification Hotfix
+### V0.5.1 — System Classification Hotfix And Plugin Import Notice
 
-只修复已经确认的分类错误和统计说明，不扩大扫描目录。
+只修复已经确认的分类错误、统计说明和 GitHub Agent Plugin 导入提示，不扩大扫描目录。
 
 ### V0.6 — Codex Available Skills
 
@@ -79,6 +81,48 @@ System 分类还有一个独立问题：
 - System 是 Installed 的可重叠子集，侧边栏数字不相加。
 
 界面暂不增加复杂统计面板，只保证各分区标题和空状态用词准确。
+
+### 4.5 GitHub Agent Plugin Notice
+
+GitHub 导入流程继续把包含 `SKILL.md` 的文件夹作为可导入对象，但需要额外识别常见 Agent Plugin 仓库结构。
+
+识别条件：
+
+- 仓库根目录存在 `.codex-plugin/plugin.json`。
+- 仓库根目录存在 `.claude-plugin/plugin.json`。
+- 仓库根目录存在其他已知 Agent 插件清单时，可后续追加，但 V0.5.1 先覆盖 Codex / Claude Code。
+
+识别到插件包时，在导入页的仓库信息和 Skill 列表之间显示轻量提示卡：
+
+```text
+This repository is an Agent Plugin.
+SkillDock can import the included Skills for reading, collection, manual sync, and manual update checks.
+To preserve plugin hooks, runtime behavior, official registration, and plugin updates, install the full plugin through Codex / Claude Code.
+```
+
+提示卡必须表达两个边界：
+
+- SkillDock 会保留：Skill 名称、`SKILL.md`、references / scripts / assets 等 Skill 文件、GitHub 来源记录、后续手动更新检查能力。
+- SkillDock 不会保留：Agent plugin 注册信息、hooks、runtime / extension 配置、官方插件启用状态、官方插件更新流程。
+
+导入行为不阻断：
+
+- 用户仍可选择导入全部或部分 Skills。
+- 如果用户只想收藏、阅读或手动同步某几个 Skills，当前流程仍然有效。
+- 如果用户要完整安装插件，应根据提示去 Codex / Claude Code 使用官方插件安装方式。
+
+多 Skill 插件包还需要补充批量选择入口：
+
+- `Select All`：选择当前列表全部候选 Skills。
+- `Deselect All`：取消当前列表全部候选 Skills。
+- 如果用户输入的是仓库根链接，默认选择策略可以在实施计划中确认；V0.5.1 至少必须提供明确批量选择入口，避免用户误以为只识别到第一个 Skill。
+
+V0.5.1 不做：
+
+- 不安装 `.codex-plugin/plugin.json` 或 `.claude-plugin/plugin.json`。
+- 不复制或注册 hooks。
+- 不模拟 Codex / Claude Code 官方插件安装命令。
+- 不管理插件级启用、禁用、卸载和升级。
 
 ## 5. V0.6 Design
 
@@ -146,6 +190,10 @@ SkillDock 不承诺与 Codex 的数字始终完全一致，原因包括：
 - 从 Library 页面打开时仍使用 Library 路径和正常操作权限。
 - Installed 与 System 数量允许重叠。
 - 现有名称 + Hash 去重行为不回退。
+- GitHub 仓库存在 `.codex-plugin/plugin.json` 时，导入页显示 Agent Plugin 提示。
+- GitHub 仓库存在 `.claude-plugin/plugin.json` 时，导入页显示 Agent Plugin 提示。
+- `obra/superpowers` 这类多 Skill 插件包仍显示全部可导入 Skills，并提供批量选择入口。
+- Agent Plugin 提示不阻断普通 Skill 导入，也不宣称 SkillDock 已完整安装插件。
 
 ### V0.6
 
@@ -163,6 +211,7 @@ V0.5.1 不包含：
 - 新扫描目录。
 - Available 页面。
 - Codex 插件读取。
+- Agent 插件安装、注册、启用、禁用、卸载或升级。
 
 V0.6 不包含：
 

@@ -6,7 +6,7 @@ V0.5 DeepSeek Skill Translation 已完成开发、验收、主线合并和 V0.5.
 
 ## Current Goal
 
-先完成 V0.5.1 System Skill 分类修复，再进入 V0.6 Codex Available Skills 规划与开发；V0.5.0 保持维护状态。
+先完成 V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示，再进入 V0.6 Codex Available Skills 规划与开发；V0.5.0 保持维护状态。
 
 ## Completed
 
@@ -407,7 +407,7 @@ V0.3.0 暂不包含：
 - 设计铁律：能用 Apple 官方组件或系统默认行为实现的界面，绝对不自己写自定义实现。
 - V0.3 公开 GitHub 仓库同时支持 Git Clone 和 ZIP；远程导入默认只进入主技能库，更新必须手动触发并确认。
 - V0.3.1 发布 Agent 安装状态与安全卸载；V0.3.2 修复确认操作；V0.3.3 完成手动更新检查和 Agent 筛选。
-- V0.5.1 修复重复 Skill 合并后丢失 System 来源的问题，不扩大扫描范围。
+- V0.5.1 修复重复 Skill 合并后丢失 System 来源的问题，并补充 GitHub Agent Plugin 导入提示；不扩大扫描范围，不接管 Agent 官方插件安装流程。
 - V0.6 区分 Installed 与 Codex Available，逐步覆盖 Personal、Plugin 和 System 来源。
 
 ## Current Environment Note
@@ -447,9 +447,10 @@ V0.3.0 暂不包含：
 - V0.4.0 发布后的小修复：GitHub 克隆 Skill 的 `.git` 元数据不再参与 Hash 和更新 diff，避免无真实内容变化时误报 `Local changes detected`。
 - V0.5 已完成 Provider、Keychain、译文存储、Settings 和详情页 Original / Translation 体验。
 - V0.5.0 已合并到 `main` 并发布 GitHub Release；下一步从 `main` 继续下一版本规划。
-- 已确认 V0.5.1 System 分类修复和 V0.6 Codex Available Skills 两阶段方案。
+- 已确认 V0.5.1 System 分类修复、GitHub Agent Plugin 导入提示和 V0.6 Codex Available Skills 分阶段方案。
 - 当前诊断：SkillDock 的 Installed 数量按配置 Agent Target 去重统计；Codex 客户端数量还包含 Personal、Plugin 等可用来源。
 - 当前已知 Bug：`skill-installer` 的 Library、Codex System、Claude 副本内容相同，合并后丢失 System 标记，导致 System 只显示 4 个而不是 5 个。
+- 当前 GitHub 导入体验待优化：`obra/superpowers` 这类 Agent Plugin 仓库可识别出 14 个 Skills，但 SkillDock 只导入 Skill 文件内容，不保留插件级 hooks、runtime / extension 配置、官方注册状态和官方更新流程；V0.5.1 需要在导入页明确提示用户如需完整插件能力，应走 Codex / Claude Code 官方插件安装方式。
 - 产品负责人提供的应用图标和 System / Light / Dark 模式图均已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Codex / Claude Logo 已复制进项目并提交，不依赖当前电脑桌面文件。
 - 产品负责人提供的 Grok / Gemini / OpenCode / Antigravity / Hermes Logo 已复制进项目资源，不依赖当前电脑桌面文件。

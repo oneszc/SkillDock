@@ -311,3 +311,19 @@ https://developer.apple.com/cn/sf-symbols/
 - 直接把插件 Skill 计入 Installed 会误导用户对安装、卸载和所有权的理解。
 - 保留完整来源信息可以修复 System 分类，同时为 Personal 和 Plugin 来源扩展建立稳定基础。
 - Codex cache 属于内部实现细节，直接依赖会带来旧版本重复、禁用插件误收录和升级兼容风险。
+
+## 2026-06-29 - Agent Plugin Repositories Are Not Fully Installed By Skill Import
+
+决定：
+
+- V0.5.1 在 GitHub 导入页识别常见 Agent Plugin 仓库，并显示边界提示。
+- SkillDock 可以导入插件仓库里的 `SKILL.md` 文件夹，用于收藏、阅读、同步到 Agent 目标和后续手动更新检查。
+- SkillDock 不把“导入 Skills”包装成“完整安装插件”。
+- 完整插件能力，包括 hooks、runtime / extension 配置、Agent 官方注册状态和官方插件更新流程，应由 Codex / Claude Code 等 Agent 自己的插件安装逻辑处理。
+- 识别到插件包时，导入页继续展示可选 Skills，但必须提示用户：如果需要保留插件完整能力，应使用 Agent 官方插件安装方式。
+
+原因：
+
+- `obra/superpowers` 这类仓库同时包含多个 Skills 和 `.codex-plugin` / `.claude-plugin` 清单，单独复制 `SKILL.md` 无法等价于完整插件安装。
+- 第三方管理器贸然模拟官方插件安装会引入 hooks 权限、插件生命周期、版本兼容和卸载责任，超出当前 SkillDock 的可靠边界。
+- 明确边界可以保留 SkillDock 管理 Skill 资产的价值，同时避免用户误以为 hooks 和插件运行逻辑也被同步。

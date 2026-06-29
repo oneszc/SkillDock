@@ -79,6 +79,21 @@ my-skill/
   examples/
 ```
 
+### Agent Plugin Repository
+
+部分 GitHub 仓库不是普通单个 Skill，而是 Agent 插件包，例如同时包含：
+
+```text
+.codex-plugin/plugin.json
+.claude-plugin/plugin.json
+skills/
+hooks/
+```
+
+SkillDock 可以导入其中 `skills/` 下的 Skill 文件夹，用于收藏、阅读、同步到 Agent 目标和手动更新检查。
+
+但完整插件能力不由 SkillDock 接管。hooks、runtime / extension 配置、官方插件注册状态和官方插件更新流程应由 Codex / Claude Code 等 Agent 自己的插件安装逻辑处理。
+
 ## Product Principle
 
 第一版优先做稳定、清楚、可控。

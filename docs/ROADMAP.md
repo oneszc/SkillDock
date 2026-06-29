@@ -261,9 +261,9 @@ V0.5 暂不包含：
 docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 ```
 
-## V0.5.1 - System Skill Classification Hotfix
+## V0.5.1 - System Skill Classification And Plugin Import Notice
 
-目标：修复相同 Skill 跨 Library、Agent 和 Codex System 合并后丢失 System 来源的问题。
+目标：修复相同 Skill 跨 Library、Agent 和 Codex System 合并后丢失 System 来源的问题，并在 GitHub 导入 Agent Plugin 仓库时明确提示 SkillDock 与官方插件安装的边界。
 
 状态：方案已确认，待编写实施计划和开发。
 
@@ -275,8 +275,12 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - 从 System 页面打开时使用 System 副本并保持只读。
 - Installed 与 System 是可重叠视图，数量不相加。
 - 增加 Library、Codex System、Claude 三处相同副本的回归测试。
+- GitHub 导入时识别常见 Agent Plugin 清单，例如 `.codex-plugin/plugin.json`、`.claude-plugin/plugin.json`。
+- 识别到插件包时，在导入页显示提示：SkillDock 可以导入其中的 Skills 用于收藏、阅读、手动同步和后续手动更新检查；完整插件能力应通过 Codex / Claude Code 官方插件安装方式完成。
+- 提示明确 SkillDock 不会保留或安装插件级 hooks、runtime / extension 配置、官方插件注册状态和官方插件更新流程。
+- 对包含多个 Skill 的插件包，保留当前多选导入流程，并补充批量选择入口，降低只导入一个 Skill 的误解。
 
-V0.5.1 不扩大扫描目录，不接入 Personal 或 Plugin Skill。
+V0.5.1 不扩大扫描目录，不接入 Codex Available 的 Personal 或 Plugin Skill 只读来源，也不实现第三方插件生命周期管理。
 
 ## V0.6 - Codex Available Skills
 

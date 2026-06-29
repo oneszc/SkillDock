@@ -82,6 +82,7 @@ https://developer.apple.com/cn/sf-symbols/
 - 有译文 / 无译文 / 译文需要更新。
 - 有 scripts 风险提示。
 - Skill 来源是 Library、Agent Copy、Personal、Plugin 还是 System。
+- GitHub 导入对象是普通 Skill 仓库、多 Skill 仓库，还是 Agent Plugin 仓库。
 
 ## Visual Style
 
@@ -105,6 +106,12 @@ https://developer.apple.com/cn/sf-symbols/
 - 是否有中文备注。
 - 是否可能有风险。
 - 当前数字统计的是已安装副本，还是 Codex 可用能力。
+
+GitHub 导入页需要避免误导：
+
+- 多 Skill 仓库要清楚显示发现数量和批量选择入口。
+- Agent Plugin 仓库要明确说明 SkillDock 只导入 Skills，不等同于完整安装插件。
+- 涉及 hooks、runtime / extension 配置和官方插件更新流程时，提示用户使用 Agent 官方插件安装方式。
 
 详情页优先帮助用户完成动作：
 
