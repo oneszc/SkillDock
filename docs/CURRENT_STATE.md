@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已合并到 `main`，完整测试和打包验证通过，待 GitHub Release 发布。
+V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已合并到 `main`，完整测试、打包验证和 GitHub Release 发布均已完成。
 
 ## Current Goal
 
-发布 GitHub Release `v0.5.1`，然后进入 V0.6 Codex Available Skills 规划与开发。
+进入 V0.6 Codex Available Skills 规划与开发。
 
 ## Completed
 
@@ -352,9 +352,10 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - SHA-256：`32c4ad550af5c00d14549bc9ed8d1eb80e76777f461121efa4f27fed7b1af6e9`。
 - 打包脚本已清理扩展属性并使用 `ditto --norsrc`，避免 ZIP 解压后出现 `._` AppleDouble 文件导致签名校验失败。
 
-待完成：
+发布状态：
 
-- GitHub Release 发布。
+- `main` 已推送到 GitHub。
+- GitHub Release：`https://github.com/oneszc/SkillDock/releases/tag/v0.5.1`
 
 ### V0.4.1 Maintenance Release（2026-06-18）
 
