@@ -41,6 +41,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-
 .btn:hover{transform:translateY(-1px);border-color:#999}
 .btn-primary{background:#0a0a0a;color:#fff;border-color:#0a0a0a}
 .btn-primary:hover{background:#242424;border-color:#242424}
+.hero-shot{margin:48px auto 0;max-width:1160px;text-align:left}
+.hero-shot img{width:100%;height:auto;border-radius:18px;filter:drop-shadow(0 28px 56px rgba(0,0,0,.09))}
 .product-shell{margin:48px auto 0;max-width:1080px;text-align:left;background:#fff;border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;box-shadow:0 26px 65px rgba(0,0,0,.09)}
 .product-toolbar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--line);background:#fcfcfc}
 .traffic{display:flex;gap:7px}.traffic span{width:10px;height:10px;border-radius:50%}.traffic span:nth-child(1){background:#ff605c}.traffic span:nth-child(2){background:#ffbd44}.traffic span:nth-child(3){background:#00ca4e}
@@ -66,7 +68,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-
 footer{border-top:1px solid var(--line);padding:32px 0;color:#777;font-size:12px}.footer-inner{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}.footer-right{display:flex;gap:20px}.footer-right a{text-decoration:none}.footer-right a:hover{color:#000}
 [data-reveal]{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s ease}[data-reveal].visible{opacity:1;transform:none}
 @media(max-width:900px){.nav-links a:not(.nav-download){display:none}.hero{padding-top:80px}.product-grid{grid-template-columns:150px 220px minmax(0,1fr)}.product-detail{padding:18px}.feature-grid{grid-template-columns:1fr 1fr}.download-inner{grid-template-columns:1fr;align-items:start}.download-actions{margin-top:4px}}
-@media(max-width:640px){.container{width:min(100% - 32px,var(--max))}.nav-inner{height:58px}.brand img{width:30px;height:30px}.brand-meta{font-size:8px;padding-left:10px}.nav-download{display:none!important}.nav-links{gap:14px}.hero{padding:64px 0 56px;background-size:36px 36px}.hero h1{font-size:47px}.hero-sub{font-size:15px}.hero-actions{display:grid;grid-template-columns:1fr 1fr}.btn{padding:0 12px}.product-shell{margin-top:44px;border-radius:10px}.product-toolbar{height:42px}.toolbar-title{display:none}.product-grid{display:block;min-height:0}.product-sidebar,.product-list{border-right:0;border-bottom:1px solid var(--line)}.product-sidebar{padding:10px}.product-label{display:none}.product-nav{grid-template-columns:repeat(3,1fr)}.product-nav div{justify-content:center;padding:8px 4px;font-size:10px}.product-nav small{display:none}.product-list{padding:12px}.skill-items{grid-template-columns:1fr 1fr}.skill-item:nth-child(n+3){display:none}.skill-desc{font-size:9px}.product-detail{padding:16px}.detail-top{display:block}.agent-chips{justify-content:flex-start;margin-top:10px}.code+.code{display:none}.section{padding:72px 0}.feature-grid{grid-template-columns:1fr;margin-top:36px}.feature{min-height:170px}.feature h3{margin-top:24px}.install-grid{grid-template-columns:1fr}.install-step+.install-step{border-left:0;border-top:1px solid var(--line)}.download-actions{display:grid;grid-template-columns:1fr}.footer-inner{display:block}.footer-right{margin-top:12px}}
+@media(max-width:640px){.container{width:min(100% - 32px,var(--max))}.nav-inner{height:58px}.brand img{width:30px;height:30px}.brand-meta{font-size:8px;padding-left:10px}.nav-download{display:none!important}.nav-links{gap:14px}.hero{padding:64px 0 56px;background-size:36px 36px}.hero h1{font-size:47px}.hero-sub{font-size:15px}.hero-actions{display:grid;grid-template-columns:1fr 1fr}.btn{padding:0 12px}.hero-shot{margin-top:40px}.hero-shot img{border-radius:12px}.product-shell{margin-top:44px;border-radius:10px}.product-toolbar{height:42px}.toolbar-title{display:none}.product-grid{display:block;min-height:0}.product-sidebar,.product-list{border-right:0;border-bottom:1px solid var(--line)}.product-sidebar{padding:10px}.product-label{display:none}.product-nav{grid-template-columns:repeat(3,1fr)}.product-nav div{justify-content:center;padding:8px 4px;font-size:10px}.product-nav small{display:none}.product-list{padding:12px}.skill-items{grid-template-columns:1fr 1fr}.skill-item:nth-child(n+3){display:none}.skill-desc{font-size:9px}.product-detail{padding:16px}.detail-top{display:block}.agent-chips{justify-content:flex-start;margin-top:10px}.code+.code{display:none}.section{padding:72px 0}.feature-grid{grid-template-columns:1fr;margin-top:36px}.feature{min-height:170px}.feature h3{margin-top:24px}.install-grid{grid-template-columns:1fr}.install-step+.install-step{border-left:0;border-top:1px solid var(--line)}.download-actions{display:grid;grid-template-columns:1fr}.footer-inner{display:block}.footer-right{margin-top:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}[data-reveal]{opacity:1;transform:none}}
 </style>
 </head>
@@ -98,33 +100,9 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:#777;font-size:12px
         <a class="btn btn-primary" href="https://github.com/oneszc/SkillDock/releases/latest" target="_blank" rel="noopener" data-i18n="hero_download">Download for macOS</a>
         <a class="btn" href="https://github.com/oneszc/SkillDock" target="_blank" rel="noopener" data-i18n="hero_github">View on GitHub</a>
       </div>
-      <div class="product-shell" data-reveal aria-label="Simplified SkillDock interface preview">
-        <div class="product-toolbar"><div class="traffic" aria-hidden="true"><span></span><span></span><span></span></div><span class="toolbar-title">SkillDock · Local Library</span><span class="toolbar-search">Search Skills</span></div>
-        <div class="product-grid">
-          <aside class="product-sidebar">
-            <div class="product-label">Workspace</div>
-            <div class="product-nav">
-              <div class="active"><span data-i18n="mock_library">Library</span><small>24</small></div>
-              <div><span data-i18n="mock_installed">Installed</span><small>12</small></div>
-              <div><span data-i18n="mock_system">System</span><small>8</small></div>
-            </div>
-          </aside>
-          <div class="product-list">
-            <div class="product-list-head"><strong data-i18n="mock_all_skills">All Skills</strong><span class="filter-chip">All Agents</span></div>
-            <div class="skill-items">
-              <div class="skill-item active"><div class="skill-name"><span class="skill-marker"></span>weather</div><div class="skill-desc">Get current weather and forecast</div></div>
-              <div class="skill-item"><div class="skill-name"><span class="skill-marker"></span>github-pr-summary</div><div class="skill-desc">Summarize a pull request</div></div>
-              <div class="skill-item"><div class="skill-name"><span class="skill-marker"></span>code-review</div><div class="skill-desc">Review code for issues</div></div>
-              <div class="skill-item"><div class="skill-name"><span class="skill-marker"></span>docs-search</div><div class="skill-desc">Search project documentation</div></div>
-            </div>
-          </div>
-          <section class="product-detail">
-            <div class="detail-top"><div><h3>weather</h3><p>Get current weather and forecasts.</p></div><div class="agent-chips"><span class="agent-chip on">Codex</span><span class="agent-chip on">Claude</span><span class="agent-chip">Gemini</span><span class="agent-chip">OpenCode</span></div></div>
-            <div class="detail-tabs"><div class="file-tabs"><span class="mini-tab active">SKILL.md</span><span class="mini-tab">Files</span><span class="mini-tab">Install</span></div><div class="language-tabs"><span class="mini-tab active">Original</span><span class="mini-tab">Translation</span></div></div>
-            <div class="markdown"><h4>Weather</h4><p>Two free services, no API keys needed.</p><div class="code"><span class="code-label">Quick start</span>curl -s "wttr.in/London?format=3"<br># Output: London: +8°C</div><div class="code"><span class="code-label">Full forecast</span>curl -s "wttr.in/London?T"</div></div>
-          </section>
-        </div>
-      </div>
+      <figure class="hero-shot" data-reveal>
+        <img src="assets/skilldock-hero-real.svg" alt="SkillDock app interface preview">
+      </figure>
     </div>
   </section>
 
