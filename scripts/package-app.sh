@@ -13,9 +13,16 @@ MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 ICON_FILE="$ROOT_DIR/Resources/SkillDock.icns"
 APP_RESOURCE_BUNDLE="$BUILD_DIR/SkillDock_SkillDockApp.bundle"
+SWIFT_BUILD_ARGS=(-c release --product SkillDockApp)
+CLT_DEVELOPER_DIR="/Library/Developer/CommandLineTools"
+CLT_MACOS_26_SDK="$CLT_DEVELOPER_DIR/SDKs/MacOSX26.sdk"
+
+if [[ "$(xcode-select -p)" == "$CLT_DEVELOPER_DIR" && -d "$CLT_MACOS_26_SDK" ]]; then
+    SWIFT_BUILD_ARGS=(--sdk "$CLT_MACOS_26_SDK" "${SWIFT_BUILD_ARGS[@]}")
+fi
 
 cd "$ROOT_DIR"
-swift build -c release --product SkillDockApp
+swift build "${SWIFT_BUILD_ARGS[@]}"
 
 rm -rf "$APP_DIR"
 mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"

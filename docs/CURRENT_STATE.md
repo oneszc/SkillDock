@@ -367,6 +367,14 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - Plugin 来源延期到后续 V0.6.x，不扫描 `.codex/plugins/cache`。
 - 独立设计规格：`docs/superpowers/specs/2026-08-08-v0.6-codex-available-skills-design.md`。
 
+### Command Line Tools 27 启动兼容修复（2026-08-08）
+
+- 已确认启动失败不是 SwiftUI 页面代码错误，而是独立 Command Line Tools 27 默认使用 macOS 27 SDK 时缺少 `SwiftUIMacros` 插件。
+- `scripts/package-app.sh` 在仅启用 Command Line Tools 且存在 macOS 26 SDK 时，会自动使用 macOS 26 SDK 构建；完整 Xcode 环境保持默认行为。
+- `scripts/verify-app.sh` 已兼容 Swift 6.4 生成的标准 Bundle 资源结构和旧版扁平资源结构。
+- 不要求为了构建 SkillDock 安装 Xcode 27；项目最低系统版本仍为 macOS 26。
+- 已重新完成构建、打包、签名验证并实际启动 `dist/SkillDock.app`。
+
 ### V0.4.1 Maintenance Release（2026-06-18）
 
 发布范围：
