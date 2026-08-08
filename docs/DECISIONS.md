@@ -327,3 +327,21 @@ https://developer.apple.com/cn/sf-symbols/
 - `obra/superpowers` 这类仓库同时包含多个 Skills 和 `.codex-plugin` / `.claude-plugin` 清单，单独复制 `SKILL.md` 无法等价于完整插件安装。
 - 第三方管理器贸然模拟官方插件安装会引入 hooks 权限、插件生命周期、版本兼容和卸载责任，超出当前 SkillDock 的可靠边界。
 - 明确边界可以保留 SkillDock 管理 Skill 资产的价值，同时避免用户误以为 hooks 和插件运行逻辑也被同步。
+
+## 2026-08-08 - Limit V0.6.0 Available To Personal And System
+
+决定：
+
+- V0.6.0 用 `Available` 取代主侧边栏中的 `System`，旧 System 能力迁移到 `Available > System`。
+- 第一版只接入 `~/.agents/skills` Personal 来源和现有 Codex System 来源。
+- Available 提供 `All Sources / Personal / System` 筛选。
+- Personal 与 System 在 Available 上下文中均只读；本版不提供安装、卸载、删除、更新或内容修改。
+- 同名且内容 Hash 相同的副本合并，但必须保留 Personal、System 和 Agent Copy 等完整来源信息。
+- Plugin 来源延期到后续 V0.6.x，正式实现不得依赖 `.codex/plugins/cache` 全量扫描。
+
+原因：
+
+- Personal 来源有稳定、明确的目录，可以先验证 Available 的产品心智和来源模型。
+- Plugin 生命周期和来源有效性更复杂，混入第一版会扩大风险，并可能把旧缓存或禁用插件错误展示为可用。
+- Personal 第一版只读可以先解决“看得见、看得懂”的问题，避免在所有权、同步和删除语义尚未确认前修改用户文件。
+- 分阶段交付可以完整复用 V0.5.1 的 System 来源修复，同时保持 Library 和 Installed 的稳定行为。

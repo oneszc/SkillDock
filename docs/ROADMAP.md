@@ -286,20 +286,28 @@ V0.5.1 不扩大扫描目录，不接入 Codex Available 的 Personal 或 Plugin
 
 目标：在不混淆“已安装副本”和“Codex 可用能力”的前提下，扩展 Personal、Plugin 和 System Skill 的来源覆盖。
 
-状态：方向已确认，V0.5.1 完成后进入详细设计和开发。
+状态：V0.6.0 范围已确认，设计规格已完成，等待实施计划与开发。
 
-确认方向：
+V0.6.0 确认范围：
 
 - 新增独立的 Codex Available 来源层，并用 `Available` 取代单独的 `System` 一级入口。
-- 首先支持 `~/.agents/skills` 等 Personal Skill 来源。
-- Plugin Skill 通过稳定的插件清单或元数据读取，不直接全量扫描内部 cache。
-- Available 支持 `Personal / Plugin / System` 来源筛选和来源标签。
-- Plugin 与 System Skill 只读，不由 SkillDock 安装、卸载或更新。
+- 支持 `~/.agents/skills` Personal 来源和现有 Codex System 来源。
+- Available 支持 `All Sources / Personal / System` 来源筛选和来源标签。
+- Personal 与 System Skill 在 Available 中只读，不由 SkillDock 安装、卸载或更新。
 - 相同名称和内容跨来源合并，但必须保留全部来源信息。
 - 不承诺数量与 Codex 永久完全一致，界面需明确统计口径。
+
+V0.6.0 暂不包含：
+
+- Plugin Skill 来源接入。
+- 扫描 `.codex/plugins/cache`。
+- 插件安装、启停、卸载或更新。
+- 从 Available 修改、安装或删除 Skill。
+
+Plugin 来源作为后续 V0.6.x 独立阶段处理，必须优先使用稳定插件清单或元数据。
 
 设计规格：
 
 ```text
-docs/superpowers/specs/2026-06-22-skill-source-coverage-and-system-classification-design.md
+docs/superpowers/specs/2026-08-08-v0.6-codex-available-skills-design.md
 ```

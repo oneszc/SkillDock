@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已合并到 `main`，完整测试、打包验证和 GitHub Release 发布均已完成。
+V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。V0.6.0 Available Skills 已完成范围确认和设计规格，尚未进入功能开发。
 
 ## Current Goal
 
-进入 V0.6 Codex Available Skills 规划与开发。
+复核 V0.6.0 Codex Available Skills 设计规格，随后编写实施计划并进入开发。
 
 ## Completed
 
@@ -356,6 +356,16 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 
 - `main` 已推送到 GitHub。
 - GitHub Release：`https://github.com/oneszc/SkillDock/releases/tag/v0.5.1`
+
+### V0.6.0 Available Skills 设计确认（2026-08-08）
+
+- 主侧边栏将用 `Available` 取代 `System`，旧 System 能力迁移到 `Available > System`。
+- 第一版只接入 `~/.agents/skills` Personal 来源和现有 Codex System 来源。
+- Available 提供 `All Sources / Personal / System` 筛选。
+- Personal 与 System 在 Available 页面均只读，不提供安装、卸载、删除、更新或内容修改。
+- 同名且内容 Hash 相同的副本继续合并，并保留完整物理来源。
+- Plugin 来源延期到后续 V0.6.x，不扫描 `.codex/plugins/cache`。
+- 独立设计规格：`docs/superpowers/specs/2026-08-08-v0.6-codex-available-skills-design.md`。
 
 ### V0.4.1 Maintenance Release（2026-06-18）
 
