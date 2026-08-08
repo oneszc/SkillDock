@@ -6,7 +6,7 @@ V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。
 
 ## Current Goal
 
-复核 V0.6.0 Codex Available Skills 设计规格，随后编写实施计划并进入开发。
+V0.6.0 Codex Available Skills 实施计划已完成，等待选择执行方式后进入开发。
 
 ## Completed
 
