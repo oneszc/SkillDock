@@ -47,8 +47,17 @@ final class AppModel {
 
     var records: [SkillRecord] = []
     var selectionID: SkillRecord.ID?
-    var navigationSection: NavigationSection = .library
+    var navigationSection: NavigationSection = .library {
+        didSet {
+            selectFirstVisibleRecordIfNeeded()
+        }
+    }
     var agentFilter: AgentFilter = .all
+    var availableSourceFilter: AvailableSourceFilter = .all {
+        didSet {
+            selectFirstVisibleRecordIfNeeded()
+        }
+    }
     var searchQuery = ""
     var settings: SkillSettings = .defaults()
     var isRefreshing = false
@@ -115,19 +124,27 @@ final class AppModel {
                 record.hasLibraryCopy
             case .installed:
                 record.hasInstalledCopy
-            case .system:
-                record.hasSystemCopy
+            case .available:
+                record.hasAvailableCopy
             }
         }
-        let agentFilteredRecords = sectionRecords.filter { record in
-            switch (navigationSection, agentFilter) {
-            case (.system, _), (_, .all):
-                true
-            case (_, .agent(let id)):
-                isInstalled(record.skill.installation, in: id)
+        let contextFilteredRecords = sectionRecords.filter { record in
+            switch navigationSection {
+            case .available:
+                guard let source = availableSourceFilter.source else {
+                    return true
+                }
+                return record.availableSources.contains(source)
+            case .library, .installed:
+                switch agentFilter {
+                case .all:
+                    return true
+                case .agent(let id):
+                    return isInstalled(record.skill.installation, in: id)
+                }
             }
         }
-        return search.filter(agentFilteredRecords, query: searchQuery)
+        return search.filter(contextFilteredRecords, query: searchQuery)
     }
 
     var selectedRecord: SkillRecord? {
@@ -551,6 +568,13 @@ final class AppModel {
         }
     }
 
+    private func selectFirstVisibleRecordIfNeeded() {
+        guard navigationSection == .available,
+              !filteredRecords.contains(where: { $0.id == selectionID })
+        else { return }
+        selectionID = filteredRecords.first?.id
+    }
+
     func agentTarget(id: String) -> AgentTarget? {
         settings.agentTargets.first { $0.id == id && $0.isEnabled }
     }
@@ -564,28 +588,28 @@ final class AppModel {
     }
 
     private func presentedRecord(_ record: SkillRecord) -> SkillRecord {
-        guard navigationSection == .system,
-              let systemCopy = record.systemCopy
+        guard navigationSection == .available,
+              let copy = record.availableCopy(preferred: availableSourceFilter.source)
         else {
             return record
         }
-        let systemSkill = Skill(
+        let availableSkill = Skill(
             id: record.skill.id,
             name: record.skill.name,
             description: record.skill.description,
-            path: systemCopy.path,
-            source: systemCopy.source,
+            path: copy.path,
+            source: copy.source,
             hasScripts: record.skill.hasScripts,
-            isSystem: systemCopy.isSystem,
-            isReadOnly: systemCopy.isReadOnly,
-            contentHash: systemCopy.contentHash,
+            isSystem: copy.isSystem,
+            isReadOnly: true,
+            contentHash: copy.contentHash,
             installation: record.skill.installation
         )
         return SkillRecord(
-            skill: systemSkill,
+            skill: availableSkill,
             note: record.note,
             isNoteStale: record.isNoteStale,
-            remoteSource: record.remoteSource,
+            remoteSource: nil,
             translation: record.translation,
             isTranslationStale: record.isTranslationStale,
             physicalCopies: record.physicalCopies

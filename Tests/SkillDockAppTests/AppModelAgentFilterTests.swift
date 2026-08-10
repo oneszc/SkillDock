@@ -54,92 +54,133 @@ final class AppModelAgentFilterTests: XCTestCase {
         XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["gemini-skill"])
     }
 
-    func testSystemSectionUsesPhysicalCopiesForMembership() {
+    func testAvailableFiltersByPhysicalSource() {
         let model = AppModel()
-        model.navigationSection = .system
+        model.navigationSection = .available
         model.records = [
-            record(
-                name: "sample-skill",
-                source: .library,
-                installation: .init(codex: true, claude: true),
-                physicalCopies: [
-                    SkillPhysicalCopy(
-                        source: .library,
-                        path: URL(fileURLWithPath: "/tmp/library/sample-skill"),
-                        isSystem: false,
-                        isReadOnly: false,
-                        contentHash: "same"
-                    ),
-                    SkillPhysicalCopy(
-                        source: .codex,
-                        path: URL(fileURLWithPath: "/tmp/codex/.system/sample-skill"),
-                        isSystem: true,
-                        isReadOnly: true,
-                        contentHash: "same"
-                    ),
-                    SkillPhysicalCopy(
-                        source: .claude,
-                        path: URL(fileURLWithPath: "/tmp/claude/sample-skill"),
-                        isSystem: false,
-                        isReadOnly: false,
-                        contentHash: "same"
-                    )
-                ]
-            )
+            record(name: "personal", source: .available(.personal)),
+            record(name: "system", source: .available(.system)),
+            record(name: "agent", source: .codex)
         ]
 
-        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["sample-skill"])
-        XCTAssertEqual(model.filteredRecords.first?.hasLibraryCopy, true)
-        XCTAssertEqual(model.filteredRecords.first?.hasInstalledCopy, true)
-        XCTAssertEqual(model.filteredRecords.first?.hasSystemCopy, true)
+        model.availableSourceFilter = .personal
+        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["personal"])
+
+        model.availableSourceFilter = .system
+        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["system"])
+
+        model.availableSourceFilter = .all
+        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["personal", "system"])
     }
 
-    func testSystemDetailLoadsSystemCopyContent() async throws {
-        let root = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString)
-        let libraryPath = root.appendingPathComponent("library/sample-skill")
-        let systemPath = root.appendingPathComponent("codex/.system/sample-skill")
-        try FileManager.default.createDirectory(at: libraryPath, withIntermediateDirectories: true)
+    func testAvailableAllSourcesPrefersPersonalDetailCopy() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let personalPath = root.appendingPathComponent("personal/sample-skill")
+        let systemPath = root.appendingPathComponent("system/sample-skill")
+        try FileManager.default.createDirectory(at: personalPath, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: systemPath, withIntermediateDirectories: true)
-        try Data("# Library copy".utf8).write(to: libraryPath.appendingPathComponent("SKILL.md"))
+        try Data("# Personal copy".utf8).write(to: personalPath.appendingPathComponent("SKILL.md"))
         try Data("# System copy".utf8).write(to: systemPath.appendingPathComponent("SKILL.md"))
         defer { try? FileManager.default.removeItem(at: root) }
 
-        let model = AppModel()
-        let skill = Skill(
-            id: "library:sample-skill:same",
-            name: "sample-skill",
-            description: nil,
-            path: libraryPath,
-            source: .library,
-            hasScripts: false,
+        let personal = SkillPhysicalCopy(
+            source: .available(.personal),
+            path: personalPath,
             isSystem: false,
-            isReadOnly: false,
-            contentHash: "same",
-            installation: .init(codex: true)
+            isReadOnly: true,
+            contentHash: "same"
         )
-        let record = SkillRecord(
-            skill: skill,
-            note: nil,
-            isNoteStale: false,
-            physicalCopies: [
-                skill.physicalCopy,
-                SkillPhysicalCopy(
-                    source: .codex,
-                    path: systemPath,
-                    isSystem: true,
-                    isReadOnly: true,
-                    contentHash: "same"
-                )
-            ]
+        let system = SkillPhysicalCopy(
+            source: .available(.system),
+            path: systemPath,
+            isSystem: true,
+            isReadOnly: true,
+            contentHash: "same"
         )
+        let record = record(
+            name: "sample-skill",
+            source: .available(.personal),
+            physicalCopies: [system, personal]
+        )
+        let model = AppModel()
         model.records = [record]
         model.selectionID = record.id
-        model.navigationSection = .system
+        model.navigationSection = .available
+        model.availableSourceFilter = .all
 
         await model.loadSelectedDetail()
 
-        XCTAssertEqual(model.markdown, "# System copy")
+        XCTAssertEqual(model.markdown, "# Personal copy")
+        XCTAssertEqual(model.selectedRecord?.skill.source, .available(.personal))
+        XCTAssertEqual(model.selectedRecord?.skill.isReadOnly, true)
+    }
+
+    func testLibraryContextKeepsMergedLibraryCopyWritable() {
+        let library = SkillPhysicalCopy(
+            source: .library,
+            path: URL(fileURLWithPath: "/tmp/library/sample-skill"),
+            isSystem: false,
+            isReadOnly: false,
+            contentHash: "same"
+        )
+        let personal = SkillPhysicalCopy(
+            source: .available(.personal),
+            path: URL(fileURLWithPath: "/tmp/personal/sample-skill"),
+            isSystem: false,
+            isReadOnly: true,
+            contentHash: "same"
+        )
+        let merged = record(
+            name: "sample-skill",
+            source: .library,
+            physicalCopies: [library, personal]
+        )
+        let model = AppModel()
+        model.records = [merged]
+        model.selectionID = merged.id
+        model.navigationSection = .library
+
+        XCTAssertEqual(model.selectedRecord?.skill.source, .library)
+        XCTAssertEqual(model.selectedRecord?.skill.isReadOnly, false)
+    }
+
+    func testAgentOnlyIsNotAvailableAndAvailableOnlyIsNotInstalled() {
+        let model = AppModel()
+        model.records = [
+            record(name: "agent", source: .codex, installation: .init(codex: true)),
+            record(name: "personal", source: .available(.personal))
+        ]
+
+        model.navigationSection = .available
+        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["personal"])
+
+        model.navigationSection = .installed
+        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["agent"])
+    }
+
+    func testAvailableFilterSelectsFirstVisibleRecordWhenItHidesSelection() {
+        let model = AppModel()
+        let personal = record(name: "personal", source: .available(.personal))
+        let system = record(name: "system", source: .available(.system))
+        model.records = [personal, system]
+        model.navigationSection = .available
+        model.selectionID = system.id
+
+        model.availableSourceFilter = .personal
+
+        XCTAssertEqual(model.selectionID, personal.id)
+    }
+
+    func testAvailableNavigationSelectsFirstVisibleRecord() {
+        let model = AppModel()
+        let agent = record(name: "agent", source: .codex)
+        let personal = record(name: "personal", source: .available(.personal))
+        model.records = [agent, personal]
+        model.selectionID = agent.id
+
+        model.navigationSection = .available
+
+        XCTAssertEqual(model.selectionID, personal.id)
     }
 
     private func record(

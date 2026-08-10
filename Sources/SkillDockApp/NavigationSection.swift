@@ -3,7 +3,9 @@ import Foundation
 enum NavigationSection: String, CaseIterable, Identifiable {
     case library = "Library"
     case installed = "Installed"
-    case system = "System"
+    case available = "Available"
+
+    static var system: Self { .available }
 
     var id: Self { self }
 
@@ -11,7 +13,7 @@ enum NavigationSection: String, CaseIterable, Identifiable {
         switch self {
         case .library: "folder"
         case .installed: "square.and.arrow.down"
-        case .system: "lock.shield"
+        case .available: "sparkles.rectangle.stack"
         }
     }
 }
