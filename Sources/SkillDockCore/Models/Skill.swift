@@ -52,11 +52,19 @@ public enum SkillSource: Codable, Equatable, Hashable, Sendable {
     }
 
     public init(from decoder: Decoder) throws {
-        let value = try decoder.singleValueContainer().decode(String.self)
+        let container = try decoder.singleValueContainer()
+        let value = try container.decode(String.self)
         if value == "library" {
             self = .library
-        } else if value.hasPrefix("available:"),
-                  let source = AvailableSkillSource(rawValue: String(value.dropFirst("available:".count))) {
+        } else if value.hasPrefix("available:") {
+            guard let source = AvailableSkillSource(
+                rawValue: String(value.dropFirst("available:".count))
+            ) else {
+                throw DecodingError.dataCorruptedError(
+                    in: container,
+                    debugDescription: "Unknown available Skill source: \(value)"
+                )
+            }
             self = .available(source)
         } else {
             self = .agent(value)

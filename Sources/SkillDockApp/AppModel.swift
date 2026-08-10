@@ -35,7 +35,7 @@ final class AppModel {
     }
 
     enum PendingOverwrite {
-        case install(String)
+        case install(agentID: String, skill: Skill)
     }
 
     struct PendingUninstall {
@@ -359,19 +359,26 @@ final class AppModel {
             await installSelected(to: agentID, strategy: settings.defaultConflictStrategy)
             return
         }
-        pendingOverwrite = .install(agentID)
+        pendingOverwrite = .install(agentID: agentID, skill: record.skill)
     }
 
     func installSelected(to agentID: String, strategy: ConflictStrategy) async {
-        guard let record = selectedRecord,
-              let target = agentTarget(id: agentID)
-        else { return }
+        guard let skill = selectedRecord?.skill, !skill.isReadOnly else { return }
+        await install(skill, to: agentID, strategy: strategy)
+    }
+
+    private func install(
+        _ skill: Skill,
+        to agentID: String,
+        strategy: ConflictStrategy
+    ) async {
+        guard !skill.isReadOnly, let target = agentTarget(id: agentID) else { return }
         do {
             let result = try await workspaceService.installSkill(
-                from: record.skill.path,
+                from: skill.path,
                 target: target,
                 strategy: strategy,
-                isSystemSkill: record.skill.isSystem
+                isSystemSkill: skill.isSystem
             )
             operationMessage = result.message
             await refresh()
@@ -533,8 +540,8 @@ final class AppModel {
 
     func confirmOverwrite(_ pendingOverwrite: PendingOverwrite) async {
         self.pendingOverwrite = nil
-        guard case .install(let target) = pendingOverwrite else { return }
-        await installSelected(to: target, strategy: .overwrite)
+        guard case .install(let agentID, let skill) = pendingOverwrite else { return }
+        await install(skill, to: agentID, strategy: .overwrite)
     }
 
     func saveSettings() async {

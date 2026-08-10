@@ -139,6 +139,33 @@ final class SkillLibraryBuilderTests: XCTestCase {
         XCTAssertEqual(currentRecord?.isTranslationStale, false)
     }
 
+    func testAvailableSystemSkillUsesMatchingLegacyCodexTranslation() {
+        let skill = makeSkill(
+            source: .available(.system),
+            hash: "same",
+            isSystem: true
+        )
+        let translation = SkillTranslation(
+            skillName: skill.name,
+            source: .codex,
+            contentHash: skill.contentHash,
+            translatedDescription: "Legacy system translation",
+            translatedMarkdown: "# Legacy system translation",
+            providerID: TranslationProviderID.deepSeek,
+            model: DeepSeekModel.flash.rawValue,
+            generatedAt: Date(timeIntervalSince1970: 1)
+        )
+
+        let record = SkillLibraryBuilder().build(
+            skills: [skill],
+            notes: [],
+            translations: [translation]
+        ).first
+
+        XCTAssertEqual(record?.translation, translation)
+        XCTAssertEqual(record?.isTranslationStale, false)
+    }
+
     private func makeSkill(
         source: SkillSource,
         hash: String,

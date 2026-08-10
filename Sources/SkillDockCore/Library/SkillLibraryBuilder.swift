@@ -152,6 +152,14 @@ public struct SkillLibraryBuilder: Sendable {
         if let exact = candidates.first(where: { $0.contentHash == skill.contentHash }) {
             return SkillTranslationMatch(translation: exact, isStale: false)
         }
+        if skill.source == .available(.system),
+           let legacyExact = translations.first(where: {
+               $0.skillName == skill.name
+                   && $0.source == .codex
+                   && $0.contentHash == skill.contentHash
+           }) {
+            return SkillTranslationMatch(translation: legacyExact, isStale: false)
+        }
         guard let latest = candidates.max(by: { $0.generatedAt < $1.generatedAt }) else {
             return nil
         }

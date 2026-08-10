@@ -5,6 +5,65 @@ import XCTest
 
 @MainActor
 final class AppModelConfirmationTests: XCTestCase {
+    func testInstallSelectedDoesNotWriteReadOnlyAvailableSkill() async throws {
+        let fixture = try InstallConfirmationFixture()
+        defer { fixture.remove() }
+        let availableSkill = try fixture.makeSkill(
+            name: "read-only-skill",
+            source: .available(.personal),
+            root: fixture.available,
+            isReadOnly: true
+        )
+        let model = fixture.makeModel(records: [availableSkill])
+        model.navigationSection = .available
+        model.selectionID = availableSkill.id
+
+        await model.installSelected(to: AgentTargetID.codex, strategy: .overwrite)
+
+        XCTAssertFalse(
+            FileManager.default.fileExists(
+                atPath: fixture.codex.appendingPathComponent(availableSkill.name).path
+            )
+        )
+    }
+
+    func testConfirmedOverwriteInstallsCapturedSkillAfterSelectionChanges() async throws {
+        let fixture = try InstallConfirmationFixture()
+        defer { fixture.remove() }
+        let intendedSkill = try fixture.makeSkill(
+            name: "intended-skill",
+            source: .library,
+            root: fixture.library,
+            isReadOnly: false
+        )
+        let availableSkill = try fixture.makeSkill(
+            name: "read-only-skill",
+            source: .available(.personal),
+            root: fixture.available,
+            isReadOnly: true
+        )
+        let model = fixture.makeModel(records: [intendedSkill, availableSkill])
+        model.selectionID = intendedSkill.id
+
+        await model.requestInstall(to: AgentTargetID.codex)
+        let pendingOverwrite = try XCTUnwrap(model.pendingOverwrite)
+        model.navigationSection = .available
+        XCTAssertEqual(model.selectedRecord?.skill.id, availableSkill.id)
+
+        await model.confirmOverwrite(pendingOverwrite)
+
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: fixture.codex.appendingPathComponent(intendedSkill.name).path
+            )
+        )
+        XCTAssertFalse(
+            FileManager.default.fileExists(
+                atPath: fixture.codex.appendingPathComponent(availableSkill.name).path
+            )
+        )
+    }
+
     func testConfirmedUninstallUsesCapturedRequestAfterDialogStateClears() async throws {
         let root = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -101,6 +160,80 @@ final class AppModelConfirmationTests: XCTestCase {
         XCTAssertNotNil(model.errorMessage)
         XCTAssertNotEqual(model.errorMessage, "Could not completely read Library skills at \(library.path): Scan warning.")
         XCTAssertTrue(model.errorMessage?.contains("SKILL.md") == true)
+    }
+}
+
+@MainActor
+private final class InstallConfirmationFixture {
+    let root: URL
+    let home: URL
+    let library: URL
+    let codex: URL
+    let claude: URL
+    let available: URL
+    let storage: URL
+
+    init() throws {
+        root = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        home = root.appendingPathComponent("home", isDirectory: true)
+        library = root.appendingPathComponent("library", isDirectory: true)
+        codex = root.appendingPathComponent("codex", isDirectory: true)
+        claude = root.appendingPathComponent("claude", isDirectory: true)
+        available = home.appendingPathComponent(".agents/skills", isDirectory: true)
+        storage = root.appendingPathComponent("storage", isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+    }
+
+    func makeSkill(
+        name: String,
+        source: SkillSource,
+        root: URL,
+        isReadOnly: Bool
+    ) throws -> Skill {
+        let path = root.appendingPathComponent(name, isDirectory: true)
+        try FileManager.default.createDirectory(at: path, withIntermediateDirectories: true)
+        try Data("---\nname: \(name)\n---\n".utf8)
+            .write(to: path.appendingPathComponent("SKILL.md"))
+        return Skill(
+            id: "\(source.rawValue):\(name):hash",
+            name: name,
+            description: nil,
+            path: path,
+            source: source,
+            hasScripts: false,
+            isSystem: false,
+            isReadOnly: isReadOnly,
+            contentHash: "hash"
+        )
+    }
+
+    func makeModel(records skills: [Skill]) -> AppModel {
+        var settings = SkillSettings(
+            libraryPath: library,
+            codexPath: codex,
+            claudePath: claude,
+            defaultConflictStrategy: .overwrite
+        )
+        settings.showSystemSkills = false
+        let notesStore = NotesStore(directory: storage)
+        let model = AppModel(
+            settingsStore: SettingsStore(directory: storage, defaultSettings: settings),
+            libraryService: SkillLibraryService(
+                notesStore: notesStore,
+                translationStore: TranslationStore(directory: storage),
+                remoteSourceStore: RemoteSourceStore(directory: storage),
+                homeDirectory: home
+            ),
+            workspaceService: SkillWorkspaceService(notesStore: notesStore)
+        )
+        model.settings = settings
+        model.records = SkillLibraryBuilder().build(skills: skills, notes: [])
+        return model
+    }
+
+    func remove() {
+        try? FileManager.default.removeItem(at: root)
     }
 }
 
