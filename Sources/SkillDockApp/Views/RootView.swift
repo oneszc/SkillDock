@@ -30,7 +30,7 @@ struct RootView: View {
                     .frame(minWidth: 620, minHeight: 560)
             }
         }
-        .onChange(of: model.selectionID) { _, _ in
+        .onChange(of: model.selectedDetailContextID) { _, _ in
             Task {
                 await model.flushPendingNoteSave()
                 await model.loadSelectedDetail()

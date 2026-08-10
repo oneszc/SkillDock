@@ -154,6 +154,15 @@ final class AppModel {
         return presentedRecord(record)
     }
 
+    var selectedDetailContextID: String? {
+        guard let record = selectedRecord else { return nil }
+        return [
+            record.id,
+            record.skill.source.rawValue,
+            record.skill.path.standardizedFileURL.path
+        ].joined(separator: "|")
+    }
+
     func start() async {
         do {
             settings = try await settingsStore.load()
@@ -187,8 +196,12 @@ final class AppModel {
             return
         }
         do {
-            markdown = try await workspaceService.markdown(for: record.skill.path)
-            filePaths = try await workspaceService.fileTree(for: record.skill.path)
+            let selectedContextID = selectedDetailContextID
+            let markdown = try await workspaceService.markdown(for: record.skill.path)
+            let filePaths = try await workspaceService.fileTree(for: record.skill.path)
+            guard selectedContextID == selectedDetailContextID else { return }
+            self.markdown = markdown
+            self.filePaths = filePaths
         } catch {
             errorMessage = error.localizedDescription
         }

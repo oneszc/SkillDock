@@ -160,6 +160,40 @@ final class AppModelAgentFilterTests: XCTestCase {
         XCTAssertEqual(model.selectedRecord?.skill.source, .available(.system))
     }
 
+    func testAvailableSourceFilterChangesDetailContextWhenSelectionIsPreserved() {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let personal = SkillPhysicalCopy(
+            source: .available(.personal),
+            path: root.appendingPathComponent("personal/sample-skill"),
+            isSystem: false,
+            isReadOnly: true,
+            contentHash: "same"
+        )
+        let system = SkillPhysicalCopy(
+            source: .available(.system),
+            path: root.appendingPathComponent("system/sample-skill"),
+            isSystem: true,
+            isReadOnly: true,
+            contentHash: "same"
+        )
+        let record = record(
+            name: "sample-skill",
+            source: .available(.personal),
+            physicalCopies: [personal, system]
+        )
+        let model = AppModel()
+        model.records = [record]
+        model.selectionID = record.id
+        model.navigationSection = .available
+        model.availableSourceFilter = .personal
+        let personalContext = model.selectedDetailContextID
+
+        model.availableSourceFilter = .system
+
+        XCTAssertEqual(model.selectionID, record.id)
+        XCTAssertNotEqual(model.selectedDetailContextID, personalContext)
+    }
+
     func testLibraryContextKeepsMergedLibraryCopyWritable() {
         let library = SkillPhysicalCopy(
             source: .library,

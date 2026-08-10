@@ -17,8 +17,13 @@ struct SkillDetailView: View {
                 content(for: record)
             }
             .navigationTitle(record.skill.name)
-            .onChange(of: record.id) { _, _ in
-                if record.skill.isReadOnly && tab == .install {
+            .onAppear {
+                if record.skill.isReadOnly {
+                    tab = .markdown
+                }
+            }
+            .onChange(of: record.skill.isReadOnly) { _, isReadOnly in
+                if isReadOnly {
                     tab = .markdown
                 }
             }
@@ -140,7 +145,7 @@ struct SkillDetailView: View {
 
                 Spacer(minLength: 0)
 
-                if tab == .markdown {
+                if activeTab(for: record) == .markdown {
                     Picker("Language", selection: $language) {
                         ForEach(TranslationLanguage.allCases) { item in
                             Text(item.title).tag(item)
@@ -173,7 +178,7 @@ struct SkillDetailView: View {
 
     @ViewBuilder
     private func content(for record: SkillRecord) -> some View {
-        switch tab {
+        switch activeTab(for: record) {
         case .markdown:
             translationContent(for: record)
         case .files:
@@ -264,6 +269,10 @@ struct SkillDetailView: View {
         }
     }
 
+    private func activeTab(for record: SkillRecord) -> DetailTab {
+        record.skill.isReadOnly && tab == .install ? .markdown : tab
+    }
+
     private func presentation(for record: SkillRecord) -> TranslationPresentation {
         let operation = model.translationOperationState
         let isGenerating: Bool
@@ -283,7 +292,7 @@ struct SkillDetailView: View {
             record: record,
             originalMarkdown: model.markdown,
             language: language,
-            showsMarkdown: tab == .markdown,
+            showsMarkdown: activeTab(for: record) == .markdown,
             isGenerating: isGenerating,
             errorMessage: errorMessage,
             hasAPIKey: model.translationCredentialStatus == .available
