@@ -562,7 +562,7 @@ final class AppModel {
     }
 
     private func preserveOrSelectFirstRecord() {
-        guard records.contains(where: { $0.id == selectionID }) else {
+        guard filteredRecords.contains(where: { $0.id == selectionID }) else {
             selectionID = filteredRecords.first?.id
             return
         }

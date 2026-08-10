@@ -115,6 +115,51 @@ final class AppModelAgentFilterTests: XCTestCase {
         XCTAssertEqual(model.selectedRecord?.skill.isReadOnly, true)
     }
 
+    func testAvailableSourceFiltersLoadMatchingPhysicalCopy() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let personalPath = root.appendingPathComponent("personal/sample-skill")
+        let systemPath = root.appendingPathComponent("system/sample-skill")
+        try FileManager.default.createDirectory(at: personalPath, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: systemPath, withIntermediateDirectories: true)
+        try Data("# Personal copy".utf8).write(to: personalPath.appendingPathComponent("SKILL.md"))
+        try Data("# System copy".utf8).write(to: systemPath.appendingPathComponent("SKILL.md"))
+        defer { try? FileManager.default.removeItem(at: root) }
+
+        let personal = SkillPhysicalCopy(
+            source: .available(.personal),
+            path: personalPath,
+            isSystem: false,
+            isReadOnly: true,
+            contentHash: "same"
+        )
+        let system = SkillPhysicalCopy(
+            source: .available(.system),
+            path: systemPath,
+            isSystem: true,
+            isReadOnly: true,
+            contentHash: "same"
+        )
+        let record = record(
+            name: "sample-skill",
+            source: .available(.personal),
+            physicalCopies: [system, personal]
+        )
+        let model = AppModel()
+        model.records = [record]
+        model.selectionID = record.id
+        model.navigationSection = .available
+
+        model.availableSourceFilter = .personal
+        await model.loadSelectedDetail()
+        XCTAssertEqual(model.markdown, "# Personal copy")
+        XCTAssertEqual(model.selectedRecord?.skill.source, .available(.personal))
+
+        model.availableSourceFilter = .system
+        await model.loadSelectedDetail()
+        XCTAssertEqual(model.markdown, "# System copy")
+        XCTAssertEqual(model.selectedRecord?.skill.source, .available(.system))
+    }
+
     func testLibraryContextKeepsMergedLibraryCopyWritable() {
         let library = SkillPhysicalCopy(
             source: .library,
@@ -181,6 +226,46 @@ final class AppModelAgentFilterTests: XCTestCase {
         model.navigationSection = .available
 
         XCTAssertEqual(model.selectionID, personal.id)
+    }
+
+    func testRefreshClearsAvailableSelectionWhenSelectedRecordLosesAvailableCopy() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let home = root.appendingPathComponent("home")
+        let library = root.appendingPathComponent("library")
+        let personal = home.appendingPathComponent(".agents/skills/sample-skill")
+        let settingsDirectory = root.appendingPathComponent("settings")
+        let notesDirectory = root.appendingPathComponent("notes")
+        let librarySkill = library.appendingPathComponent("sample-skill")
+        try FileManager.default.createDirectory(at: personal, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: librarySkill, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: settingsDirectory, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: notesDirectory, withIntermediateDirectories: true)
+        try Data("# Sample skill".utf8).write(to: personal.appendingPathComponent("SKILL.md"))
+        try Data("# Sample skill".utf8).write(to: librarySkill.appendingPathComponent("SKILL.md"))
+        defer { try? FileManager.default.removeItem(at: root) }
+
+        var settings = SkillSettings.defaults(homeDirectory: home)
+        settings.libraryPath = library
+        let model = AppModel(
+            settingsStore: SettingsStore(directory: settingsDirectory, defaultSettings: settings),
+            libraryService: SkillLibraryService(
+                notesStore: NotesStore(directory: notesDirectory),
+                homeDirectory: home
+            )
+        )
+        model.settings = settings
+        model.navigationSection = .available
+        model.availableSourceFilter = .personal
+
+        await model.refresh()
+        XCTAssertEqual(model.selectedRecord?.skill.source, .available(.personal))
+
+        try FileManager.default.removeItem(at: personal)
+        await model.refresh()
+
+        XCTAssertNil(model.selectionID)
+        XCTAssertNil(model.selectedRecord)
+        XCTAssertTrue(model.filteredRecords.isEmpty)
     }
 
     private func record(
