@@ -152,11 +152,12 @@ final class AppModel {
         defer { isRefreshing = false }
 
         do {
-            records = try await libraryService.refresh(settings: settings)
+            let snapshot = try await libraryService.refresh(settings: settings)
+            records = snapshot.records
             preserveOrSelectFirstRecord()
             await loadSelectedDetail()
             await loadNoteDraft()
-            errorMessage = nil
+            errorMessage = snapshot.issues.first?.message
         } catch {
             errorMessage = error.localizedDescription
         }

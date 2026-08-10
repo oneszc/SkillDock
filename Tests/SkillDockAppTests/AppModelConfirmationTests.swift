@@ -18,7 +18,7 @@ final class AppModelConfirmationTests: XCTestCase {
             .write(to: skill.appendingPathComponent("SKILL.md"))
         defer { try? FileManager.default.removeItem(at: root) }
 
-        let scanned = await SkillScanner().scan([ScanLocation(root: codex, source: .codex)])
+        let scanResult = await SkillScanner().scan([ScanLocation(root: codex, source: .codex)])
         let settings = SkillSettings(libraryPath: library, codexPath: codex, claudePath: claude)
         let model = AppModel(
             settingsStore: SettingsStore(directory: notes, defaultSettings: settings),
@@ -29,7 +29,7 @@ final class AppModelConfirmationTests: XCTestCase {
         let request = AppModel.PendingUninstall(
             agentID: AgentTargetID.codex,
             skillName: "sample-skill",
-            contentHash: try XCTUnwrap(scanned.first?.contentHash),
+            contentHash: try XCTUnwrap(scanResult.skills.first?.contentHash),
             isSystemSkill: false
         )
 
