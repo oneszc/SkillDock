@@ -17,6 +17,7 @@ public actor SkillLibraryService {
     private let remoteSourceStore: RemoteSourceStore
     private let builder: SkillLibraryBuilder
     private let homeDirectory: URL
+    private let afterScan: @Sendable (SkillScanResult) throws -> Void
 
     public init(
         scanner: SkillScanner = .init(),
@@ -32,12 +33,33 @@ public actor SkillLibraryService {
         self.remoteSourceStore = remoteSourceStore
         self.builder = builder
         self.homeDirectory = homeDirectory
+        self.afterScan = { _ in }
+    }
+
+    init(
+        scanner: SkillScanner = .init(),
+        notesStore: NotesStore = .init(),
+        translationStore: TranslationStore = .init(),
+        remoteSourceStore: RemoteSourceStore = .init(),
+        builder: SkillLibraryBuilder = .init(),
+        homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser,
+        afterScan: @escaping @Sendable (SkillScanResult) throws -> Void
+    ) {
+        self.scanner = scanner
+        self.notesStore = notesStore
+        self.translationStore = translationStore
+        self.remoteSourceStore = remoteSourceStore
+        self.builder = builder
+        self.homeDirectory = homeDirectory
+        self.afterScan = afterScan
     }
 
     public func refresh(settings: SkillSettings) async throws -> SkillLibrarySnapshot {
+        var systemRootIdentities = Set<URL>()
         let systemRoots = settings.agentTargets
             .filter(\.supportsSystemSkills)
             .map { $0.path.appendingPathComponent(".system", isDirectory: true) }
+            .filter { systemRootIdentities.insert(scanComparisonIdentity($0)).inserted }
         let agentLocations = settings.agentTargets
             .filter(\.isEnabled)
             .map { target in
@@ -65,6 +87,7 @@ public actor SkillLibraryService {
                 + agentLocations
                 + availableLocations
         )
+        try afterScan(scanResult)
         let notes = try await notesStore.load()
         let translations = try await translationStore.load()
         let remoteSources = try await remoteSourceStore.load()

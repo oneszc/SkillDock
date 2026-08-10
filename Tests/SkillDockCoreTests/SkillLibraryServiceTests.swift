@@ -151,6 +151,35 @@ final class SkillLibraryServiceTests: XCTestCase {
         )
     }
 
+    func testRefreshDeduplicatesDuplicateSystemRoots() async throws {
+        let home = try Fixtures.temporaryDirectory()
+        var settings = SkillSettings.defaults(homeDirectory: home)
+        settings.agentTargets.append(
+            AgentTarget(
+                id: "duplicate-system-root",
+                displayName: "Duplicate System Root",
+                path: settings.codexPath,
+                isEnabled: false,
+                supportsSystemSkills: true
+            )
+        )
+        try Fixtures.makeSkill(
+            at: settings.codexPath.appendingPathComponent(".system/system-skill"),
+            name: "system-skill"
+        )
+
+        let service = SkillLibraryService(
+            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory()),
+            homeDirectory: home
+        )
+        let snapshot = try await service.refresh(settings: settings)
+
+        let record = try XCTUnwrap(
+            snapshot.records.first { $0.skill.name == "system-skill" }
+        )
+        XCTAssertEqual(record.physicalCopies.filter { $0.availableSource == .system }.count, 1)
+    }
+
     func testDisabledSystemSettingKeepsPersonalAndHidesSystem() async throws {
         let home = try Fixtures.temporaryDirectory()
         var settings = SkillSettings.defaults(homeDirectory: home)

@@ -147,6 +147,24 @@ final class SkillScannerTests: XCTestCase {
         XCTAssertEqual(result.skills.first { $0.name == "system-skill" }?.isSystem, true)
     }
 
+    func testExcludesSystemRootByPhysicalIdentity() async throws {
+        let root = try Fixtures.temporaryDirectory()
+        let systemRoot = root.appendingPathComponent(".system")
+        let systemAlias = root.appendingPathComponent("system-alias")
+        try Fixtures.makeSkill(at: root.appendingPathComponent("agent-copy"), name: "agent-copy")
+        try Fixtures.makeSkill(
+            at: systemRoot.appendingPathComponent("system-skill"),
+            name: "system-skill"
+        )
+        try FileManager.default.createSymbolicLink(at: systemAlias, withDestinationURL: systemRoot)
+
+        let result = await SkillScanner().scan([
+            ScanLocation(root: root, source: .codex, excludedRoots: [systemAlias])
+        ])
+
+        XCTAssertEqual(result.skills.map(\.name), ["agent-copy"])
+    }
+
     func testMissingRootProducesNoIssue() async {
         let root = URL(fileURLWithPath: "/tmp/skilldock-missing-source")
         let result = await SkillScanner().scan([
@@ -166,7 +184,7 @@ final class SkillScannerTests: XCTestCase {
         )
         try FileManager.default.createDirectory(at: unreadableRoot, withIntermediateDirectories: true)
 
-        let scanner = SkillScanner(enumeratorProvider: { url, keys in
+        let scanner = SkillScanner(enumeratorProvider: { url, keys, _ in
             guard url.standardizedFileURL != unreadableRoot.standardizedFileURL else { return nil }
             return FileManager.default.enumerator(
                 at: url,
@@ -181,5 +199,34 @@ final class SkillScannerTests: XCTestCase {
 
         XCTAssertEqual(result.skills.map(\.name), ["readable-skill"])
         XCTAssertEqual(result.issues.map(\.source), [.available(.personal)])
+    }
+
+    func testTraversalErrorKeepsSuccessfulSkillsAndReportsIssue() async throws {
+        let root = try Fixtures.temporaryDirectory()
+        try Fixtures.makeSkill(at: root.appendingPathComponent("readable-skill"))
+
+        let scanner = SkillScanner(enumeratorProvider: { url, keys, errorHandler in
+            _ = errorHandler?(url.appendingPathComponent("blocked"), ScannerTestError.blocked)
+            return FileManager.default.enumerator(
+                at: url,
+                includingPropertiesForKeys: keys,
+                options: []
+            )
+        })
+        let result = await scanner.scan([
+            ScanLocation(root: root, source: .available(.personal))
+        ])
+
+        XCTAssertEqual(result.skills.map(\.name), ["sample-skill"])
+        XCTAssertEqual(result.issues.map(\.source), [.available(.personal)])
+        XCTAssertTrue(result.issues.first?.message.contains("Blocked during traversal.") == true)
+    }
+}
+
+private enum ScannerTestError: LocalizedError {
+    case blocked
+
+    var errorDescription: String? {
+        "Blocked during traversal."
     }
 }

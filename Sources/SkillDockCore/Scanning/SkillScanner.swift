@@ -44,7 +44,8 @@ public actor SkillScanner {
     private let fileManager: FileManager
     private let enumeratorProvider: (
         URL,
-        [URLResourceKey]?
+        [URLResourceKey]?,
+        ((URL, any Error) -> Bool)?
     ) -> FileManager.DirectoryEnumerator?
 
     public init(
@@ -55,11 +56,12 @@ public actor SkillScanner {
         self.parser = parser
         self.hasher = hasher
         self.fileManager = fileManager
-        self.enumeratorProvider = { url, keys in
+        self.enumeratorProvider = { url, keys, errorHandler in
             fileManager.enumerator(
                 at: url,
                 includingPropertiesForKeys: keys,
-                options: []
+                options: [],
+                errorHandler: errorHandler
             )
         }
     }
@@ -70,7 +72,8 @@ public actor SkillScanner {
         fileManager: FileManager = .default,
         enumeratorProvider: @escaping (
             URL,
-            [URLResourceKey]?
+            [URLResourceKey]?,
+            ((URL, any Error) -> Bool)?
         ) -> FileManager.DirectoryEnumerator?
     ) {
         self.parser = parser
@@ -115,8 +118,19 @@ public actor SkillScanner {
         guard fileManager.fileExists(atPath: root.path) else { return ([], nil) }
 
         var result = [root]
-        let excludedRoots = Set(location.excludedRoots.map(normalizedURL))
-        guard let enumerator = enumeratorProvider(root, [.isDirectoryKey]) else {
+        let excludedRoots = Set(location.excludedRoots.map(scanComparisonIdentity))
+        var traversalErrorMessage: String?
+        let errorHandler: (URL, any Error) -> Bool = { _, error in
+            if traversalErrorMessage == nil {
+                traversalErrorMessage = error.localizedDescription
+            }
+            return true
+        }
+        guard let enumerator = enumeratorProvider(
+            root,
+            [.isDirectoryKey],
+            errorHandler
+        ) else {
             return (
                 [],
                 SkillScanIssue(
@@ -128,7 +142,7 @@ public actor SkillScanner {
         }
 
         for case let url as URL in enumerator {
-            let candidate = normalizedURL(url)
+            let candidate = scanComparisonIdentity(url)
             if excludedRoots.contains(candidate) {
                 enumerator.skipDescendants()
                 continue
@@ -137,7 +151,14 @@ public actor SkillScanner {
                 result.append(url)
             }
         }
-        return (result, nil)
+        let issue = traversalErrorMessage.map { message in
+            SkillScanIssue(
+                root: root,
+                source: location.source,
+                message: "Could not completely read \(location.source.displayName) skills at \(root.path): \(message)"
+            )
+        }
+        return (result, issue)
     }
 
     private func makeSkill(at directory: URL, source: SkillSource) -> Skill? {
@@ -190,7 +211,8 @@ public actor SkillScanner {
         }
     }
 
-    private func normalizedURL(_ url: URL) -> URL {
-        url.standardizedFileURL
-    }
+}
+
+func scanComparisonIdentity(_ url: URL) -> URL {
+    url.resolvingSymlinksInPath().standardizedFileURL
 }
