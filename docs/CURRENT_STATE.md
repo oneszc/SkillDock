@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。V0.6.0 Available Skills 已完成范围确认和设计规格，尚未进入功能开发。
+V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。V0.6.0 Available Skills 已完成开发、自动化测试和打包/独立解压验证，等待产品负责人手动验收后发布。
 
 ## Current Goal
 
-V0.6.0 Codex Available Skills 实施计划已完成，等待选择执行方式后进入开发。
+由产品负责人按 `docs/testing/V0.6_ACCEPTANCE.md` 完成 V0.6.0 手动验收；全部通过前不发布。
 
 ## Completed
 
@@ -366,6 +366,31 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - 同名且内容 Hash 相同的副本继续合并，并保留完整物理来源。
 - Plugin 来源延期到后续 V0.6.x，不扫描 `.codex/plugins/cache`。
 - 独立设计规格：`docs/superpowers/specs/2026-08-08-v0.6-codex-available-skills-design.md`。
+
+### V0.6.0 Available Skills 发布准备（2026-08-10）
+
+已完成：
+
+- `Available` 已取代旧 `System` 一级入口，第一版只读取 Personal（`~/.agents/skills`）与 Codex System 两类只读来源。
+- Personal、System 与 Agent Copy 的物理副本会按规范化名称和内容 Hash 合并，同时保留全部来源；Available 仅统计 Personal 与 System 逻辑 Skill。
+- 已新增产品负责人验收清单：`docs/testing/V0.6_ACCEPTANCE.md`。
+- 已新增 Release notes：`docs/releases/v0.6.0.md`。
+- 打包脚本默认版本已更新为 `0.6.0`。
+
+已验证：
+
+- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer swift test`：171 项全部通过，零失败。
+- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer SKILLDOCK_VERSION=0.6.0 ./scripts/package-app.sh`：已生成并验证 `dist/SkillDock.app` 与 `dist/SkillDock-0.6.0.zip`。
+- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer ./scripts/verify-app.sh dist/SkillDock.app`：通过。
+- 独立解压 `dist/SkillDock-0.6.0.zip` 到 `/tmp/skilldock-v0.6-verification` 后运行 `./scripts/verify-app.sh`：通过。
+- 包内版本：`0.6.0`。
+- SHA-256：`2753f9a1f34092e575a6b08e0efbdf7507412301f4508274efac4a835b0e8831`。
+- 已运行 `open -n dist/SkillDock.app` 启动打包后的 App；本执行环境未完成视觉或交互验收。
+
+剩余发布前检查：
+
+- 产品负责人需逐项完成 `docs/testing/V0.6_ACCEPTANCE.md`，包括真实 Personal / System 来源、来源标签与计数、只读限制，以及 Library、Installed、GitHub 更新、Settings 和译文回归。
+- 手动验收通过前，V0.6.0 不发布。
 
 ### Command Line Tools 27 启动兼容修复（2026-08-08）
 
