@@ -4,6 +4,7 @@ import SwiftUI
 struct SkillRowView: View {
     let record: SkillRecord
     let agentTargets: [AgentTarget]
+    let showsAvailableSources: Bool
 
     var body: some View {
         HStack(spacing: 12) {
@@ -24,22 +25,26 @@ struct SkillRowView: View {
 
             Spacer(minLength: 8)
 
-            HStack(spacing: 5) {
-                ForEach(installBadges.visibleTargets, id: \.id) { target in
-                    AgentLogo(target: target, installed: true, size: 13)
-                        .help("Installed in \(target.displayName)")
+            if showsAvailableSources {
+                AvailableSourceBadges(record: record)
+            } else {
+                HStack(spacing: 5) {
+                    ForEach(installBadges.visibleTargets, id: \.id) { target in
+                        AgentLogo(target: target, installed: true, size: 13)
+                            .help("Installed in \(target.displayName)")
+                    }
+                    if installBadges.collapsedCount > 0 {
+                        Text("+\(installBadges.collapsedCount)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(.quaternary, in: Capsule())
+                            .help(installedTargetsTooltip)
+                    }
                 }
-                if installBadges.collapsedCount > 0 {
-                    Text("+\(installBadges.collapsedCount)")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(.quaternary, in: Capsule())
-                        .help(installedTargetsTooltip)
-                }
+                .font(.subheadline)
             }
-            .font(.subheadline)
         }
         .padding(.vertical, VisualMetrics.rowVerticalPadding)
     }
@@ -59,6 +64,24 @@ struct SkillRowView: View {
 
     private var rowDescription: String {
         return record.skill.description ?? record.skill.source.displayName
+    }
+}
+
+struct AvailableSourceBadges: View {
+    let record: SkillRecord
+
+    var body: some View {
+        HStack(spacing: 5) {
+            ForEach(Array(AvailableSourcePresentation.badges(for: record).enumerated()), id: \.offset) {
+                _, badge in
+                Text(badge.title)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(.quaternary, in: Capsule())
+            }
+        }
     }
 }
 

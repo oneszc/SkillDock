@@ -264,7 +264,7 @@ final class AppModel {
     }
 
     func generateSelectedTranslation() async {
-        guard let record = selectedRecord else { return }
+        guard let record = selectedRecord, !record.skill.isReadOnly else { return }
         let skill = record.skill
         let sourceMarkdown = markdown
         translationOperationState = .generating(skillID: skill.id)
@@ -341,6 +341,7 @@ final class AppModel {
     }
 
     func requestInstall(to agentID: String) async {
+        guard let record = selectedRecord, !record.skill.isReadOnly else { return }
         guard settings.defaultConflictStrategy == .overwrite else {
             await installSelected(to: agentID, strategy: settings.defaultConflictStrategy)
             return
@@ -367,9 +368,10 @@ final class AppModel {
     }
 
     func requestTargetState(_ installed: Bool, target: AgentTarget) async {
+        guard let record = selectedRecord, !record.skill.isReadOnly else { return }
         if installed {
             await requestInstall(to: target.id)
-        } else if let record = selectedRecord {
+        } else {
             pendingUninstall = PendingUninstall(
                 agentID: target.id,
                 skillName: record.skill.name,
@@ -436,7 +438,10 @@ final class AppModel {
     }
 
     func checkSelectedRemoteUpdate() async {
-        guard let source = selectedRecord?.remoteSource else { return }
+        guard let record = selectedRecord,
+              !record.skill.isReadOnly,
+              let source = record.remoteSource
+        else { return }
         isCheckingRemoteUpdate = true
         defer { isCheckingRemoteUpdate = false }
 
