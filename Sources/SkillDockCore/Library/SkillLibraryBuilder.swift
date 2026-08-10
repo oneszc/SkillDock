@@ -104,7 +104,10 @@ public struct SkillLibraryBuilder: Sendable {
                 }
 
             let noteMatch = matchNote(for: preferred, notes: notes)
-            let translationMatch = matchTranslation(for: preferred, translations: translations)
+            let translationMatch = isAmbiguousLegacySystemTranslation(
+                for: preferred,
+                in: group
+            ) ? nil : matchTranslation(for: preferred, translations: translations)
             let availableSystemTranslationMatch = group
                 .first { $0.source == .available(.system) }
                 .flatMap { matchTranslation(for: $0, translations: translations) }
@@ -147,6 +150,14 @@ public struct SkillLibraryBuilder: Sendable {
             return nil
         }
         return SkillNoteMatch(note: latest, isStale: true)
+    }
+
+    private func isAmbiguousLegacySystemTranslation(
+        for preferred: Skill,
+        in group: [Skill]
+    ) -> Bool {
+        preferred.source == .codex
+            && group.contains { $0.source == .available(.system) }
     }
 
     private func matchTranslation(

@@ -265,6 +265,53 @@ final class AppModelAgentFilterTests: XCTestCase {
         XCTAssertEqual(model.selectedRecord?.isTranslationStale, false)
     }
 
+    func testAgentAndSystemMergedRecordKeepsLegacyTranslationOutOfInstalledContext() throws {
+        let agent = mergedSkill(source: .codex)
+        let system = mergedSkill(
+            source: .available(.system),
+            isSystem: true,
+            isReadOnly: true
+        )
+        let legacyTranslation = mergedTranslation(source: .codex)
+        let merged = try XCTUnwrap(
+            SkillLibraryBuilder().build(
+                skills: [agent, system],
+                notes: [],
+                translations: [legacyTranslation]
+            ).first
+        )
+        let model = AppModel()
+        model.records = [merged]
+        model.selectionID = merged.id
+
+        model.navigationSection = .installed
+        XCTAssertEqual(model.selectedRecord?.skill.source, .codex)
+        XCTAssertNil(model.selectedRecord?.translation)
+
+        model.navigationSection = .available
+        model.availableSourceFilter = .system
+        XCTAssertEqual(model.selectedRecord?.skill.source, .available(.system))
+        XCTAssertEqual(model.selectedRecord?.translation, legacyTranslation)
+    }
+
+    func testAgentRecordKeepsAgentTranslationWhenNoSystemCopyIsMerged() throws {
+        let agent = mergedSkill(source: .codex)
+        let agentTranslation = mergedTranslation(source: .codex)
+        let record = try XCTUnwrap(
+            SkillLibraryBuilder().build(
+                skills: [agent],
+                notes: [],
+                translations: [agentTranslation]
+            ).first
+        )
+        let model = AppModel()
+        model.records = [record]
+        model.selectionID = record.id
+        model.navigationSection = .installed
+
+        XCTAssertEqual(model.selectedRecord?.translation, agentTranslation)
+    }
+
     func testAgentOnlyIsNotAvailableAndAvailableOnlyIsNotInstalled() {
         let model = AppModel()
         model.records = [
@@ -384,6 +431,19 @@ final class AppModelAgentFilterTests: XCTestCase {
             isSystem: isSystem,
             isReadOnly: isReadOnly,
             contentHash: "same"
+        )
+    }
+
+    private func mergedTranslation(source: SkillSource) -> SkillTranslation {
+        SkillTranslation(
+            skillName: "merged-skill",
+            source: source,
+            contentHash: "same",
+            translatedDescription: "Merged translation",
+            translatedMarkdown: "# Merged translation",
+            providerID: TranslationProviderID.deepSeek,
+            model: DeepSeekModel.flash.rawValue,
+            generatedAt: Date(timeIntervalSince1970: 1)
         )
     }
 }

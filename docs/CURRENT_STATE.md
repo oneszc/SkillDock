@@ -374,6 +374,7 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - `Available` 已取代旧 `System` 一级入口，第一版只读取 Personal（`~/.agents/skills`）与 Codex System 两类只读来源。
 - Personal、System 与 Agent Copy 的物理副本会按规范化名称和内容 Hash 合并，同时保留全部来源；Available 仅统计 Personal 与 System 逻辑 Skill。
 - V0.5 使用 Codex 来源保存的 System 译文会在名称和内容 Hash 相同时继续显示于 `Available > System`；即使该 System 副本与 Library、Installed 或 Personal 合并，也只在 System 展示上下文使用，基础记录匹配规则不变。
+- Codex Agent 与 Available System 单独合并时，无法区分旧 System `.codex` 译文与真实 Agent 译文，因此 Installed 保守隐藏该歧义译文，Available System 继续显示；没有 System 副本的正常 Agent 译文保持不变。
 - 安装最终写入入口会拒绝只读 Available Skill；覆盖确认保存发起时的完整 Skill，不会因确认前切换选择而安装其他 Skill。
 - 未知 `available:` 保留来源解码会明确失败，不再误识别为 Agent；旧 Agent 字符串保持兼容。
 - 已新增产品负责人验收清单：`docs/testing/V0.6_ACCEPTANCE.md`。
@@ -382,12 +383,12 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 
 已验证：
 
-- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer swift test`：177 项全部通过，零失败。
+- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer swift test`：179 项全部通过，零失败。
 - `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer SKILLDOCK_VERSION=0.6.0 ./scripts/package-app.sh`：已生成并验证 `dist/SkillDock.app` 与 `dist/SkillDock-0.6.0.zip`。
 - `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer ./scripts/verify-app.sh dist/SkillDock.app`：通过。
 - 独立解压 `dist/SkillDock-0.6.0.zip` 到 `/tmp/skilldock-v0.6-verification` 后运行 `./scripts/verify-app.sh`：通过。
 - 包内版本：`0.6.0`。
-- SHA-256：`eeac27344dcdb194c7f0d623062861956d2cf2c95e86428f001161c99448f65f`。
+- SHA-256：`a5b90331b65ff695c97948a4d84f50c94f94bae24143b6a6f6c568f37df26e03`。
 - 已运行 `open -n dist/SkillDock.app` 启动打包后的 App；本执行环境未完成视觉或交互验收。
 
 剩余发布前检查：
