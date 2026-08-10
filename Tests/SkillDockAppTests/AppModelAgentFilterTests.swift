@@ -223,6 +223,48 @@ final class AppModelAgentFilterTests: XCTestCase {
         XCTAssertEqual(model.selectedRecord?.skill.isReadOnly, false)
     }
 
+    func testAvailableSystemContextUsesLegacyTranslationWithoutChangingBaseContexts() throws {
+        let library = mergedSkill(source: .library)
+        let installed = mergedSkill(source: .codex)
+        let system = mergedSkill(
+            source: .available(.system),
+            isSystem: true,
+            isReadOnly: true
+        )
+        let legacyTranslation = SkillTranslation(
+            skillName: library.name,
+            source: .codex,
+            contentHash: library.contentHash,
+            translatedDescription: "Legacy system translation",
+            translatedMarkdown: "# Legacy system translation",
+            providerID: TranslationProviderID.deepSeek,
+            model: DeepSeekModel.flash.rawValue,
+            generatedAt: Date(timeIntervalSince1970: 1)
+        )
+        let merged = try XCTUnwrap(
+            SkillLibraryBuilder().build(
+                skills: [library, installed, system],
+                notes: [],
+                translations: [legacyTranslation]
+            ).first
+        )
+        let model = AppModel()
+        model.records = [merged]
+        model.selectionID = merged.id
+
+        model.navigationSection = .library
+        XCTAssertNil(model.selectedRecord?.translation)
+
+        model.navigationSection = .installed
+        XCTAssertNil(model.selectedRecord?.translation)
+
+        model.navigationSection = .available
+        model.availableSourceFilter = .system
+        XCTAssertEqual(model.selectedRecord?.skill.source, .available(.system))
+        XCTAssertEqual(model.selectedRecord?.translation, legacyTranslation)
+        XCTAssertEqual(model.selectedRecord?.isTranslationStale, false)
+    }
+
     func testAgentOnlyIsNotAvailableAndAvailableOnlyIsNotInstalled() {
         let model = AppModel()
         model.records = [
@@ -324,6 +366,24 @@ final class AppModelAgentFilterTests: XCTestCase {
             note: nil,
             isNoteStale: false,
             physicalCopies: physicalCopies
+        )
+    }
+
+    private func mergedSkill(
+        source: SkillSource,
+        isSystem: Bool = false,
+        isReadOnly: Bool = false
+    ) -> Skill {
+        Skill(
+            id: "\(source.rawValue):merged-skill:same",
+            name: "merged-skill",
+            description: nil,
+            path: URL(fileURLWithPath: "/tmp/\(source.rawValue)/merged-skill"),
+            source: source,
+            hasScripts: false,
+            isSystem: isSystem,
+            isReadOnly: isReadOnly,
+            contentHash: "same"
         )
     }
 }

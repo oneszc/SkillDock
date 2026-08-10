@@ -308,6 +308,7 @@ final class AppModel {
             remoteSource: record.remoteSource,
             translation: translation,
             isTranslationStale: translation.contentHash != record.skill.contentHash,
+            availableSystemTranslationMatch: record.availableSystemTranslationMatch,
             physicalCopies: record.physicalCopies
         )
     }
@@ -630,13 +631,23 @@ final class AppModel {
             contentHash: copy.contentHash,
             installation: record.skill.installation
         )
+        let presentedTranslation: SkillTranslation?
+        let isPresentedTranslationStale: Bool
+        if copy.availableSource == .system {
+            presentedTranslation = record.availableSystemTranslationMatch?.translation
+            isPresentedTranslationStale = record.availableSystemTranslationMatch?.isStale ?? false
+        } else {
+            presentedTranslation = record.translation
+            isPresentedTranslationStale = record.isTranslationStale
+        }
         return SkillRecord(
             skill: availableSkill,
             note: record.note,
             isNoteStale: record.isNoteStale,
             remoteSource: nil,
-            translation: record.translation,
-            isTranslationStale: record.isTranslationStale,
+            translation: presentedTranslation,
+            isTranslationStale: isPresentedTranslationStale,
+            availableSystemTranslationMatch: record.availableSystemTranslationMatch,
             physicalCopies: record.physicalCopies
         )
     }

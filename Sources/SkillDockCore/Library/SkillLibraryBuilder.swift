@@ -7,6 +7,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
     public let remoteSource: RemoteSkillSource?
     public let translation: SkillTranslation?
     public let isTranslationStale: Bool
+    public let availableSystemTranslationMatch: SkillTranslationMatch?
     public let physicalCopies: [SkillPhysicalCopy]
 
     public var id: String { skill.id }
@@ -53,6 +54,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
         remoteSource: RemoteSkillSource? = nil,
         translation: SkillTranslation? = nil,
         isTranslationStale: Bool = false,
+        availableSystemTranslationMatch: SkillTranslationMatch? = nil,
         physicalCopies: [SkillPhysicalCopy] = []
     ) {
         self.skill = skill
@@ -61,6 +63,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
         self.remoteSource = remoteSource
         self.translation = translation
         self.isTranslationStale = isTranslationStale
+        self.availableSystemTranslationMatch = availableSystemTranslationMatch
         self.physicalCopies = physicalCopies.isEmpty ? [skill.physicalCopy] : physicalCopies
     }
 }
@@ -102,12 +105,16 @@ public struct SkillLibraryBuilder: Sendable {
 
             let noteMatch = matchNote(for: preferred, notes: notes)
             let translationMatch = matchTranslation(for: preferred, translations: translations)
+            let availableSystemTranslationMatch = group
+                .first { $0.source == .available(.system) }
+                .flatMap { matchTranslation(for: $0, translations: translations) }
             return SkillRecord(
                 skill: preferred,
                 note: noteMatch?.note,
                 isNoteStale: noteMatch?.isStale ?? false,
                 translation: translationMatch?.translation,
                 isTranslationStale: translationMatch?.isStale ?? false,
+                availableSystemTranslationMatch: availableSystemTranslationMatch,
                 physicalCopies: physicalCopies
             )
         }

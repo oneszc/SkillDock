@@ -101,6 +101,7 @@ public actor SkillLibraryService {
                     remoteSource: remoteSource(for: record.skill, in: remoteSources),
                     translation: record.translation,
                     isTranslationStale: record.isTranslationStale,
+                    availableSystemTranslationMatch: record.availableSystemTranslationMatch,
                     physicalCopies: record.physicalCopies
                 )
             }
