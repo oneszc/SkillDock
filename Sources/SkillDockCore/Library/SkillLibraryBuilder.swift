@@ -21,6 +21,23 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
         }
     }
 
+    public var availableSources: Set<AvailableSkillSource> {
+        Set(physicalCopies.compactMap(\.availableSource))
+    }
+
+    public var hasAvailableCopy: Bool {
+        !availableSources.isEmpty
+    }
+
+    public func availableCopy(preferred source: AvailableSkillSource?) -> SkillPhysicalCopy? {
+        if let source,
+           let exact = physicalCopies.first(where: { $0.availableSource == source }) {
+            return exact
+        }
+        return physicalCopies.first { $0.availableSource == .personal }
+            ?? physicalCopies.first { $0.availableSource == .system }
+    }
+
     public var hasSystemCopy: Bool {
         physicalCopies.contains { $0.isSystem }
     }
@@ -101,8 +118,14 @@ public struct SkillLibraryBuilder: Sendable {
 
     private func sourcePriority(_ source: SkillSource) -> Int {
         switch source {
-        case .library: 0
-        case .agent: 1
+        case .library:
+            0
+        case .agent:
+            1
+        case .available(.personal):
+            2
+        case .available(.system):
+            3
         }
     }
 

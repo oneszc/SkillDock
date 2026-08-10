@@ -100,6 +100,8 @@ public actor SkillScanner {
             .init()
         case .agent(let id):
             .init(agentIDs: [id])
+        case .available:
+            .init()
         }
     }
 }
