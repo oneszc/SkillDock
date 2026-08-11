@@ -367,7 +367,7 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - Plugin 来源延期到后续 V0.6.x，不扫描 `.codex/plugins/cache`。
 - 独立设计规格：`docs/superpowers/specs/2026-08-08-v0.6-codex-available-skills-design.md`。
 
-### V0.6.0 Available Skills 发布准备（2026-08-10）
+### V0.6.0 Available Skills 发布准备与验收（2026-08-11）
 
 已完成：
 
@@ -389,12 +389,13 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - 独立解压 `dist/SkillDock-0.6.0.zip` 到 `/tmp/skilldock-v0.6-verification` 后运行 `./scripts/verify-app.sh`：通过。
 - 包内版本：`0.6.0`。
 - SHA-256：`a5b90331b65ff695c97948a4d84f50c94f94bae24143b6a6f6c568f37df26e03`。
-- 已运行 `open -n dist/SkillDock.app` 启动打包后的 App；本执行环境未完成视觉或交互验收。
+- 已运行 `open -n dist/SkillDock.app` 启动打包后的 App。
+- 产品负责人已完成 V0.6.0 手动验收，`docs/testing/V0.6_ACCEPTANCE.md` 已全部勾选。
 
-剩余发布前检查：
+发布状态：
 
-- 产品负责人需逐项完成 `docs/testing/V0.6_ACCEPTANCE.md`，包括真实 Personal / System 来源、来源标签与计数、只读限制，以及 Library、Installed、GitHub 更新、Settings 和译文回归。
-- 手动验收通过前，V0.6.0 不发布。
+- V0.6.0 已完成开发、自动化验证、打包验证和产品负责人手动验收。
+- 当前分支：`codex/v0.6-available-skills`，等待推送和合并/发布决策。
 
 ### Command Line Tools 27 启动兼容修复（2026-08-08）
 
