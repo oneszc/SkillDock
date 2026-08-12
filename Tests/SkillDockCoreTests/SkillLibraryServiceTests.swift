@@ -14,11 +14,11 @@ final class SkillLibraryServiceTests: XCTestCase {
             name: "codex-skill"
         )
         let notesStore = NotesStore(directory: try Fixtures.temporaryDirectory())
-        let service = SkillLibraryService(notesStore: notesStore)
+        let service = SkillLibraryService(notesStore: notesStore, homeDirectory: home)
 
-        let records = try await service.refresh(settings: settings)
+        let snapshot = try await service.refresh(settings: settings)
 
-        XCTAssertEqual(records.map(\.skill.name), ["codex-skill", "library-skill"])
+        XCTAssertEqual(snapshot.records.map(\.skill.name), ["codex-skill", "library-skill"])
     }
 
     func testRefreshScansEnabledDynamicAgentTargets() async throws {
@@ -57,14 +57,15 @@ final class SkillLibraryServiceTests: XCTestCase {
             name: "gemini-skill"
         )
         let service = SkillLibraryService(
-            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory())
+            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory()),
+            homeDirectory: home
         )
 
-        let records = try await service.refresh(settings: settings)
+        let snapshot = try await service.refresh(settings: settings)
 
-        XCTAssertEqual(records.map(\.skill.name), ["gemini-skill"])
-        XCTAssertEqual(records.first?.skill.source, .agent(AgentTargetID.gemini))
-        XCTAssertEqual(records.first?.skill.installation.agentIDs, [AgentTargetID.gemini])
+        XCTAssertEqual(snapshot.records.map(\.skill.name), ["gemini-skill"])
+        XCTAssertEqual(snapshot.records.first?.skill.source, .agent(AgentTargetID.gemini))
+        XCTAssertEqual(snapshot.records.first?.skill.installation.agentIDs, [AgentTargetID.gemini])
     }
 
     func testRefreshHidesSystemSkillsWhenSettingIsDisabled() async throws {
@@ -76,12 +77,13 @@ final class SkillLibraryServiceTests: XCTestCase {
             name: "system-skill"
         )
         let service = SkillLibraryService(
-            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory())
+            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory()),
+            homeDirectory: home
         )
 
-        let records = try await service.refresh(settings: settings)
+        let snapshot = try await service.refresh(settings: settings)
 
-        XCTAssertTrue(records.isEmpty)
+        XCTAssertTrue(snapshot.records.isEmpty)
     }
 
     func testRefreshAttachesRemoteSourceToLibrarySkill() async throws {
@@ -107,12 +109,96 @@ final class SkillLibraryServiceTests: XCTestCase {
         try await sourceStore.upsert(source)
         let service = SkillLibraryService(
             notesStore: NotesStore(directory: appSupport),
-            remoteSourceStore: sourceStore
+            remoteSourceStore: sourceStore,
+            homeDirectory: home
         )
 
-        let records = try await service.refresh(settings: settings)
+        let snapshot = try await service.refresh(settings: settings)
 
-        XCTAssertEqual(records.first?.skill.name, "remote-skill")
-        XCTAssertEqual(records.first?.remoteSource, source)
+        XCTAssertEqual(snapshot.records.first?.skill.name, "remote-skill")
+        XCTAssertEqual(snapshot.records.first?.remoteSource, source)
+    }
+
+    func testRefreshAddsPersonalAndSystemAvailableSources() async throws {
+        let home = try Fixtures.temporaryDirectory()
+        let settings = SkillSettings.defaults(homeDirectory: home)
+        try Fixtures.makeSkill(
+            at: home.appendingPathComponent(".agents/skills/personal-skill"),
+            name: "personal-skill"
+        )
+        try Fixtures.makeSkill(
+            at: settings.codexPath.appendingPathComponent(".system/system-skill"),
+            name: "system-skill"
+        )
+
+        let service = SkillLibraryService(
+            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory()),
+            homeDirectory: home
+        )
+        let snapshot = try await service.refresh(settings: settings)
+
+        XCTAssertEqual(
+            snapshot.records.first { $0.skill.name == "personal-skill" }?.availableSources,
+            [.personal]
+        )
+        XCTAssertEqual(
+            snapshot.records.first { $0.skill.name == "system-skill" }?.availableSources,
+            [.system]
+        )
+        XCTAssertEqual(
+            snapshot.records.first { $0.skill.name == "system-skill" }?.hasInstalledCopy,
+            false
+        )
+    }
+
+    func testRefreshDeduplicatesDuplicateSystemRoots() async throws {
+        let home = try Fixtures.temporaryDirectory()
+        var settings = SkillSettings.defaults(homeDirectory: home)
+        settings.agentTargets.append(
+            AgentTarget(
+                id: "duplicate-system-root",
+                displayName: "Duplicate System Root",
+                path: settings.codexPath,
+                isEnabled: false,
+                supportsSystemSkills: true
+            )
+        )
+        try Fixtures.makeSkill(
+            at: settings.codexPath.appendingPathComponent(".system/system-skill"),
+            name: "system-skill"
+        )
+
+        let service = SkillLibraryService(
+            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory()),
+            homeDirectory: home
+        )
+        let snapshot = try await service.refresh(settings: settings)
+
+        let record = try XCTUnwrap(
+            snapshot.records.first { $0.skill.name == "system-skill" }
+        )
+        XCTAssertEqual(record.physicalCopies.filter { $0.availableSource == .system }.count, 1)
+    }
+
+    func testDisabledSystemSettingKeepsPersonalAndHidesSystem() async throws {
+        let home = try Fixtures.temporaryDirectory()
+        var settings = SkillSettings.defaults(homeDirectory: home)
+        settings.showSystemSkills = false
+        try Fixtures.makeSkill(
+            at: home.appendingPathComponent(".agents/skills/personal-skill"),
+            name: "personal-skill"
+        )
+        try Fixtures.makeSkill(
+            at: settings.codexPath.appendingPathComponent(".system/system-skill"),
+            name: "system-skill"
+        )
+
+        let service = SkillLibraryService(
+            notesStore: NotesStore(directory: try Fixtures.temporaryDirectory()),
+            homeDirectory: home
+        )
+        let snapshot = try await service.refresh(settings: settings)
+
+        XCTAssertEqual(snapshot.records.map(\.skill.name), ["personal-skill"])
     }
 }

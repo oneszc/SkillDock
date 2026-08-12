@@ -6,7 +6,9 @@ struct SkillListView: View {
     let agentTargets: [AgentTarget]
     let acceptsImportDrop: Bool
     let showsAgentFilter: Bool
+    let showsAvailableSourceFilter: Bool
     @Binding var agentFilter: AgentFilter
+    @Binding var availableSourceFilter: AvailableSourceFilter
     @Binding var selectionID: SkillRecord.ID?
     let onImportDrop: ([URL]) -> Void
     @State private var isImportTargeted = false
@@ -16,21 +18,20 @@ struct SkillListView: View {
             if showsAgentFilter {
                 agentFilterBar
             }
+            if showsAvailableSourceFilter {
+                availableSourceFilterBar
+            }
 
             Group {
                 if records.isEmpty {
-                    ContentUnavailableView(
-                        "No Skills",
-                        systemImage: "tray",
-                        description: Text(
-                            acceptsImportDrop
-                                ? "Drop one Skill folder here or use Import Skill."
-                                : "Refresh or choose another section."
-                        )
-                    )
+                    emptyState
                 } else {
                     List(records, selection: $selectionID) { record in
-                        SkillRowView(record: record, agentTargets: agentTargets)
+                        SkillRowView(
+                            record: record,
+                            agentTargets: agentTargets,
+                            showsAvailableSources: showsAvailableSourceFilter
+                        )
                             .tag(record.id)
                     }
                     .navigationTitle("\(records.count) Skills")
@@ -99,6 +100,63 @@ struct SkillListView: View {
 
     private var enabledAgentTargets: [AgentTarget] {
         agentTargets.filter(\.isEnabled)
+    }
+
+    private var availableSourceFilterBar: some View {
+        HStack {
+            Menu {
+                ForEach(AvailableSourceFilter.allCases) { filter in
+                    Button {
+                        availableSourceFilter = filter
+                    } label: {
+                        Text(filter.title)
+                    }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Text("Source:")
+                        .foregroundStyle(.secondary)
+                    Text(availableSourceFilter.title)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                }
+                .font(.system(size: 13))
+                .frame(minWidth: 150, alignment: .leading)
+            }
+            .menuStyle(.button)
+
+            Spacer()
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+    }
+
+    @ViewBuilder
+    private var emptyState: some View {
+        if showsAvailableSourceFilter {
+            switch availableSourceFilter {
+            case .all:
+                ContentUnavailableView(
+                    "No Available Skills",
+                    systemImage: "tray",
+                    description: Text("SkillDock currently checks Personal and System sources.")
+                )
+            case .personal:
+                ContentUnavailableView("No Personal Skills", systemImage: "tray")
+            case .system:
+                ContentUnavailableView("No System Skills", systemImage: "tray")
+            }
+        } else {
+            ContentUnavailableView(
+                "No Skills",
+                systemImage: "tray",
+                description: Text(
+                    acceptsImportDrop
+                        ? "Drop one Skill folder here or use Import Skill."
+                        : "Refresh or choose another section."
+                )
+            )
+        }
     }
 
     @ViewBuilder

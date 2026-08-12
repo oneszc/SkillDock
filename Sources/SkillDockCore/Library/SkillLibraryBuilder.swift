@@ -7,6 +7,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
     public let remoteSource: RemoteSkillSource?
     public let translation: SkillTranslation?
     public let isTranslationStale: Bool
+    public let availableSystemTranslationMatch: SkillTranslationMatch?
     public let physicalCopies: [SkillPhysicalCopy]
 
     public var id: String { skill.id }
@@ -19,6 +20,23 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
             if case .agent = $0.source { return true }
             return false
         }
+    }
+
+    public var availableSources: Set<AvailableSkillSource> {
+        Set(physicalCopies.compactMap(\.availableSource))
+    }
+
+    public var hasAvailableCopy: Bool {
+        !availableSources.isEmpty
+    }
+
+    public func availableCopy(preferred source: AvailableSkillSource?) -> SkillPhysicalCopy? {
+        if let source,
+           let exact = physicalCopies.first(where: { $0.availableSource == source }) {
+            return exact
+        }
+        return physicalCopies.first { $0.availableSource == .personal }
+            ?? physicalCopies.first { $0.availableSource == .system }
     }
 
     public var hasSystemCopy: Bool {
@@ -36,6 +54,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
         remoteSource: RemoteSkillSource? = nil,
         translation: SkillTranslation? = nil,
         isTranslationStale: Bool = false,
+        availableSystemTranslationMatch: SkillTranslationMatch? = nil,
         physicalCopies: [SkillPhysicalCopy] = []
     ) {
         self.skill = skill
@@ -44,6 +63,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
         self.remoteSource = remoteSource
         self.translation = translation
         self.isTranslationStale = isTranslationStale
+        self.availableSystemTranslationMatch = availableSystemTranslationMatch
         self.physicalCopies = physicalCopies.isEmpty ? [skill.physicalCopy] : physicalCopies
     }
 }
@@ -84,13 +104,20 @@ public struct SkillLibraryBuilder: Sendable {
                 }
 
             let noteMatch = matchNote(for: preferred, notes: notes)
-            let translationMatch = matchTranslation(for: preferred, translations: translations)
+            let translationMatch = isAmbiguousLegacySystemTranslation(
+                for: preferred,
+                in: group
+            ) ? nil : matchTranslation(for: preferred, translations: translations)
+            let availableSystemTranslationMatch = group
+                .first { $0.source == .available(.system) }
+                .flatMap { matchTranslation(for: $0, translations: translations) }
             return SkillRecord(
                 skill: preferred,
                 note: noteMatch?.note,
                 isNoteStale: noteMatch?.isStale ?? false,
                 translation: translationMatch?.translation,
                 isTranslationStale: translationMatch?.isStale ?? false,
+                availableSystemTranslationMatch: availableSystemTranslationMatch,
                 physicalCopies: physicalCopies
             )
         }
@@ -101,8 +128,14 @@ public struct SkillLibraryBuilder: Sendable {
 
     private func sourcePriority(_ source: SkillSource) -> Int {
         switch source {
-        case .library: 0
-        case .agent: 1
+        case .library:
+            0
+        case .agent:
+            1
+        case .available(.personal):
+            2
+        case .available(.system):
+            3
         }
     }
 
@@ -119,6 +152,14 @@ public struct SkillLibraryBuilder: Sendable {
         return SkillNoteMatch(note: latest, isStale: true)
     }
 
+    private func isAmbiguousLegacySystemTranslation(
+        for preferred: Skill,
+        in group: [Skill]
+    ) -> Bool {
+        preferred.source == .codex
+            && group.contains { $0.source == .available(.system) }
+    }
+
     private func matchTranslation(
         for skill: Skill,
         translations: [SkillTranslation]
@@ -128,6 +169,14 @@ public struct SkillLibraryBuilder: Sendable {
         }
         if let exact = candidates.first(where: { $0.contentHash == skill.contentHash }) {
             return SkillTranslationMatch(translation: exact, isStale: false)
+        }
+        if skill.source == .available(.system),
+           let legacyExact = translations.first(where: {
+               $0.skillName == skill.name
+                   && $0.source == .codex
+                   && $0.contentHash == skill.contentHash
+           }) {
+            return SkillTranslationMatch(translation: legacyExact, isStale: false)
         }
         guard let latest = candidates.max(by: { $0.generatedAt < $1.generatedAt }) else {
             return nil

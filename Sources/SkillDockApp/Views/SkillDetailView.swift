@@ -17,6 +17,16 @@ struct SkillDetailView: View {
                 content(for: record)
             }
             .navigationTitle(record.skill.name)
+            .onAppear {
+                if record.skill.isReadOnly {
+                    tab = .markdown
+                }
+            }
+            .onChange(of: record.skill.isReadOnly) { _, isReadOnly in
+                if isReadOnly {
+                    tab = .markdown
+                }
+            }
             .task(id: language) {
                 guard language == .translated else { return }
                 await model.refreshTranslationCredentialStatus()
@@ -53,27 +63,32 @@ struct SkillDetailView: View {
                 }
 
                 HStack(spacing: 12) {
-                    ForEach(enabledAgentTargets, id: \.id) { target in
-                        let installed = isInstalled(target, in: record)
-
-                        Button {
-                            guard !record.skill.isSystem, !installed else { return }
-                            Task { await model.requestInstall(to: target.id) }
-                        } label: {
-                            AgentLogo(target: target, installed: installed, size: 18)
-                        }
-                        .buttonStyle(.plain)
-                        .allowsHitTesting(!record.skill.isSystem && !installed)
-                        .help(installed ? "Installed in \(target.displayName)" : "Install to \(target.displayName)")
-                        .accessibilityLabel("\(target.displayName) installation status")
-                        .accessibilityValue(
-                            accessibilityValue(installed: installed, isSystem: record.skill.isSystem)
-                        )
-                    }
-
-                    if record.skill.isSystem {
+                    if record.skill.isReadOnly {
+                        AvailableSourceBadges(record: record)
                         Label("Read-only", systemImage: "lock.fill")
                             .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(enabledAgentTargets, id: \.id) { target in
+                            let installed = isInstalled(target, in: record)
+
+                            Button {
+                                guard !record.skill.isSystem, !installed else { return }
+                                Task { await model.requestInstall(to: target.id) }
+                            } label: {
+                                AgentLogo(target: target, installed: installed, size: 18)
+                            }
+                            .buttonStyle(.plain)
+                            .allowsHitTesting(!record.skill.isSystem && !installed)
+                            .help(installed ? "Installed in \(target.displayName)" : "Install to \(target.displayName)")
+                            .accessibilityLabel("\(target.displayName) installation status")
+                            .accessibilityValue(
+                                accessibilityValue(installed: installed, isSystem: record.skill.isSystem)
+                            )
+                        }
+                        if record.skill.isSystem {
+                            Label("Read-only", systemImage: "lock.fill")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
                 .labelStyle(.titleAndIcon)
@@ -82,7 +97,7 @@ struct SkillDetailView: View {
             }
             .frame(maxWidth: VisualMetrics.readableContentWidth, alignment: .leading)
 
-            if let source = record.remoteSource {
+            if !record.skill.isReadOnly, let source = record.remoteSource {
                 HStack(spacing: 12) {
                     if let githubLogoImage {
                         Image(nsImage: githubLogoImage)
@@ -120,7 +135,7 @@ struct SkillDetailView: View {
 
             HStack(spacing: 18) {
                 Picker("Detail", selection: $tab) {
-                    ForEach(DetailTab.allCases) { item in
+                    ForEach(detailTabs(for: record)) { item in
                         Label(item.title, systemImage: item.systemImage).tag(item)
                     }
                 }
@@ -130,7 +145,7 @@ struct SkillDetailView: View {
 
                 Spacer(minLength: 0)
 
-                if tab == .markdown {
+                if activeTab(for: record) == .markdown {
                     Picker("Language", selection: $language) {
                         ForEach(TranslationLanguage.allCases) { item in
                             Text(item.title).tag(item)
@@ -163,7 +178,7 @@ struct SkillDetailView: View {
 
     @ViewBuilder
     private func content(for record: SkillRecord) -> some View {
-        switch tab {
+        switch activeTab(for: record) {
         case .markdown:
             translationContent(for: record)
         case .files:
@@ -176,42 +191,86 @@ struct SkillDetailView: View {
     @ViewBuilder
     private func translationContent(for record: SkillRecord) -> some View {
         let presentation = presentation(for: record)
+        if record.skill.isReadOnly {
+            readOnlyTranslationContent(presentation)
+        } else {
+            switch presentation.state {
+            case .original:
+                MarkdownPreviewView(markdown: presentation.markdown)
+            case .available(let isStale):
+                VStack(spacing: 0) {
+                    HStack {
+                        if isStale {
+                            Label("The source has changed. This translation may be outdated.", systemImage: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                        } else {
+                            Label("AI-generated translation", systemImage: "sparkles")
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Button(isStale ? "Update Translation" : "Regenerate") {
+                            confirmsRegeneration = true
+                        }
+                    }
+                    .font(.callout)
+                    .padding(.horizontal, VisualMetrics.contentPadding)
+                    .padding(.vertical, 10)
+                    .background(.quaternary)
+                    MarkdownPreviewView(markdown: presentation.markdown)
+                }
+            case .missingConfiguration, .empty, .generating, .failed:
+                TranslationEmptyView(
+                    state: presentation.state,
+                    onGenerate: {
+                        Task { await model.generateSelectedTranslation() }
+                    },
+                    onOpenSettings: {
+                        model.settingsSection = .aiTranslation
+                        openWindow(id: "settings")
+                    }
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func readOnlyTranslationContent(_ presentation: TranslationPresentation) -> some View {
         switch presentation.state {
         case .original:
             MarkdownPreviewView(markdown: presentation.markdown)
         case .available(let isStale):
             VStack(spacing: 0) {
-                HStack {
-                    if isStale {
-                        Label("The source has changed. This translation may be outdated.", systemImage: "exclamationmark.triangle.fill")
-                            .foregroundStyle(.orange)
-                    } else {
-                        Label("AI-generated translation", systemImage: "sparkles")
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    Button(isStale ? "Update Translation" : "Regenerate") {
-                        confirmsRegeneration = true
-                    }
-                }
+                Label(
+                    isStale
+                        ? "The source has changed. This translation may be outdated."
+                        : "AI-generated translation",
+                    systemImage: isStale ? "exclamationmark.triangle.fill" : "sparkles"
+                )
+                .foregroundStyle(isStale ? .orange : .secondary)
                 .font(.callout)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, VisualMetrics.contentPadding)
                 .padding(.vertical, 10)
                 .background(.quaternary)
                 MarkdownPreviewView(markdown: presentation.markdown)
             }
         case .missingConfiguration, .empty, .generating, .failed:
-            TranslationEmptyView(
-                state: presentation.state,
-                onGenerate: {
-                    Task { await model.generateSelectedTranslation() }
-                },
-                onOpenSettings: {
-                    model.settingsSection = .aiTranslation
-                    openWindow(id: "settings")
-                }
+            ContentUnavailableView(
+                "No Translation Available",
+                systemImage: "text.bubble",
+                description: Text("Translations are read-only when browsing Available Skills.")
             )
         }
+    }
+
+    private func detailTabs(for record: SkillRecord) -> [DetailTab] {
+        DetailTab.allCases.filter { tab in
+            !record.skill.isReadOnly || tab != .install
+        }
+    }
+
+    private func activeTab(for record: SkillRecord) -> DetailTab {
+        record.skill.isReadOnly && tab == .install ? .markdown : tab
     }
 
     private func presentation(for record: SkillRecord) -> TranslationPresentation {
@@ -233,7 +292,7 @@ struct SkillDetailView: View {
             record: record,
             originalMarkdown: model.markdown,
             language: language,
-            showsMarkdown: tab == .markdown,
+            showsMarkdown: activeTab(for: record) == .markdown,
             isGenerating: isGenerating,
             errorMessage: errorMessage,
             hasAPIKey: model.translationCredentialStatus == .available

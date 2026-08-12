@@ -202,9 +202,16 @@ public actor SkillWorkspaceService {
         )) ?? []
         var matches: [Skill] = []
         for child in children {
-            let scannedSkills = await SkillScanner()
-                .scan([ScanLocation(root: child, source: source)])
-            matches.append(contentsOf: scannedSkills.filter {
+            let childSource: SkillSource
+            if target.supportsSystemSkills,
+               child.lastPathComponent == ".system" {
+                childSource = .available(.system)
+            } else {
+                childSource = source
+            }
+            let scanResult = await SkillScanner()
+                .scan([ScanLocation(root: child, source: childSource)])
+            matches.append(contentsOf: scanResult.skills.filter {
                 $0.name == name
                     && $0.contentHash == contentHash
                     && (pathsReferToSameFile($0.path, child) || $0.isSystem)
@@ -235,7 +242,7 @@ public actor SkillWorkspaceService {
             at: installedSkill.path,
             named: name,
             contentHash: contentHash,
-            source: source
+            source: installedSkill.isSystem ? .available(.system) : source
         ) else {
             throw SkillWorkspaceServiceError.installedSkillNotFound
         }
@@ -278,9 +285,9 @@ public actor SkillWorkspaceService {
         contentHash: String,
         source: SkillSource
     ) async -> Skill? {
-        let scannedSkills = await SkillScanner()
+        let scanResult = await SkillScanner()
             .scan([ScanLocation(root: target, source: source)])
-        return scannedSkills.first {
+        return scanResult.skills.first {
             $0.name == name
                 && $0.contentHash == contentHash
                 && pathsReferToSameFile($0.path, target)

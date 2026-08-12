@@ -35,7 +35,7 @@ final class AppModel {
     }
 
     enum PendingOverwrite {
-        case install(String)
+        case install(agentID: String, skill: Skill)
     }
 
     struct PendingUninstall {
@@ -47,8 +47,17 @@ final class AppModel {
 
     var records: [SkillRecord] = []
     var selectionID: SkillRecord.ID?
-    var navigationSection: NavigationSection = .library
+    var navigationSection: NavigationSection = .library {
+        didSet {
+            selectFirstVisibleRecordIfNeeded()
+        }
+    }
     var agentFilter: AgentFilter = .all
+    var availableSourceFilter: AvailableSourceFilter = .all {
+        didSet {
+            selectFirstVisibleRecordIfNeeded()
+        }
+    }
     var searchQuery = ""
     var settings: SkillSettings = .defaults()
     var isRefreshing = false
@@ -115,19 +124,27 @@ final class AppModel {
                 record.hasLibraryCopy
             case .installed:
                 record.hasInstalledCopy
-            case .system:
-                record.hasSystemCopy
+            case .available:
+                record.hasAvailableCopy
             }
         }
-        let agentFilteredRecords = sectionRecords.filter { record in
-            switch (navigationSection, agentFilter) {
-            case (.system, _), (_, .all):
-                true
-            case (_, .agent(let id)):
-                isInstalled(record.skill.installation, in: id)
+        let contextFilteredRecords = sectionRecords.filter { record in
+            switch navigationSection {
+            case .available:
+                guard let source = availableSourceFilter.source else {
+                    return true
+                }
+                return record.availableSources.contains(source)
+            case .library, .installed:
+                switch agentFilter {
+                case .all:
+                    return true
+                case .agent(let id):
+                    return isInstalled(record.skill.installation, in: id)
+                }
             }
         }
-        return search.filter(agentFilteredRecords, query: searchQuery)
+        return search.filter(contextFilteredRecords, query: searchQuery)
     }
 
     var selectedRecord: SkillRecord? {
@@ -135,6 +152,15 @@ final class AppModel {
             return nil
         }
         return presentedRecord(record)
+    }
+
+    var selectedDetailContextID: String? {
+        guard let record = selectedRecord else { return nil }
+        return [
+            record.id,
+            record.skill.source.rawValue,
+            record.skill.path.standardizedFileURL.path
+        ].joined(separator: "|")
     }
 
     func start() async {
@@ -152,11 +178,12 @@ final class AppModel {
         defer { isRefreshing = false }
 
         do {
-            records = try await libraryService.refresh(settings: settings)
+            let snapshot = try await libraryService.refresh(settings: settings)
+            records = snapshot.records
+            errorMessage = snapshot.issues.first?.message
             preserveOrSelectFirstRecord()
             await loadSelectedDetail()
             await loadNoteDraft()
-            errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -169,8 +196,12 @@ final class AppModel {
             return
         }
         do {
-            markdown = try await workspaceService.markdown(for: record.skill.path)
-            filePaths = try await workspaceService.fileTree(for: record.skill.path)
+            let selectedContextID = selectedDetailContextID
+            let markdown = try await workspaceService.markdown(for: record.skill.path)
+            let filePaths = try await workspaceService.fileTree(for: record.skill.path)
+            guard selectedContextID == selectedDetailContextID else { return }
+            self.markdown = markdown
+            self.filePaths = filePaths
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -246,7 +277,7 @@ final class AppModel {
     }
 
     func generateSelectedTranslation() async {
-        guard let record = selectedRecord else { return }
+        guard let record = selectedRecord, !record.skill.isReadOnly else { return }
         let skill = record.skill
         let sourceMarkdown = markdown
         translationOperationState = .generating(skillID: skill.id)
@@ -277,6 +308,7 @@ final class AppModel {
             remoteSource: record.remoteSource,
             translation: translation,
             isTranslationStale: translation.contentHash != record.skill.contentHash,
+            availableSystemTranslationMatch: record.availableSystemTranslationMatch,
             physicalCopies: record.physicalCopies
         )
     }
@@ -323,23 +355,31 @@ final class AppModel {
     }
 
     func requestInstall(to agentID: String) async {
+        guard let record = selectedRecord, !record.skill.isReadOnly else { return }
         guard settings.defaultConflictStrategy == .overwrite else {
             await installSelected(to: agentID, strategy: settings.defaultConflictStrategy)
             return
         }
-        pendingOverwrite = .install(agentID)
+        pendingOverwrite = .install(agentID: agentID, skill: record.skill)
     }
 
     func installSelected(to agentID: String, strategy: ConflictStrategy) async {
-        guard let record = selectedRecord,
-              let target = agentTarget(id: agentID)
-        else { return }
+        guard let skill = selectedRecord?.skill, !skill.isReadOnly else { return }
+        await install(skill, to: agentID, strategy: strategy)
+    }
+
+    private func install(
+        _ skill: Skill,
+        to agentID: String,
+        strategy: ConflictStrategy
+    ) async {
+        guard !skill.isReadOnly, let target = agentTarget(id: agentID) else { return }
         do {
             let result = try await workspaceService.installSkill(
-                from: record.skill.path,
+                from: skill.path,
                 target: target,
                 strategy: strategy,
-                isSystemSkill: record.skill.isSystem
+                isSystemSkill: skill.isSystem
             )
             operationMessage = result.message
             await refresh()
@@ -349,9 +389,10 @@ final class AppModel {
     }
 
     func requestTargetState(_ installed: Bool, target: AgentTarget) async {
+        guard let record = selectedRecord, !record.skill.isReadOnly else { return }
         if installed {
             await requestInstall(to: target.id)
-        } else if let record = selectedRecord {
+        } else {
             pendingUninstall = PendingUninstall(
                 agentID: target.id,
                 skillName: record.skill.name,
@@ -418,7 +459,10 @@ final class AppModel {
     }
 
     func checkSelectedRemoteUpdate() async {
-        guard let source = selectedRecord?.remoteSource else { return }
+        guard let record = selectedRecord,
+              !record.skill.isReadOnly,
+              let source = record.remoteSource
+        else { return }
         isCheckingRemoteUpdate = true
         defer { isCheckingRemoteUpdate = false }
 
@@ -497,8 +541,8 @@ final class AppModel {
 
     func confirmOverwrite(_ pendingOverwrite: PendingOverwrite) async {
         self.pendingOverwrite = nil
-        guard case .install(let target) = pendingOverwrite else { return }
-        await installSelected(to: target, strategy: .overwrite)
+        guard case .install(let agentID, let skill) = pendingOverwrite else { return }
+        await install(skill, to: agentID, strategy: .overwrite)
     }
 
     func saveSettings() async {
@@ -544,10 +588,17 @@ final class AppModel {
     }
 
     private func preserveOrSelectFirstRecord() {
-        guard records.contains(where: { $0.id == selectionID }) else {
+        guard filteredRecords.contains(where: { $0.id == selectionID }) else {
             selectionID = filteredRecords.first?.id
             return
         }
+    }
+
+    private func selectFirstVisibleRecordIfNeeded() {
+        guard navigationSection == .available,
+              !filteredRecords.contains(where: { $0.id == selectionID })
+        else { return }
+        selectionID = filteredRecords.first?.id
     }
 
     func agentTarget(id: String) -> AgentTarget? {
@@ -563,30 +614,40 @@ final class AppModel {
     }
 
     private func presentedRecord(_ record: SkillRecord) -> SkillRecord {
-        guard navigationSection == .system,
-              let systemCopy = record.systemCopy
+        guard navigationSection == .available,
+              let copy = record.availableCopy(preferred: availableSourceFilter.source)
         else {
             return record
         }
-        let systemSkill = Skill(
+        let availableSkill = Skill(
             id: record.skill.id,
             name: record.skill.name,
             description: record.skill.description,
-            path: systemCopy.path,
-            source: systemCopy.source,
+            path: copy.path,
+            source: copy.source,
             hasScripts: record.skill.hasScripts,
-            isSystem: systemCopy.isSystem,
-            isReadOnly: systemCopy.isReadOnly,
-            contentHash: systemCopy.contentHash,
+            isSystem: copy.isSystem,
+            isReadOnly: true,
+            contentHash: copy.contentHash,
             installation: record.skill.installation
         )
+        let presentedTranslation: SkillTranslation?
+        let isPresentedTranslationStale: Bool
+        if copy.availableSource == .system {
+            presentedTranslation = record.availableSystemTranslationMatch?.translation
+            isPresentedTranslationStale = record.availableSystemTranslationMatch?.isStale ?? false
+        } else {
+            presentedTranslation = record.translation
+            isPresentedTranslationStale = record.isTranslationStale
+        }
         return SkillRecord(
-            skill: systemSkill,
+            skill: availableSkill,
             note: record.note,
             isNoteStale: record.isNoteStale,
-            remoteSource: record.remoteSource,
-            translation: record.translation,
-            isTranslationStale: record.isTranslationStale,
+            remoteSource: nil,
+            translation: presentedTranslation,
+            isTranslationStale: isPresentedTranslationStale,
+            availableSystemTranslationMatch: record.availableSystemTranslationMatch,
             physicalCopies: record.physicalCopies
         )
     }

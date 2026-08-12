@@ -1,8 +1,23 @@
 import Foundation
 
+public enum AvailableSkillSource: String, Codable, CaseIterable, Hashable, Sendable {
+    case personal
+    case system
+
+    public var displayName: String {
+        switch self {
+        case .personal:
+            "Personal"
+        case .system:
+            "System"
+        }
+    }
+}
+
 public enum SkillSource: Codable, Equatable, Hashable, Sendable {
     case library
     case agent(String)
+    case available(AvailableSkillSource)
 
     public static let codex = SkillSource.agent(AgentTargetID.codex)
     public static let claude = SkillSource.agent(AgentTargetID.claude)
@@ -20,6 +35,8 @@ public enum SkillSource: Codable, Equatable, Hashable, Sendable {
             default:
                 id
             }
+        case .available(let source):
+            source.displayName
         }
     }
 
@@ -29,12 +46,29 @@ public enum SkillSource: Codable, Equatable, Hashable, Sendable {
             "library"
         case .agent(let id):
             id
+        case .available(let source):
+            "available:\(source.rawValue)"
         }
     }
 
     public init(from decoder: Decoder) throws {
-        let value = try decoder.singleValueContainer().decode(String.self)
-        self = value == "library" ? .library : .agent(value)
+        let container = try decoder.singleValueContainer()
+        let value = try container.decode(String.self)
+        if value == "library" {
+            self = .library
+        } else if value.hasPrefix("available:") {
+            guard let source = AvailableSkillSource(
+                rawValue: String(value.dropFirst("available:".count))
+            ) else {
+                throw DecodingError.dataCorruptedError(
+                    in: container,
+                    debugDescription: "Unknown available Skill source: \(value)"
+                )
+            }
+            self = .available(source)
+        } else {
+            self = .agent(value)
+        }
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -109,6 +143,13 @@ public struct SkillPhysicalCopy: Codable, Equatable, Sendable {
         self.isSystem = isSystem
         self.isReadOnly = isReadOnly
         self.contentHash = contentHash
+    }
+}
+
+public extension SkillPhysicalCopy {
+    var availableSource: AvailableSkillSource? {
+        guard case .available(let source) = source else { return nil }
+        return source
     }
 }
 

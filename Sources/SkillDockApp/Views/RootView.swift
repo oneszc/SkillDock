@@ -30,7 +30,7 @@ struct RootView: View {
                     .frame(minWidth: 620, minHeight: 560)
             }
         }
-        .onChange(of: model.selectionID) { _, _ in
+        .onChange(of: model.selectedDetailContextID) { _, _ in
             Task {
                 await model.flushPendingNoteSave()
                 await model.loadSelectedDetail()
@@ -120,8 +120,10 @@ struct RootView: View {
                 records: model.filteredRecords,
                 agentTargets: model.settings.agentTargets,
                 acceptsImportDrop: model.navigationSection == .library,
-                showsAgentFilter: model.navigationSection != .system,
+                showsAgentFilter: model.navigationSection != .available,
+                showsAvailableSourceFilter: model.navigationSection == .available,
                 agentFilter: $model.agentFilter,
+                availableSourceFilter: $model.availableSourceFilter,
                 selectionID: $model.selectionID,
                 onImportDrop: { urls in
                     Task { await model.prepareImport(urls: urls) }
@@ -133,20 +135,22 @@ struct RootView: View {
         }
         .searchable(text: $model.searchQuery, prompt: "Search Skills")
         .toolbar {
-            ToolbarItem {
-                Menu {
-                    Button {
-                        Task { await model.requestImport() }
+            if model.navigationSection != .available {
+                ToolbarItem {
+                    Menu {
+                        Button {
+                            Task { await model.requestImport() }
+                        } label: {
+                            Label("Import from Folder", systemImage: "folder")
+                        }
+                        Button(action: model.openRemoteImport) {
+                            Label("Add from GitHub", systemImage: "shippingbox.and.arrow.backward")
+                        }
                     } label: {
-                        Label("Import from Folder", systemImage: "folder")
+                        Label("Add Skill", systemImage: "plus")
                     }
-                    Button(action: model.openRemoteImport) {
-                        Label("Add from GitHub", systemImage: "shippingbox.and.arrow.backward")
-                    }
-                } label: {
-                    Label("Add Skill", systemImage: "plus")
+                    .help("Add Skill")
                 }
-                .help("Add Skill")
             }
             ToolbarItemGroup {
                 Button(action: model.revealSelectedInFinder) {

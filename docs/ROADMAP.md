@@ -284,9 +284,9 @@ V0.5.1 不扩大扫描目录，不接入 Codex Available 的 Personal 或 Plugin
 
 ## V0.6 - Codex Available Skills
 
-目标：在不混淆“已安装副本”和“Codex 可用能力”的前提下，扩展 Personal、Plugin 和 System Skill 的来源覆盖。
+目标：在不混淆“已安装副本”和“Codex 可用能力”的前提下，先覆盖 Personal 与 System Skill 来源；Plugin 来源作为后续 V0.6.x 阶段单独规划。
 
-状态：V0.6.0 范围已确认，设计规格已完成，等待实施计划与开发。
+状态：V0.6.0 已完成开发、179 项自动化测试、打包/独立解压验证和产品负责人手动验收，等待合并与发布。
 
 V0.6.0 确认范围：
 

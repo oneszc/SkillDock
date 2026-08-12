@@ -23,14 +23,14 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         try Fixtures.makeSkill(at: skillDirectory)
         let notesDirectory = try Fixtures.temporaryDirectory()
         let notesStore = NotesStore(directory: notesDirectory)
-        let libraryService = SkillLibraryService(notesStore: notesStore)
+        let libraryService = SkillLibraryService(notesStore: notesStore, homeDirectory: library)
         let workspace = SkillWorkspaceService(notesStore: notesStore)
         let settings = SkillSettings(
             libraryPath: library,
             codexPath: try Fixtures.temporaryDirectory(),
             claudePath: try Fixtures.temporaryDirectory()
         )
-        let original = try await libraryService.refresh(settings: settings).first!
+        let original = try await libraryService.refresh(settings: settings).records.first!
         let note = SkillNote(
             key: SkillNoteKey(
                 name: original.skill.name,
@@ -48,7 +48,7 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         )
 
         try await workspace.save(note: note)
-        let refreshed = try await libraryService.refresh(settings: settings).first!
+        let refreshed = try await libraryService.refresh(settings: settings).records.first!
 
         XCTAssertEqual(refreshed.note?.chineseName, "示例技能")
         XCTAssertEqual(refreshed.skill.contentHash, original.skill.contentHash)
@@ -172,10 +172,10 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         let name = "sample-skill"
         try Fixtures.makeSkill(at: targetRoot.appendingPathComponent(name), name: name)
         try Fixtures.makeSkill(at: otherRoot.appendingPathComponent(name), name: name)
-        let scanned = await SkillScanner().scan([
+        let scanResult = await SkillScanner().scan([
             ScanLocation(root: targetRoot, source: .agent(AgentTargetID.gemini))
         ])
-        let hash = try XCTUnwrap(scanned.first?.contentHash)
+        let hash = try XCTUnwrap(scanResult.skills.first?.contentHash)
         let target = AgentTarget(
             id: AgentTargetID.gemini,
             displayName: "Gemini",
@@ -795,9 +795,9 @@ final class SkillWorkspaceServiceTests: XCTestCase {
         source: SkillSource,
         folderName: String
     ) async throws -> String {
-        let skills = await SkillScanner().scan([ScanLocation(root: root, source: source)])
+        let scanResult = await SkillScanner().scan([ScanLocation(root: root, source: source)])
         return try XCTUnwrap(
-            skills.first { $0.path.lastPathComponent == folderName }?.contentHash
+            scanResult.skills.first { $0.path.lastPathComponent == folderName }?.contentHash
         )
     }
 }
