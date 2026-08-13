@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。V0.6.0 Available Skills 已完成开发、自动化测试和打包/独立解压验证，等待产品负责人手动验收后发布。
+V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。V0.6.0 Available Skills 已完成开发、自动化测试、打包/独立解压验证和产品负责人手动验收，并已合并推送到 `main`。
 
 ## Current Goal
 
-由产品负责人按 `docs/testing/V0.6_ACCEPTANCE.md` 完成 V0.6.0 手动验收；全部通过前不发布。
+V0.6.1 Plugin Skills 只读来源设计规格已完成初稿，等待产品负责人确认；确认前不进入实现。
 
 ## Completed
 
@@ -395,7 +395,24 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 发布状态：
 
 - V0.6.0 已完成开发、自动化验证、打包验证和产品负责人手动验收。
-- 当前分支：`codex/v0.6-available-skills`，等待推送和合并/发布决策。
+- `codex/v0.6-available-skills` 已合并到 `main`。
+- `main` 已推送到 GitHub，合并提交：`8b5edb9 merge: v0.6 available skills`。
+
+### V0.6.1 Plugin Skills 只读来源设计（2026-08-13）
+
+当前方向：
+
+- V0.6.1 先做 Plugin Skills 来源调研与只读接入设计，不直接实现扫描。
+- 推荐方案为“清单优先、只读发现、保守展示”。
+- 本机可观察到插件版本目录下存在 `.codex-plugin/plugin.json`，其中包含插件名、版本、描述和 `skills` 相对路径。
+- 远程插件根目录下存在 `.codex-remote-plugin-install.json`，但它只提供远程插件 ID，不提供完整启用状态或生命周期信息。
+- 这些结构目前只能作为候选验证点；正式功能仍不得全量扫描 `.codex/plugins/cache`。
+- 独立设计规格：`docs/superpowers/specs/2026-08-13-v0.6.1-plugin-skills-read-only-source-design.md`。
+
+待开始：
+
+- 用户确认 V0.6.1 设计规格后，进入实施计划。
+- 实施计划需要先解决稳定来源和多版本插件判定规则，再决定是否扩展 `AvailableSkillSource.plugin`。
 
 ### Command Line Tools 27 启动兼容修复（2026-08-08）
 

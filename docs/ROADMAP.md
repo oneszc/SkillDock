@@ -286,7 +286,7 @@ V0.5.1 不扩大扫描目录，不接入 Codex Available 的 Personal 或 Plugin
 
 目标：在不混淆“已安装副本”和“Codex 可用能力”的前提下，先覆盖 Personal 与 System Skill 来源；Plugin 来源作为后续 V0.6.x 阶段单独规划。
 
-状态：V0.6.0 已完成开发、179 项自动化测试、打包/独立解压验证和产品负责人手动验收，等待合并与发布。
+状态：V0.6.0 已完成开发、179 项自动化测试、打包/独立解压验证和产品负责人手动验收，并已合并推送到 `main`。
 
 V0.6.0 确认范围：
 
@@ -306,7 +306,33 @@ V0.6.0 暂不包含：
 
 Plugin 来源作为后续 V0.6.x 独立阶段处理，必须优先使用稳定插件清单或元数据。
 
-设计规格：
+### V0.6.1 - Plugin Skills Read-Only Source Design
+
+目标：先确认 Codex Plugin Skills 的稳定来源、产品边界和 Available 展示规则，再决定是否进入真实扫描实现。
+
+状态：设计规格已完成初稿，等待产品负责人确认；确认前不写实现代码。
+
+确认范围：
+
+- 验证插件版本目录下 `.codex-plugin/plugin.json` 与 `skills` 相对路径是否可作为候选读取点。
+- 明确 Plugin 来源只属于 Available 只读浏览，不计入 Installed。
+- 设计未来 `Available` 筛选扩展为 `All Sources / Personal / Plugin / System`。
+- 保留插件安装、卸载、启用、禁用、更新给 Codex 官方插件系统处理。
+- 不把 `.codex/plugins/cache` 全量扫描作为正式产品能力。
+
+暂不包含：
+
+- 真实接入 Plugin Skill 扫描。
+- 增加当前 App 的 Plugin 筛选入口。
+- 插件生命周期管理。
+
+V0.6.1 设计规格：
+
+```text
+docs/superpowers/specs/2026-08-13-v0.6.1-plugin-skills-read-only-source-design.md
+```
+
+V0.6.0 设计规格：
 
 ```text
 docs/superpowers/specs/2026-08-08-v0.6-codex-available-skills-design.md

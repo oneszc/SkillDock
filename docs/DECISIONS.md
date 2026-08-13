@@ -345,3 +345,20 @@ https://developer.apple.com/cn/sf-symbols/
 - Plugin 生命周期和来源有效性更复杂，混入第一版会扩大风险，并可能把旧缓存或禁用插件错误展示为可用。
 - Personal 第一版只读可以先解决“看得见、看得懂”的问题，避免在所有权、同步和删除语义尚未确认前修改用户文件。
 - 分阶段交付可以完整复用 V0.5.1 的 System 来源修复，同时保持 Library 和 Installed 的稳定行为。
+
+## 2026-08-13 - V0.6.1 Plugin Skills Starts With Read-Only Source Design
+
+决定：
+
+- V0.6.1 先做 Plugin Skills 来源调研与只读接入设计，不直接实现扫描。
+- 推荐方案为“清单优先、只读发现、保守展示”。
+- 本机可观察到插件版本目录下的 `.codex-plugin/plugin.json` 包含插件名、版本、描述和 `skills` 相对路径，可作为候选验证点。
+- 远程插件根目录下的 `.codex-remote-plugin-install.json` 只包含远程插件 ID，不足以判断完整启用状态或生命周期。
+- 正式实现仍不得全量扫描 `.codex/plugins/cache`；必须先确认稳定插件清单、启用状态和多版本判定规则。
+- Plugin 来源未来只进入 `Available` 只读浏览，不计入 `Installed`，也不接管插件安装、卸载、启用、禁用或更新。
+
+原因：
+
+- Plugin Skills 的缓存目录结构能证明“可发现”，但不能证明“当前启用且稳定可用”。
+- 如果直接扫描缓存，可能把旧版本、禁用插件或内部实现细节展示给用户，造成数量和所有权误解。
+- 先写设计规格可以让下一阶段实施聚焦于稳定来源验证，而不是扩大扫描范围。
