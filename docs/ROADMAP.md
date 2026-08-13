@@ -310,7 +310,7 @@ Plugin 来源作为后续 V0.6.x 独立阶段处理，必须优先使用稳定�
 
 目标：先确认 Codex Plugin Skills 的稳定来源、产品边界和 Available 展示规则，再决定是否进入真实扫描实现。
 
-状态：设计规格已完成初稿，等待产品负责人确认；确认前不写实现代码。
+状态：设计规格已获产品负责人认可，实施计划已写好，等待执行。
 
 确认范围：
 
@@ -330,6 +330,12 @@ V0.6.1 设计规格：
 
 ```text
 docs/superpowers/specs/2026-08-13-v0.6.1-plugin-skills-read-only-source-design.md
+```
+
+V0.6.1 实施计划：
+
+```text
+docs/superpowers/plans/2026-08-13-v0.6.1-plugin-skills-read-only-source.md
 ```
 
 V0.6.0 设计规格：

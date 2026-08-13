@@ -6,7 +6,7 @@ V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。
 
 ## Current Goal
 
-V0.6.1 Plugin Skills 只读来源设计规格已完成初稿，等待产品负责人确认；确认前不进入实现。
+V0.6.1 Plugin Skills 只读来源设计规格已获产品负责人认可；实施计划已写好，等待选择执行方式。
 
 ## Completed
 
@@ -411,8 +411,9 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 
 待开始：
 
-- 用户确认 V0.6.1 设计规格后，进入实施计划。
-- 实施计划需要先解决稳定来源和多版本插件判定规则，再决定是否扩展 `AvailableSkillSource.plugin`。
+- 按 `docs/superpowers/plans/2026-08-13-v0.6.1-plugin-skills-read-only-source.md` 执行。
+- 推荐使用 Subagent-Driven 方式逐任务实施和复核。
+- 实施时必须保留安全边界：不全量扫描 `.codex/plugins/cache`，多版本插件无法判定时跳过并记录问题。
 
 ### Command Line Tools 27 启动兼容修复（2026-08-08）
 
