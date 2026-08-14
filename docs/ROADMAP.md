@@ -306,25 +306,26 @@ V0.6.0 暂不包含：
 
 Plugin 来源作为后续 V0.6.x 独立阶段处理，必须优先使用稳定插件清单或元数据。
 
-### V0.6.1 - Plugin Skills Read-Only Source Design
+### V0.6.1 - Plugin Skills Read-Only Source
 
-目标：先确认 Codex Plugin Skills 的稳定来源、产品边界和 Available 展示规则，再决定是否进入真实扫描实现。
+目标：将 Codex Plugin Skills 作为只读来源接入 Available，不混淆为已安装副本或插件管理能力。
 
 状态：实现完成，等待产品负责人验收。
 
-确认范围：
+已实现：
 
-- 验证插件版本目录下 `.codex-plugin/plugin.json` 与 `skills` 相对路径是否可作为候选读取点。
-- 明确 Plugin 来源只属于 Available 只读浏览，不计入 Installed。
-- 设计未来 `Available` 筛选扩展为 `All Sources / Personal / Plugin / System`。
-- 保留插件安装、卸载、启用、禁用、更新给 Codex 官方插件系统处理。
-- 不把 `.codex/plugins/cache` 全量扫描作为正式产品能力。
+- Plugin Skills 通过插件 manifest 声明的 `skills` 相对路径进入 Available。
+- Plugin 来源只读浏览，不计入 Installed。
+- Available 已提供 `All Sources / Personal / Plugin / System` 来源筛选。
+- Plugin 来源标签已在列表与详情中展示。
+- 多版本插件无法判定当前版本时会跳过并记录扫描问题。
 
 暂不包含：
 
-- 真实接入 Plugin Skill 扫描。
-- 增加当前 App 的 Plugin 筛选入口。
-- 插件生命周期管理。
+- 插件安装、卸载、启用、禁用或更新。
+- hooks、runtime、MCP、apps 与权限管理。
+- 全量扫描 `.codex/plugins/cache`。
+- 多版本插件自动选择。
 
 V0.6.1 设计规格：
 
