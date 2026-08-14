@@ -16,6 +16,7 @@ public actor SkillLibraryService {
     private let translationStore: TranslationStore
     private let remoteSourceStore: RemoteSourceStore
     private let builder: SkillLibraryBuilder
+    private let pluginSourceResolver: CodexPluginSkillSourceResolver
     private let homeDirectory: URL
     private let afterScan: @Sendable (SkillScanResult) throws -> Void
 
@@ -25,6 +26,7 @@ public actor SkillLibraryService {
         translationStore: TranslationStore = .init(),
         remoteSourceStore: RemoteSourceStore = .init(),
         builder: SkillLibraryBuilder = .init(),
+        pluginSourceResolver: CodexPluginSkillSourceResolver = .init(),
         homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser
     ) {
         self.scanner = scanner
@@ -32,6 +34,7 @@ public actor SkillLibraryService {
         self.translationStore = translationStore
         self.remoteSourceStore = remoteSourceStore
         self.builder = builder
+        self.pluginSourceResolver = pluginSourceResolver
         self.homeDirectory = homeDirectory
         self.afterScan = { _ in }
     }
@@ -42,6 +45,7 @@ public actor SkillLibraryService {
         translationStore: TranslationStore = .init(),
         remoteSourceStore: RemoteSourceStore = .init(),
         builder: SkillLibraryBuilder = .init(),
+        pluginSourceResolver: CodexPluginSkillSourceResolver = .init(),
         homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser,
         afterScan: @escaping @Sendable (SkillScanResult) throws -> Void
     ) {
@@ -50,6 +54,7 @@ public actor SkillLibraryService {
         self.translationStore = translationStore
         self.remoteSourceStore = remoteSourceStore
         self.builder = builder
+        self.pluginSourceResolver = pluginSourceResolver
         self.homeDirectory = homeDirectory
         self.afterScan = afterScan
     }
@@ -82,6 +87,8 @@ public actor SkillLibraryService {
                 ScanLocation(root: $0, source: .available(.system))
             }
         }
+        let pluginResolution = pluginSourceResolver.resolve(homeDirectory: homeDirectory)
+        availableLocations += pluginResolution.locations
         let scanResult = await scanner.scan(
             [ScanLocation(root: settings.libraryPath, source: .library)]
                 + agentLocations
@@ -105,7 +112,10 @@ public actor SkillLibraryService {
                     physicalCopies: record.physicalCopies
                 )
             }
-        return SkillLibrarySnapshot(records: records, issues: scanResult.issues)
+        return SkillLibrarySnapshot(
+            records: records,
+            issues: scanResult.issues + pluginResolution.issues
+        )
     }
 
     private func remoteSource(
