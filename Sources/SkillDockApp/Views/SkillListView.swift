@@ -139,10 +139,16 @@ struct SkillListView: View {
                 ContentUnavailableView(
                     "No Available Skills",
                     systemImage: "tray",
-                    description: Text("SkillDock currently checks Personal and System sources.")
+                    description: Text("SkillDock currently checks Personal, Plugin, and System sources.")
                 )
             case .personal:
                 ContentUnavailableView("No Personal Skills", systemImage: "tray")
+            case .plugin:
+                ContentUnavailableView(
+                    "No Plugin Skills",
+                    systemImage: "tray",
+                    description: Text("SkillDock did not find Plugin Skills from stable plugin metadata.")
+                )
             case .system:
                 ContentUnavailableView("No System Skills", systemImage: "tray")
             }

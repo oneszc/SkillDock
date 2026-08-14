@@ -6,13 +6,13 @@ import XCTest
 final class AvailableSourcePresentationTests: XCTestCase {
     func testBadgesIncludeAvailableSourcesAndAgentCopy() {
         let record = makeRecord(
-            availableSources: [.personal, .system],
+            availableSources: [.personal, .plugin, .system],
             installedAgentIDs: [AgentTargetID.codex]
         )
 
         XCTAssertEqual(
             AvailableSourcePresentation.badges(for: record),
-            [.personal, .system, .agentCopy]
+            [.personal, .plugin, .system, .agentCopy]
         )
     }
 
