@@ -16,6 +16,16 @@ final class SkillDockCoreSmokeTests: XCTestCase {
         XCTAssertEqual(decoded.displayName, "Personal")
     }
 
+    func testPluginAvailableSourceRoundTrips() throws {
+        let source = SkillSource.available(.plugin)
+        let data = try JSONEncoder().encode(source)
+        let decoded = try JSONDecoder().decode(SkillSource.self, from: data)
+
+        XCTAssertEqual(decoded, .available(.plugin))
+        XCTAssertEqual(decoded.rawValue, "available:plugin")
+        XCTAssertEqual(decoded.displayName, "Plugin")
+    }
+
     func testUnknownAvailableSourceDoesNotDecodeAsAgent() throws {
         let data = try XCTUnwrap("\"available:future\"".data(using: .utf8))
 

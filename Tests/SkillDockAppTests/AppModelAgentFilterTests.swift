@@ -59,6 +59,7 @@ final class AppModelAgentFilterTests: XCTestCase {
         model.navigationSection = .available
         model.records = [
             record(name: "personal", source: .available(.personal)),
+            record(name: "plugin", source: .available(.plugin)),
             record(name: "system", source: .available(.system)),
             record(name: "agent", source: .codex)
         ]
@@ -69,8 +70,11 @@ final class AppModelAgentFilterTests: XCTestCase {
         model.availableSourceFilter = .system
         XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["system"])
 
+        model.availableSourceFilter = .plugin
+        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["plugin"])
+
         model.availableSourceFilter = .all
-        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["personal", "system"])
+        XCTAssertEqual(model.filteredRecords.map(\.skill.name), ["personal", "plugin", "system"])
     }
 
     func testAvailableAllSourcesPrefersPersonalDetailCopy() async throws {
