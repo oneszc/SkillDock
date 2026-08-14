@@ -53,7 +53,9 @@ public struct CodexPluginSkillSourceResolver: @unchecked Sendable {
                     continue
                 }
                 let skillsRoot = versionRoot.appendingPathComponent(skillsPath, isDirectory: true).standardizedFileURL
-                guard skillsRoot.path.hasPrefix(versionRoot.standardizedFileURL.path),
+                let versionRootPath = versionRoot.standardizedFileURL.path
+                guard skillsRoot.path == versionRootPath ||
+                      skillsRoot.path.hasPrefix(versionRootPath + "/"),
                       fileManager.fileExists(atPath: skillsRoot.path) else {
                     continue
                 }

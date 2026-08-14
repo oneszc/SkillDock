@@ -57,6 +57,24 @@ final class CodexPluginSkillSourceResolverTests: XCTestCase {
         XCTAssertTrue(result.issues[0].message.contains("Could not read Plugin manifest"))
     }
 
+    func testResolverSkipsSkillsPathOutsideVersionRootWithMatchingPrefix() throws {
+        let home = try Fixtures.temporaryDirectory()
+        let versionRoot = home.appendingPathComponent(".codex/plugins/cache/openai-curated-remote/example/1.0.0")
+        let pluginDirectory = versionRoot.appendingPathComponent(".codex-plugin")
+        let rogueSkills = versionRoot
+            .deletingLastPathComponent()
+            .appendingPathComponent("1.0.0-rogue/skills")
+        try FileManager.default.createDirectory(at: pluginDirectory, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: rogueSkills, withIntermediateDirectories: true)
+        try Data(#"{"name":"example","version":"1.0.0","skills":"../1.0.0-rogue/skills"}"#.utf8)
+            .write(to: pluginDirectory.appendingPathComponent("plugin.json"))
+
+        let result = CodexPluginSkillSourceResolver().resolve(homeDirectory: home)
+
+        XCTAssertTrue(result.locations.isEmpty)
+        XCTAssertTrue(result.issues.isEmpty)
+    }
+
     func testResolverDoesNotFindUndeclaredSkillMarkdownElsewhereInCache() throws {
         let home = try Fixtures.temporaryDirectory()
         let rogue = home.appendingPathComponent(".codex/plugins/cache/openai-curated-remote/rogue/1.0.0/random-skill")
