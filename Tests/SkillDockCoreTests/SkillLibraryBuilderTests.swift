@@ -89,6 +89,32 @@ final class SkillLibraryBuilderTests: XCTestCase {
         XCTAssertEqual(record?.physicalCopies.count, 3)
     }
 
+    func testMergesPluginWithPersonalAndSystemCopiesWithoutMarkingItInstalled() {
+        let skills = [
+            makeSkill(source: .available(.personal), hash: "same"),
+            makeSkill(source: .available(.plugin), hash: "same", isSystem: true),
+            makeSkill(source: .available(.system), hash: "same", isSystem: true)
+        ]
+
+        let record = SkillLibraryBuilder().build(skills: skills, notes: []).first
+
+        XCTAssertEqual(record?.availableSources, [.personal, .plugin, .system])
+        XCTAssertFalse(record?.hasInstalledCopy ?? true)
+        XCTAssertEqual(record?.physicalCopies.count, 3)
+    }
+
+    func testKeepsPluginCopiesWithDifferentContentHashesAsDistinctRecords() {
+        let skills = [
+            makeSkill(source: .available(.plugin), hash: "first"),
+            makeSkill(source: .available(.plugin), hash: "second")
+        ]
+
+        let records = SkillLibraryBuilder().build(skills: skills, notes: [])
+
+        XCTAssertEqual(records.count, 2)
+        XCTAssertEqual(Set(records.map(\.skill.contentHash)), ["first", "second"])
+    }
+
     func testMarksPreviousMatchingNoteAsStale() {
         let skill = makeSkill(source: .library, hash: "new")
         let note = SkillNote(

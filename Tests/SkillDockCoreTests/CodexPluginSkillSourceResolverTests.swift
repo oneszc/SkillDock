@@ -75,6 +75,28 @@ final class CodexPluginSkillSourceResolverTests: XCTestCase {
         XCTAssertTrue(result.issues.isEmpty)
     }
 
+    func testResolverSkipsSkillsPathSymlinkedOutsideVersionRoot() throws {
+        let home = try Fixtures.temporaryDirectory()
+        let versionRoot = home.appendingPathComponent(".codex/plugins/cache/openai-curated-remote/example/1.0.0")
+        let pluginDirectory = versionRoot.appendingPathComponent(".codex-plugin")
+        let skillsLink = versionRoot.appendingPathComponent("skills-link")
+        let externalSkills = home.appendingPathComponent("external-skills")
+        try FileManager.default.createDirectory(at: pluginDirectory, withIntermediateDirectories: true)
+        try Fixtures.makeSkill(at: externalSkills.appendingPathComponent("outside-skill"))
+        try FileManager.default.createSymbolicLink(
+            atPath: skillsLink.path,
+            withDestinationPath: externalSkills.path
+        )
+        try Data(#"{"name":"example","version":"1.0.0","skills":"./skills-link/"}"#.utf8)
+            .write(to: pluginDirectory.appendingPathComponent("plugin.json"))
+
+        let result = CodexPluginSkillSourceResolver().resolve(homeDirectory: home)
+
+        XCTAssertTrue(result.locations.isEmpty)
+        XCTAssertFalse(result.locations.contains { $0.root == externalSkills })
+        XCTAssertTrue(result.issues.isEmpty)
+    }
+
     func testResolverDoesNotFindUndeclaredSkillMarkdownElsewhereInCache() throws {
         let home = try Fixtures.temporaryDirectory()
         let rogue = home.appendingPathComponent(".codex/plugins/cache/openai-curated-remote/rogue/1.0.0/random-skill")
