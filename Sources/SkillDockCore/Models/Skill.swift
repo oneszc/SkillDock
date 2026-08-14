@@ -2,12 +2,15 @@ import Foundation
 
 public enum AvailableSkillSource: String, Codable, CaseIterable, Hashable, Sendable {
     case personal
+    case plugin
     case system
 
     public var displayName: String {
         switch self {
         case .personal:
             "Personal"
+        case .plugin:
+            "Plugin"
         case .system:
             "System"
         }

@@ -36,6 +36,7 @@ public struct SkillRecord: Identifiable, Equatable, Sendable {
             return exact
         }
         return physicalCopies.first { $0.availableSource == .personal }
+            ?? physicalCopies.first { $0.availableSource == .plugin }
             ?? physicalCopies.first { $0.availableSource == .system }
     }
 
@@ -134,8 +135,10 @@ public struct SkillLibraryBuilder: Sendable {
             1
         case .available(.personal):
             2
-        case .available(.system):
+        case .available(.plugin):
             3
+        case .available(.system):
+            4
         }
     }
 
