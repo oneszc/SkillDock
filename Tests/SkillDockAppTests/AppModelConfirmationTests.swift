@@ -5,6 +5,29 @@ import XCTest
 
 @MainActor
 final class AppModelConfirmationTests: XCTestCase {
+    func testPluginAvailableSkillCannotBeInstalled() async throws {
+        let fixture = try InstallConfirmationFixture()
+        defer { fixture.remove() }
+        let availableSkill = try fixture.makeSkill(
+            name: "plugin-skill",
+            source: .available(.plugin),
+            root: fixture.available,
+            isReadOnly: true
+        )
+        let model = fixture.makeModel(records: [availableSkill])
+        model.navigationSection = .available
+        model.availableSourceFilter = .plugin
+        model.selectionID = availableSkill.id
+
+        await model.installSelected(to: AgentTargetID.codex, strategy: .overwrite)
+
+        XCTAssertFalse(
+            FileManager.default.fileExists(
+                atPath: fixture.codex.appendingPathComponent(availableSkill.name).path
+            )
+        )
+    }
+
     func testInstallSelectedDoesNotWriteReadOnlyAvailableSkill() async throws {
         let fixture = try InstallConfirmationFixture()
         defer { fixture.remove() }

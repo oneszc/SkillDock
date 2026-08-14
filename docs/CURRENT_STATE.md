@@ -6,7 +6,7 @@ V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。
 
 ## Current Goal
 
-V0.6.1 Plugin Skills 只读来源设计规格已获产品负责人认可；实施计划已写好，等待选择执行方式。
+V0.6.1 Plugin Skills 只读来源已完成实现，等待产品负责人验收。
 
 ## Completed
 
@@ -398,22 +398,18 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 - `codex/v0.6-available-skills` 已合并到 `main`。
 - `main` 已推送到 GitHub，合并提交：`8b5edb9 merge: v0.6 available skills`。
 
-### V0.6.1 Plugin Skills 只读来源设计（2026-08-13）
+### V0.6.1 Plugin Skills 只读来源实现（2026-08-13）
 
-当前方向：
+已完成：
 
-- V0.6.1 先做 Plugin Skills 来源调研与只读接入设计，不直接实现扫描。
-- 推荐方案为“清单优先、只读发现、保守展示”。
-- 本机可观察到插件版本目录下存在 `.codex-plugin/plugin.json`，其中包含插件名、版本、描述和 `skills` 相对路径。
-- 远程插件根目录下存在 `.codex-remote-plugin-install.json`，但它只提供远程插件 ID，不提供完整启用状态或生命周期信息。
-- 这些结构目前只能作为候选验证点；正式功能仍不得全量扫描 `.codex/plugins/cache`。
-- 独立设计规格：`docs/superpowers/specs/2026-08-13-v0.6.1-plugin-skills-read-only-source-design.md`。
+- `Available` 已增加 Plugin 来源筛选和来源标签。
+- Plugin 来源通过插件 manifest 声明的 `skills` 路径进入，只读浏览，不计入 Installed。
+- 多版本插件无法判定当前版本时会跳过并记录扫描问题。
+- 未全量扫描 `.codex/plugins/cache`。
 
-待开始：
+已验证：
 
-- 按 `docs/superpowers/plans/2026-08-13-v0.6.1-plugin-skills-read-only-source.md` 执行。
-- 推荐使用 Subagent-Driven 方式逐任务实施和复核。
-- 实施时必须保留安全边界：不全量扫描 `.codex/plugins/cache`，多版本插件无法判定时跳过并记录问题。
+- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer swift test`：通过。
 
 ### Command Line Tools 27 启动兼容修复（2026-08-08）
 
