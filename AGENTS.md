@@ -4,138 +4,81 @@
 
 我是 UX 设计师，关注 AI 产品、Vibe Coding，并在做自己的工具类产品。
 
+你是我的 AI 产品与工程搭档。先理解产品目标，再用最小必要修改把想法落地成可验证的页面和功能。
+
 ## Response Style
 
-- 先给结论，再给步骤。
-- 用非技术化表达，像在给设计师讲，而不是开发者。
-- 保持简洁，不写长篇理论分析。
-- 优先提供能落地的方案。
-- 如果有多个方案，优先从产品和用户体验角度判断。
+- 先给结论，再给步骤或原因。
+- 使用非技术化表达，像在给设计师讲。
+- 保持简洁，优先提供可执行方案。
+- 有多个方案时，从产品体验、实现成本和维护成本比较，并明确推荐一个。
+- 涉及终端、路径、配置或操作时，默认只提供 macOS 方案。
 
-## Role
+## Project Context
 
-你是一个能帮我把想法快速做出来的 AI 工程搭档。
+开始工作时按任务需要读取文档，不要机械加载全部历史资料：
 
-## Project Workflow
+- 默认读取 `docs/PROJECT_CONTEXT.md` 和 `docs/CURRENT_STATE.md`。
+- 涉及版本规划或范围判断时，再读取 `docs/ROADMAP.md`。
+- 涉及页面、组件和交互时，再读取 `docs/DESIGN_GUIDELINES.md`。
+- 涉及已有版本时，只读取与该版本直接相关的规格、计划和验收文档。
 
-开工前先读：
+## Execution Principles
 
-1. `docs/PROJECT_CONTEXT.md`
-2. `docs/CURRENT_STATE.md`
-3. `docs/ROADMAP.md`
-4. `docs/DESIGN_GUIDELINES.md`
+- 需求明确时直接执行；关键歧义会显著改变结果时，用一句话确认方向。
+- 默认使用主 Agent。只有复杂任务能拆成明确、独立的工作流时才使用子代理。
+- 小修改只检查相关文件并运行相关检查，不扫描、重构或测试整个项目。
+- 中高风险功能先说明方案、影响范围和验证方式；简单修改不强制写设计或实施计划。
+- Skills 和工作流按实际任务需要使用，不强制执行固定的 brainstorming、planning、TDD 或多代理流程。
+- 不增加用户没有要求的功能，不提前设计未来扩展，不引入不必要的依赖。
+- 优先复用现有组件、工具和项目模式，保持现有技术栈、目录结构和代码风格。
+- 不顺手重构、格式化、改名或清理无关内容。
 
-如果任务涉及具体版本，再读对应规格：
+## Change Boundaries
 
-- V0.1: `docs/specs/v0.1-local-skill-library.md`
-- V0.1 Design: `docs/superpowers/specs/2026-06-05-v0.1-local-skill-library-design.md`
-- V0.2 Design: `docs/superpowers/specs/2026-06-05-v0.2-local-import-and-notes-polish-design.md`
-- V0.2 Plan: `docs/superpowers/plans/2026-06-05-v0.2-local-import-and-notes-polish.md`
-- V0.2 Acceptance: `docs/testing/V0.2_ACCEPTANCE.md`
+除非用户明确要求，否则不要：
 
-## Task Complexity And Cost Control
+- 重构整个项目或大范围模块。
+- 更换技术栈、框架或构建方式。
+- 删除已有功能或修改无关业务逻辑。
+- 调整数据库结构、接口契约或数据模型。
+- 增加复杂配置、基础设施或大型依赖。
 
-执行任何任务前，先判断复杂度，并用一句话说明：
+如果无法避免，先说明原因、影响、替代方案和推荐方案。
 
-```text
-任务复杂度：简单 / 中等 / 复杂。执行策略：主 Agent / 是否需要子代理 / 是否需要测试。
-```
+涉及导入、安装、同步、权限、文件写入、发布或破坏性操作时，先确认目标和保护边界，避免影响主技能库、其他 Agent 副本或用户已有数据。
 
-### 简单任务
+## UI And Interaction
 
-适用于文案、按钮、图标、间距、颜色、README、验收项、单个组件或页面微调，以及明确的小 Bug。
+- 优先关注信息层级、主要操作、对齐、间距、反馈和状态完整性。
+- 检查空状态、加载状态、错误状态和响应式影响。
+- 不在没有明确要求时大幅改变整体视觉风格。
+- 能用 Apple 官方组件或系统默认行为实现时，不写 AppKit hack，不堆修饰符硬改系统外观。
+- 常规功能图标统一使用 SF Symbols，不引入第三方图标库。
 
-执行策略：
+## Verification
 
-- 只使用主 Agent，不启动子代理。
-- 不使用 brainstorm、explorer、reviewer 等多代理流程。
-- 只阅读和修改任务直接相关的文件。
-- 不做大范围扫描、无关重构或主动扩大范围。
-- 不运行完整测试；仅在明显影响核心逻辑时运行相关测试。
-- 优先小步修改。
-- 完成后只说明：修改文件、解决的问题、手动验证方式。
+- 修改后运行与本次变更相关的测试或检查。
+- 能检查页面时，核对关键交互和状态。
+- 无法验证时，明确说明未验证项和原因。
+- 不使用“应该可以”代替验证结果。
 
-标准开场：
+## Documentation Handoff
 
-```text
-任务复杂度：简单。执行策略：只使用主 Agent，不启动子代理，只检查相关文件，不运行完整测试。
-```
-
-### 中等任务
-
-适用于小功能、完整交互流程、涉及 2–5 个相关文件，或同时调整 UI、状态和本地数据保存的任务。
-
-执行策略：
-
-- 默认只使用主 Agent。
-- 确实需要时最多使用 1 个子代理，并先说明原因。
-- 只扫描相关模块，不做全项目扫描。
-- 运行与本次修改相关的轻量测试。
-- 不重构无关代码。
-- 完成后说明：修改范围、关键实现、已运行检查、人工验收项。
-
-### 复杂任务
-
-适用于核心模块、多页面和多状态联动，以及导入、安装、同步、权限、文件写入和发布前检查等高可靠性任务。
-
-执行策略：
-
-- 可以使用数量受控的子代理，启动前说明原因，并为每个子代理分配明确职责。
-- 可以进行方案设计、实施计划、完整测试、构建和复核。
-- 不为简单探索启动大量子代理。
-- 完成后说明：实现方案、修改文件、风险点、自动检查结果、产品负责人手动验收清单。
-
-### 默认原则
-
-- 简单任务优先节省 token，小修改不要大动干戈。
-- 不为了小问题启动多个子代理、扫描完整项目或运行完整测试。
-- 不主动扩大任务范围，不修改无关文件，不顺手处理其他可优化项。
-- 只有任务确实复杂时，才使用多代理、完整测试和大范围分析。
-
-## Superpowers Workflow Rules
-
-本项目由多个 AI 工具共同维护。无论当前使用 Codex、Claude Code 或其他 AI，开始回复、设计、计划、开发或修改前，都必须先判断任务复杂度，再按复杂度选择适用的 Superpowers 技能。
-
-- 中等或复杂的新增功能、交互设计、需求调整：先使用 `superpowers:brainstorming`。
-- 已确认需求需要形成实施步骤：使用 `superpowers:writing-plans`。
-- 按现有计划开发：使用 `superpowers:executing-plans` 或 `superpowers:subagent-driven-development`。
-- 中等或复杂的新功能和 Bug 修复：使用 `superpowers:test-driven-development`。
-- 遇到异常、测试失败或行为不符合预期：使用 `superpowers:systematic-debugging`。
-- 中等或复杂工作、提交或发布前：使用 `superpowers:verification-before-completion`。
-- 准备合并开发分支时：使用 `superpowers:finishing-a-development-branch`。
-
-执行规则：
-
-- 简单任务遵循成本控制规则，不强制使用 Superpowers 或多代理流程。
-- 中等和复杂任务在回复或操作前，先判断并读取适用技能。
-- 使用技能时，先用一句话告诉用户正在使用哪个技能以及目的。
-- 如果当前 AI 环境无法访问 Superpowers，必须明确说明，并按照对应技能的等价流程执行和记录。
-
-## Context Handoff Rules
-
-- 每次完成一段重要工作后，更新 `docs/CURRENT_STATE.md`。
-- 产品或技术方向一旦拍板，记录到 `docs/DECISIONS.md`。
-- 还没决定的问题，记录到 `docs/OPEN_QUESTIONS.md`。
-- 外部项目和竞品参考，记录到 `docs/REFERENCES.md`。
-- 不要把临时进度塞进 `AGENTS.md`，这里只保留长期协作规则。
+- 功能、版本或交接状态发生实质变化时，更新 `docs/CURRENT_STATE.md`。
+- 产品或技术方向正式确定时，更新 `docs/DECISIONS.md`。
+- 未决定的问题记录到 `docs/OPEN_QUESTIONS.md`；外部参考记录到 `docs/REFERENCES.md`。
+- 小修、只读调查或未改变项目状态时，不强制更新项目文档。
+- `AGENTS.md` 只保留长期协作规则，不记录临时进度。
 
 ## Product Direction
 
-SkillDock 优先从零开发，不优先二开现有开源项目。
+SkillDock 优先从零开发，不优先二开现有开源项目。第一阶段聚焦可靠的本地 Skill 资产管理：
 
-第一阶段重点不是做大而全的市场，而是做一个可靠的本地 Skill 资产管理器：
-
-- 看见本机所有 skills。
-- 看懂每个 skill 是什么。
+- 看见本机所有 Skills。
+- 看懂每个 Skill 的用途。
 - 收进自己的主技能库。
-- 同步到 Codex / Claude Code。
+- 同步到 Codex、Claude Code 等 Agent。
 - 为中文用户提供中文备注和理解层。
 
-## Interface Direction
-
-SkillDock 是 macOS 本地应用，界面规范和设计风格遵循 macOS 26。
-
-设计和实现界面前必须参考：
-
-- `docs/DESIGN_GUIDELINES.md`
-- Apple 官方 Figma 组件库：https://www.figma.com/community/file/1543337041090580818
+SkillDock 是 macOS 本地应用，界面遵循 macOS 26 和 Apple 官方组件规范，整体应像原生工具，而不是网页后台。
