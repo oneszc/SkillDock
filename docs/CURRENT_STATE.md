@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.6.1 Plugin Skills 只读来源已完成开发、自动化测试、打包/独立解压验证和产品负责人手动验收，正在准备 GitHub Release。
+V0.6.1 Plugin Skills 只读来源已完成开发、自动化测试、打包/独立解压验证和产品负责人手动验收，并已发布 GitHub Release。
 
 ## Current Goal
 
-发布 V0.6.1，并以 Plugin Skills 只读来源作为当前 V0.6 阶段收尾版本。
+V0.6.1 已发布，下一版本范围等待产品负责人确认。
 
 ## Completed
 
@@ -419,7 +419,8 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 
 发布状态：
 
-- V0.6.1 已完成实现、测试、打包和产品负责人验收，等待创建 GitHub Release。
+- V0.6.1 已发布为 GitHub 最新版本：`https://github.com/oneszc/SkillDock/releases/tag/v0.6.1`。
+- Release 附件：`SkillDock-0.6.1.zip`。
 
 ### Command Line Tools 27 启动兼容修复（2026-08-08）
 
