@@ -11,8 +11,8 @@
 Keep your personal Skill library clear, local, and under your control.
 
 <p>
-  <img src="https://img.shields.io/badge/version-v0.5.1_release-0A84FF?style=flat-square" alt="Version v0.5.1 release">
-  <img src="https://img.shields.io/badge/v0.5.1-latest-5856D6?style=flat-square" alt="V0.5.1 latest">
+  <img src="https://img.shields.io/badge/version-v0.6.1_release-0A84FF?style=flat-square" alt="Version v0.6.1 release">
+  <img src="https://img.shields.io/badge/v0.6.1-latest-5856D6?style=flat-square" alt="V0.6.1 latest">
   <img src="https://img.shields.io/badge/macOS-26%2B-111111?style=flat-square&logo=apple&logoColor=white" alt="macOS 26 or later">
   <img src="https://img.shields.io/badge/SwiftUI-native-F05138?style=flat-square&logo=swift&logoColor=white" alt="Native SwiftUI">
   <img src="https://img.shields.io/badge/local--first-private-34C759?style=flat-square" alt="Local-first and private">
@@ -39,6 +39,7 @@ SkillDock 不修改原始 Skill，也不试图成为 Skill 市场。它服务的
 | 能力 | 说明 |
 | --- | --- |
 | 统一浏览 | 扫描主技能库、Codex 和 Claude Code 中的 Skills |
+| 可用能力 | 只读浏览 Codex Personal、Plugin 与 System Skills，并按来源筛选 |
 | 快速理解 | 查看原始名称、英文描述、`SKILL.md` 和文件结构，并按需生成中文译文 |
 | 安全导入 | 导入前预览文件、脚本风险和同名冲突 |
 | GitHub 导入 | 从公开 GitHub 仓库发现多个 Skills，并批量导入主技能库 |
@@ -74,7 +75,7 @@ SkillDock 默认扫描以下位置：
 ### 下载应用
 
 1. 前往 [GitHub Releases](https://github.com/oneszc/SkillDock/releases/latest)。
-2. 下载 `SkillDock-0.5.1.zip`。
+2. 下载 `SkillDock-0.6.1.zip`。
 3. 解压并打开 `SkillDock.app`。
 
 > 当前版本使用本地临时签名，尚未进行 Apple Developer ID 签名与公证。
@@ -110,10 +111,10 @@ DeepSeek API Key 保存在 macOS Keychain；译文始终与原始 Skill 分离�
 
 ## 当前状态
 
-- 最新发布版本：[`v0.5.1`](https://github.com/oneszc/SkillDock/releases/tag/v0.5.1)
-- 自动化测试：148 项通过
-- 当前发布版本：V0.5.1，修复 System Skill 分类并补充 GitHub Agent Plugin 导入提示
-- V0.5.1 待产品负责人验收
+- 最新发布版本：[`v0.6.1`](https://github.com/oneszc/SkillDock/releases/tag/v0.6.1)
+- 自动化测试：192 项通过
+- 当前发布版本：V0.6.1，新增 Codex Personal、Plugin 与 System Skills 只读来源浏览
+- V0.6.1 已通过产品负责人验收
 - 后续方向：批量同步、多工具同步增强、AI 中文解读
 
 查看完整进度：

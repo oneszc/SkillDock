@@ -2,11 +2,11 @@
 
 ## Current Stage
 
-V0.5.1 System Skill 分类修复和 GitHub Agent Plugin 导入提示已发布。V0.6.0 Available Skills 已完成开发、自动化测试、打包/独立解压验证和产品负责人手动验收，并已合并推送到 `main`。
+V0.6.1 Plugin Skills 只读来源已完成开发、自动化测试、打包/独立解压验证和产品负责人手动验收，正在准备 GitHub Release。
 
 ## Current Goal
 
-V0.6.1 Plugin Skills 只读来源已完成实现，等待产品负责人验收。
+发布 V0.6.1，并以 Plugin Skills 只读来源作为当前 V0.6 阶段收尾版本。
 
 ## Completed
 
@@ -409,7 +409,17 @@ docs/superpowers/specs/2026-06-18-v0.5-deepseek-skill-translation-design.md
 
 已验证：
 
-- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer swift test`：通过。
+- 产品负责人已完成 V0.6.1 手动验收，记录于 `docs/testing/V0.6.1_ACCEPTANCE.md`。
+- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer swift test`：192 项全部通过，零失败。
+- `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer SKILLDOCK_VERSION=0.6.1 ./scripts/package-app.sh`：已生成并验证 `dist/SkillDock.app` 与 `dist/SkillDock-0.6.1.zip`。
+- 独立解压后运行 `./scripts/verify-app.sh`：通过。
+- 包内版本：`0.6.1`。
+- SHA-256：`320aa1a88500f4fc8a87f42207a6383ef06b851d850092886f8a069c2bea90c5`。
+- 已新增 Release notes：`docs/releases/v0.6.1.md`。
+
+发布状态：
+
+- V0.6.1 已完成实现、测试、打包和产品负责人验收，等待创建 GitHub Release。
 
 ### Command Line Tools 27 启动兼容修复（2026-08-08）
 
