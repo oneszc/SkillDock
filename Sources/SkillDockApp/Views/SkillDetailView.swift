@@ -16,6 +16,7 @@ struct SkillDetailView: View {
                 detailHeader(record)
                 content(for: record)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle(record.skill.name)
             .onAppear {
                 if record.skill.isReadOnly {
@@ -199,23 +200,7 @@ struct SkillDetailView: View {
                 MarkdownPreviewView(markdown: presentation.markdown)
             case .available(let isStale):
                 VStack(spacing: 0) {
-                    HStack {
-                        if isStale {
-                            Label("The source has changed. This translation may be outdated.", systemImage: "exclamationmark.triangle.fill")
-                                .foregroundStyle(.orange)
-                        } else {
-                            Label("AI-generated translation", systemImage: "sparkles")
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Button(isStale ? "Update Translation" : "Regenerate") {
-                            confirmsRegeneration = true
-                        }
-                    }
-                    .font(.callout)
-                    .padding(.horizontal, VisualMetrics.contentPadding)
-                    .padding(.vertical, 10)
-                    .background(.quaternary)
+                    translationStatusCard(isStale: isStale)
                     MarkdownPreviewView(markdown: presentation.markdown)
                 }
             case .missingConfiguration, .empty, .generating, .failed:
@@ -231,6 +216,72 @@ struct SkillDetailView: View {
                 )
             }
         }
+    }
+
+    private func translationStatusCard(isStale: Bool) -> some View {
+        HStack(spacing: 12) {
+            Group {
+                if isStale {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                        .frame(width: 20, height: 20)
+                } else if let aiSparkImage {
+                    Image(nsImage: aiSparkImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                }
+            }
+            .frame(width: 28, height: 28)
+
+            Text(
+                isStale
+                    ? "The source has changed. This translation may be outdated."
+                    : "AI-generated translation"
+            )
+            .font(.callout.weight(.medium))
+            .foregroundStyle(.primary)
+
+            Spacer(minLength: 12)
+
+            Button(isStale ? "Update Translation" : "Regenerate") {
+                confirmsRegeneration = true
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.regular)
+            .frame(height: 28)
+        }
+        .padding(.horizontal, 16)
+        .frame(height: 64)
+        .background {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(0.9))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(.white.opacity(0.9), lineWidth: 1.5)
+                }
+        }
+        .background {
+            LinearGradient(
+                colors: [
+                    Color(red: 0.92, green: 0.86, blue: 1.0).opacity(0.6),
+                    Color(red: 0.84, green: 0.84, blue: 1.0).opacity(0.6),
+                    Color(red: 0.77, green: 0.86, blue: 1.0).opacity(0.6)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .blur(radius: 10)
+        }
+        .padding(.horizontal, VisualMetrics.contentPadding)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
+    }
+
+    private var aiSparkImage: NSImage? {
+        Bundle.module.url(forResource: "ai-spark", withExtension: "svg")
+            .flatMap(NSImage.init(contentsOf:))
     }
 
     @ViewBuilder

@@ -37,7 +37,9 @@ struct SkillListView: View {
                     .navigationTitle("\(records.count) Skills")
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .dropDestination(for: URL.self) { urls, _ in
             guard acceptsImportDrop else { return false }
             onImportDrop(urls)
@@ -173,7 +175,7 @@ struct SkillListView: View {
         case .agent(let id):
             if let target = agentTargets.first(where: { $0.id == id }) {
                 HStack(spacing: 6) {
-                    AgentLogo(target: target, installed: true, size: 13)
+                    AgentMenuLogo(target: target)
                     Text(target.displayName)
                 }
             } else {

@@ -11,7 +11,7 @@ struct FilesView: View {
                 .listRowInsets(
                     EdgeInsets(
                         top: 4,
-                        leading: 0,
+                        leading: 10,
                         bottom: 4,
                         trailing: 0
                     )
