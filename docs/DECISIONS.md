@@ -362,3 +362,22 @@ https://developer.apple.com/cn/sf-symbols/
 - Plugin Skills 的缓存目录结构能证明“可发现”，但不能证明“当前启用且稳定可用”。
 - 如果直接扫描缓存，可能把旧版本、禁用插件或内部实现细节展示给用户，造成数量和所有权误解。
 - 先写设计规格可以让下一阶段实施聚焦于稳定来源验证，而不是扩大扫描范围。
+
+## 2026-08-16 - Replace Mandatory Superpowers Workflow With Lightweight Project Rules
+
+决定：
+
+- 不再强制所有中等或复杂任务执行 brainstorming、writing-plans、TDD、subagent-driven development 等固定技能链。
+- Skills、实施计划和子代理改为按任务风险与实际需要使用；简单修改可以由主 Agent 直接完成。
+- `AGENTS.md` 只保留 SkillDock 的产品背景、修改边界、风险控制、界面原则和验证要求。
+- 项目文档改为按任务读取和按实质变化更新，避免每次工作都加载或维护无关资料。
+
+原因：
+
+- GPT-5.6 Sol 已具备更强的意图理解、持续执行、工具调用和多 Agent 协作能力，重复描述通用工作步骤会增加上下文和执行成本。
+- 原 Superpowers 硬性流程与项目自己的“小修改直接执行、控制 token 和改动范围”原则存在冲突。
+- 保留项目特有的产品约束和验收边界，比规定固定过程更稳定，也更适合 Codex、Claude Code 等不同 AI 工具共同维护。
+
+替代关系：
+
+- 本决定取代 `2026-06-08 - All AI Collaborators Follow Superpowers Workflows` 中的强制工作流要求；原记录作为历史背景保留。
